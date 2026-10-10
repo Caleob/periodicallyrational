@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <!-- MENU VIEW -->
+    <div id="menu-view" class="view">
+        <div class="menu-header">
+            <h1>Statistical Calculator Suite</h1>
+            <p>Select a hypothesis test to begin (100% Offline Vanilla Version)</p>
+        </div>
+        
+        <div class="menu-grid">
+            <button onclick="setMode('chi')">
+                <h2>Chi-Square Test</h2>
+                <p>Variance (σ²)</p>
+            </button>
+            <button onclick="setMode('t_mean')">
+                <h2>T-Test for Mean</h2>
+                <p>Mean (μ) with unknown σ</p>
+            </button>
+            <button onclick="setMode('z_mean')">
+                <h2>Z-Test for Mean</h2>
+                <p>Mean (μ) with known σ</p>
+            </button>
+            <button onclick="setMode('z_prop')">
+                <h2>Z-Test for Proportion</h2>
+                <p>Proportion (p)</p>
+            </button>
+        </div>
+    </div>
+
+    <!-- CALCULATOR VIEW -->
+    <div id="calc-view" class="view hidden">
+        <div class="header">
+            <div>
+                <button onclick="setMode(null)">&larr; Back to Menu</button>
+                <h2 id="header-title">Title</h2>
+            </div>
+            <div id="header-df" class="badge">df = 9</div>
+        </div>
+
+        <div class="top-section">
+            <div class="cv-panel">
+                <label>Left CV</label>
+                <input id="cvLeft" type="number" step="any" placeholder="None">
+                <label>Left Area (α)</label>
+                <input id="areaLeft" type="number" step="any" placeholder="None">
+            </div>
+            <div class="cv-panel">
+                <label>Right CV</label>
+                <input id="cvRight" type="number" step="any" placeholder="None">
+                <label>Right Area (α)</label>
+                <input id="areaRight" type="number" step="any" placeholder="None">
+            </div>
+
+            <div class="p-value-panel text-center">
+                <label>P-Value</label>
+                <div id="p-value-display">--</div>
+                <div id="p-value-label">Define Rejection Region</div>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <div id="dist-label">Distribution:</div>
+            <canvas id="canvas" width="1000" height="350"></canvas>
+        </div>
+
+        <div class="main-grid">
+            <!-- FORMULA -->
+            <div class="panel text-center">
+                <h3>Test Statistic</h3>
+                <div id="formula-display" class="formula">
+                    <!-- Injected by JS -->
+                </div>
+                <div class="calc-result">
+                    <small>Calculated Value</small>
+                    <div id="calc-stat">0.0000</div>
+                </div>
+            </div>
+
+            <!-- INPUTS -->
+            <div class="panel">
+                <h3>Sample Data</h3>
+                <div id="chi-toggle" class="btn-group hidden">
+                    <button id="btn-sd" onclick="setChiMode('sd')">σ (Std Dev)</button>
+                    <button id="btn-var" onclick="setChiMode('var')">σ² (Variance)</button>
+                </div>
+
+                <div class="input-row">
+                    <label>n =</label>
+                    <input id="input-n" type="number">
+                </div>
+                <div class="input-row">
+                    <label id="label-sample">s =</label>
+                    <input id="input-sample" type="number" step="any">
+                </div>
+                <div class="input-row">
+                    <label id="label-pop">σ =</label>
+                    <input id="input-pop" type="number" step="any">
+                </div>
+                <div id="extra-input-container" class="input-row hidden">
+                    <label id="label-extra">s =</label>
+                    <input id="input-extra" type="number" step="any">
+                </div>
+            </div>
+
+            <!-- HYPOTHESIS & CONCLUSION -->
+            <div class="panel flex-col">
+                <h3>Hypothesis</h3>
+                
+                <div class="hyp-row">
+                    <label>H₀:</label>
+                    <span id="h0-sym">σ</span>
+                    <span>=</span>
+                    <span id="h0-val" class="highlight-val">0</span>
+                </div>
+
+                <div class="hyp-row">
+                    <label>H₁:</label>
+                    <span id="h1-sym">σ</span>
+                    <select id="h1-op">
+                        <option value="≠">≠</option>
+                        <option value=">">&gt;</option>
+                        <option value="<">&lt;</option>
+                    </select>
+                    <span id="h1-val" class="highlight-val">0</span>
+                </div>
+                
+                <div class="conclusion">
+                    <h4>Final Conclusion</h4>
+                    <div class="btn-group">
+                        <button id="btn-reject" onclick="setDecision('reject')">Reject H₀</button>
+                        <button id="btn-fail" onclick="setDecision('fail')">Fail to Reject H₀</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,2549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>Vocabulary Codenames</title>
+
+<style>
+  :root {
+    --bg: #11151a;
+    --surface: #1a2027;
+    --surface-2: #222a33;
+    --text: #f4f7fa;
+    --muted: #aab4bf;
+    --border: #39434e;
+
+    --red: #d52f2f;
+    --red-dark: #9e1f1f;
+
+    --blue: #1769c2;
+    --blue-dark: #104b8c;
+
+    --gold: #d8a62b;
+    --gold-bright: #f2c94c;
+    --gold-dark: #9d7618;
+
+    --neutral: #d5d9de;
+    --neutral-text: #20252a;
+
+    --assassin: #080a0d;
+
+    --shadow: 0 8px 25px rgba(0,0,0,.30);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family:
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
+    overflow: hidden;
+  }
+
+  button,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  /* =========================================================
+     APPLICATION
+     ========================================================= */
+
+  .app {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* =========================================================
+     TOP BAR
+     ========================================================= */
+
+  .topbar {
+    flex: 0 0 auto;
+    height: 68px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding: 10px 18px;
+
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .title-area {
+    min-width: 0;
+  }
+
+  .title {
+    margin: 0;
+
+    font-size:
+      clamp(1.05rem, 2vw, 1.45rem);
+
+    font-weight: 850;
+    letter-spacing: .01em;
+  }
+
+  .subtitle {
+    margin: 2px 0 0;
+
+    color: var(--muted);
+    font-size: .78rem;
+  }
+
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  /*
+    Gold Key Copy button.
+  */
+
+  .key-copy-button {
+    height: 45px;
+    padding: 0 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    border: 2px solid var(--gold-bright);
+    border-radius: 10px;
+
+    background:
+      linear-gradient(
+        145deg,
+        #e5b738,
+        #bd8d19
+      );
+
+    color: #201700;
+
+    font-size: .88rem;
+    font-weight: 900;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.35),
+      0 3px 7px rgba(0,0,0,.25);
+
+    transition:
+      transform .12s,
+      filter .15s;
+  }
+
+  .key-copy-button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+  }
+
+  .key-icon {
+    font-size: 1.2rem;
+  }
+
+  .icon-button {
+    width: 45px;
+    height: 45px;
+    padding: 0;
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    background: var(--surface-2);
+    color: var(--text);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.35rem;
+
+    transition:
+      transform .12s,
+      background .15s,
+      border-color .15s;
+  }
+
+  .icon-button:hover {
+    transform: translateY(-1px);
+    background: #2b343e;
+    border-color: #596572;
+  }
+
+  .key-copy-button:focus-visible,
+  .icon-button:focus-visible,
+  .card:focus-visible,
+  .modal-button:focus-visible,
+  .toggle input:focus-visible + .slider {
+    outline: 3px solid rgba(77, 150, 255, .55);
+    outline-offset: 2px;
+  }
+
+  /* =========================================================
+     BOARD
+     ========================================================= */
+
+  .board-area {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    padding:
+      clamp(10px, 2vw, 20px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .board-wrapper {
+    width: min(96vw, 1100px);
+
+    height:
+      min(
+        calc(100vh - 92px),
+        820px
+      );
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  .board {
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(4, 1fr);
+
+    grid-template-rows:
+      repeat(4, 1fr);
+
+    gap:
+      clamp(8px, 1.2vw, 16px);
+  }
+
+  .empty-board-message {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+
+  .board-footer {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-top: 6px;
+  }
+
+  /*
+    The gold border is deliberately substantial.
+
+    It remains visible after the card is revealed, helping the
+    entire board retain a consistent "deck of cards" appearance.
+  */
+
+  .card {
+    position: relative;
+
+    min-width: 0;
+    min-height: 0;
+
+    padding:
+      clamp(8px, 1.5vw, 20px);
+
+    border:
+      clamp(3px, .4vw, 5px)
+      solid
+      var(--gold);
+
+    border-radius:
+      clamp(9px, 1vw, 15px);
+
+    background:
+      linear-gradient(
+        145deg,
+        #fafafa,
+        #dce1e5
+      );
+
+    color: #111820;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    font-weight: 850;
+
+    font-size:
+      clamp(.85rem, 2.1vw, 1.65rem);
+
+    line-height: 1.1;
+
+    overflow: hidden;
+    user-select: none;
+
+    box-shadow:
+      0 4px 9px rgba(0,0,0,.30),
+      inset 0 0 0 1px
+        rgba(255,255,255,.45);
+
+    transition:
+      transform .13s,
+      box-shadow .13s,
+      background .16s,
+      border-color .16s;
+  }
+
+  .card:not(.revealed):hover {
+    transform: scale(1.015);
+
+    box-shadow:
+      0 8px 18px rgba(0,0,0,.38),
+      0 0 0 1px var(--gold-bright),
+      inset 0 0 0 1px
+        rgba(255,255,255,.55);
+  }
+
+  .card.revealed {
+    cursor: default;
+  }
+
+  /*
+    Revealed cards retain the gold outer border.
+    Their interior communicates the role.
+  */
+
+  .card.red {
+    background: var(--red);
+    border-color: var(--gold-bright);
+    color: white;
+  }
+
+  .card.blue {
+    background: var(--blue);
+    border-color: var(--gold-bright);
+    color: white;
+  }
+
+  .card.neutral {
+    background: var(--neutral);
+    border-color: var(--gold-bright);
+    color: var(--neutral-text);
+  }
+
+  .card.neutral .word {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+  }
+
+  .card.assassin {
+    background: var(--assassin);
+    border-color: var(--gold-bright);
+    color: white;
+  }
+
+  .assassin-warning {
+    display: none;
+
+    position: absolute;
+    top: 6px;
+    right: 9px;
+
+    font-size:
+      clamp(.9rem, 2vw, 1.4rem);
+
+    font-weight: 900;
+  }
+
+  .card.assassin .assassin-warning {
+    display: block;
+  }
+
+  .word {
+    overflow-wrap: anywhere;
+  }
+
+  /* =========================================================
+     TEACHER KEY BUTTON & TEACHER KEY VIEW
+     ========================================================= */
+
+  .teacher-key-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px;
+
+    border: 1px solid rgba(57, 67, 78, 0.7);
+    border-radius: 6px;
+
+    background: rgba(26, 32, 39, 0.8);
+    color: var(--muted);
+
+    font-size: .78rem;
+    font-weight: 550;
+    letter-spacing: .01em;
+
+    cursor: pointer;
+    user-select: none;
+
+    transition:
+      transform .12s,
+      background .15s,
+      border-color .15s,
+      color .15s;
+  }
+
+  .teacher-key-button:hover {
+    transform: translateY(-1px);
+    background: #2b343e;
+    border-color: #596572;
+    color: var(--text);
+  }
+
+  .teacher-key-arrow {
+    font-size: .85rem;
+    line-height: 1;
+    transition: transform .12s ease;
+  }
+
+  .teacher-key-button:hover .teacher-key-arrow {
+    transform: translate(1px, -1px);
+  }
+
+  .teacher-key-button:focus-visible {
+    outline: 2px solid rgba(77, 150, 255, .55);
+    outline-offset: 1px;
+  }
+
+  /* Teacher Key Window Specific Styles */
+  .teacher-key-view .teacher-key-button {
+    display: none;
+  }
+
+  .teacher-key-view #settingsButton {
+    display: none;
+  }
+
+  .teacher-key-pill-strip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .role-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: .75rem;
+    font-weight: 750;
+    letter-spacing: .02em;
+    user-select: none;
+  }
+
+  .role-pill.red {
+    background: rgba(213, 47, 47, 0.22);
+    border: 1px solid var(--red);
+    color: #ff7e7e;
+  }
+
+  .role-pill.blue {
+    background: rgba(23, 105, 194, 0.22);
+    border: 1px solid var(--blue);
+    color: #72b0f4;
+  }
+
+  .role-pill.neutral {
+    background: rgba(213, 217, 222, 0.15);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .role-pill.assassin {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #5a6470;
+    color: #f4f7fa;
+  }
+
+  /* Full color cards in teacher key tab */
+  .teacher-key-view .card {
+    cursor: pointer;
+  }
+
+  .teacher-key-view .card.red {
+    background: var(--red);
+    border-color: var(--gold-bright);
+    color: white;
+  }
+
+  .teacher-key-view .card.blue {
+    background: var(--blue);
+    border-color: var(--gold-bright);
+    color: white;
+  }
+
+  .teacher-key-view .card.neutral {
+    background: var(--neutral);
+    border-color: var(--gold-bright);
+    color: var(--neutral-text);
+  }
+
+  .teacher-key-view .card.neutral .word {
+    text-decoration: none;
+  }
+
+  .teacher-key-view .card.assassin {
+    background: var(--assassin);
+    border-color: var(--gold-bright);
+    color: white;
+  }
+
+  .teacher-key-view .card.assassin .assassin-warning {
+    display: block;
+  }
+
+  /* Status tag on card when revealed / guessed */
+  .card-revealed-tag {
+    display: none;
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: clamp(.60rem, .9vw, .72rem);
+    font-weight: 800;
+    letter-spacing: .04em;
+    background: rgba(0, 0, 0, 0.65);
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,.4);
+    pointer-events: none;
+  }
+
+  .teacher-key-view .card.is-revealed .card-revealed-tag {
+    display: block;
+  }
+
+  .teacher-key-view .card.is-revealed {
+    opacity: 0.62;
+    filter: saturate(0.85);
+  }
+
+  /* =========================================================
+     SETTINGS MODAL
+     ========================================================= */
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    background: rgba(0,0,0,.72);
+
+    backdrop-filter: blur(4px);
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+  }
+
+  .modal-backdrop.open {
+    display: flex;
+  }
+
+  .modal {
+    width: min(700px, 100%);
+    max-height: min(850px, 92vh);
+
+    overflow-y: auto;
+
+    background: var(--surface);
+
+    border:
+      1px solid var(--border);
+
+    border-radius: 15px;
+
+    box-shadow: var(--shadow);
+
+    padding: 22px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.35rem;
+  }
+
+  .close-button {
+    border: 0;
+    background: transparent;
+
+    color: var(--muted);
+
+    font-size: 1.7rem;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 8px;
+  }
+
+  .close-button:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 180px;
+
+    resize: vertical;
+
+    padding: 13px;
+
+    border:
+      2px solid var(--border);
+
+    border-radius: 9px;
+
+    background: #10151a;
+    color: var(--text);
+
+    outline: none;
+  }
+
+  textarea:focus {
+    border-color: var(--blue);
+
+    box-shadow:
+      0 0 0 3px
+      rgba(23,105,194,.2);
+  }
+
+  .counter {
+    margin: 7px 0 12px;
+
+    color: var(--muted);
+
+    font-size: .9rem;
+    font-weight: 750;
+  }
+
+  .counter.valid {
+    color: #65d18d;
+  }
+
+  .counter.invalid {
+    color: #ff9b70;
+  }
+
+  .instructions {
+    color: var(--muted);
+
+    font-size: .88rem;
+
+    margin:
+      8px 0 16px;
+  }
+
+  .modal-controls {
+    display: flex;
+
+    gap: 9px;
+
+    flex-wrap: wrap;
+  }
+
+  .modal-button {
+    padding:
+      10px 15px;
+
+    border-radius: 8px;
+
+    border:
+      1px solid var(--border);
+
+    font-weight: 800;
+  }
+
+  .primary {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+  }
+
+  .secondary {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+
+  .primary:hover {
+    background: #1d78d8;
+  }
+
+  .secondary:hover {
+    background: #303a45;
+  }
+
+  .settings-section {
+    margin-top: 20px;
+
+    padding-top: 18px;
+
+    border-top:
+      1px solid var(--border);
+  }
+
+  .settings-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+  }
+
+  .settings-row strong {
+    display: block;
+  }
+
+  .settings-row small {
+    display: block;
+
+    color: var(--muted);
+
+    margin-top: 3px;
+  }
+
+  .toggle {
+    position: relative;
+
+    flex: 0 0 auto;
+
+    width: 52px;
+    height: 29px;
+  }
+
+  .toggle input {
+    opacity: 0;
+
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    inset: 0;
+
+    background: #606b76;
+
+    border-radius: 999px;
+
+    cursor: pointer;
+
+    transition: .2s;
+  }
+
+  .slider::before {
+    content: "";
+
+    position: absolute;
+
+    width: 21px;
+    height: 21px;
+
+    left: 4px;
+    top: 4px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    transition: .2s;
+  }
+
+  .toggle input:checked + .slider {
+    background: var(--blue);
+  }
+
+  .toggle input:checked + .slider::before {
+    transform:
+      translateX(23px);
+  }
+
+  .status {
+    min-height: 1.4em;
+
+    margin-top: 12px;
+
+    color: var(--muted);
+
+    font-size: .88rem;
+    font-weight: 650;
+  }
+
+  /* =========================================================
+     COPY TOAST
+     ========================================================= */
+
+  .copy-toast {
+    position: fixed;
+
+    z-index: 2000;
+
+    left: 50%;
+    bottom: 25px;
+
+    transform:
+      translate(-50%, 15px);
+
+    background: #f0f5f8;
+    color: #101820;
+
+    padding:
+      10px 17px;
+
+    border-radius: 999px;
+
+    font-weight: 800;
+
+    box-shadow:
+      var(--shadow);
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+      opacity .18s,
+      transform .18s;
+  }
+
+  .copy-toast.show {
+    opacity: 1;
+
+    transform:
+      translate(-50%, 0);
+  }
+
+  /* =========================================================
+     MOBILE / SMALL SCREEN
+     ========================================================= */
+
+  @media (max-width: 600px) {
+
+    .topbar {
+      height: 61px;
+
+      padding:
+        7px 9px;
+
+      gap: 6px;
+    }
+
+    .subtitle {
+      display: none;
+    }
+
+    .top-actions {
+      gap: 5px;
+    }
+
+    .key-copy-button {
+      height: 39px;
+      padding: 0 10px;
+
+      border-radius: 8px;
+
+      font-size: .76rem;
+    }
+
+    .key-icon {
+      font-size: 1rem;
+    }
+
+    .icon-button {
+      width: 39px;
+      height: 39px;
+
+      border-radius: 8px;
+
+      font-size: 1.05rem;
+    }
+
+    .board-area {
+      padding: 7px;
+    }
+
+    .board {
+      width: 100%;
+
+      height:
+        calc(100vh - 75px);
+
+      gap: 5px;
+    }
+
+    .card {
+      border-width: 3px;
+      border-radius: 7px;
+    }
+
+    .modal-backdrop {
+      padding: 8px;
+    }
+
+    .modal {
+      padding: 16px;
+      border-radius: 12px;
+    }
+  }
+
+  @media
+    (orientation: landscape)
+    and (max-height: 600px) {
+
+    .topbar {
+      height: 50px;
+    }
+
+    .board {
+      height:
+        calc(100vh - 58px);
+
+      gap: 5px;
+    }
+
+    .key-copy-button {
+      height: 35px;
+    }
+
+    .icon-button {
+      width: 35px;
+      height: 35px;
+
+      font-size: 1rem;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- =======================================================
+       TOP BAR
+       ======================================================= -->
+
+  <header class="topbar">
+
+    <div class="title-area">
+
+      <h1 class="title">
+        Vocabulary Codenames
+      </h1>
+
+      <p class="subtitle">
+        Teacher / Spymaster Board
+      </p>
+
+    </div>
+
+
+    <div class="top-actions">
+
+      <!-- One complete key for either spymaster -->
+
+      <button
+        id="keyCopyButton"
+        class="key-copy-button"
+        type="button"
+        title="Copy complete spymaster key"
+        aria-label="Copy complete spymaster key"
+      >
+        <span
+          class="key-icon"
+          aria-hidden="true"
+        >
+          🔑
+        </span>
+
+        <span>
+          Key Copy
+        </span>
+      </button>
+
+
+      <!-- Settings -->
+
+      <button
+        id="settingsButton"
+        class="icon-button"
+        type="button"
+        title="Game settings"
+        aria-label="Open game settings"
+      >
+        ⚙
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- =======================================================
+       BOARD
+       ======================================================= -->
+
+  <main class="board-area">
+
+    <div class="board-wrapper">
+
+      <div
+        id="board"
+        class="board"
+        aria-label="Vocabulary Codenames board"
+      >
+
+        <div class="empty-board-message">
+          Open settings to enter vocabulary and generate a game.
+        </div>
+
+      </div>
+
+      <div class="board-footer">
+
+        <button
+          id="teacherKeyButton"
+          class="teacher-key-button"
+          type="button"
+          title="Open teacher key in a new tab"
+          aria-label="Open teacher key window in a new tab"
+        >
+          Teacher key window <span class="teacher-key-arrow" aria-hidden="true">↗</span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<!-- =========================================================
+     SETTINGS MODAL
+     ========================================================= -->
+
+<div
+  id="settingsModal"
+  class="modal-backdrop"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="settingsTitle"
+>
+
+  <section class="modal">
+
+    <div class="modal-header">
+
+      <h2 id="settingsTitle">
+        Game Setup
+      </h2>
+
+      <button
+        id="closeModalButton"
+        class="close-button"
+        type="button"
+        aria-label="Close settings"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <textarea
+      id="wordInput"
+      aria-label="Vocabulary words"
+      placeholder="Paste vocabulary words here.
+
+Newlines, commas, and tabs are all supported.
+
+Example:
+photosynthesis
+mitochondria
+osmosis
+homeostasis
+diffusion"
+    ></textarea>
+
+
+    <div
+      id="wordCounter"
+      class="counter"
+    >
+      0 valid unique words
+    </div>
+
+
+    <p class="instructions">
+      Enter at least 16 unique words. If you provide more than 16,
+      the game randomly selects 16. Your complete vocabulary remains
+      available for subsequent reshuffles.
+    </p>
+
+
+    <div class="modal-controls">
+
+      <button
+        id="generateButton"
+        class="modal-button primary"
+        type="button"
+      >
+        Generate Game
+      </button>
+
+      <button
+        id="reshuffleButton"
+        class="modal-button secondary"
+        type="button"
+      >
+        Reshuffle / New Game
+      </button>
+
+    </div>
+
+
+    <div
+      id="modalStatus"
+      class="status"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+  </section>
+
+</div>
+
+
+<!-- =========================================================
+     COPY FEEDBACK
+     ========================================================= -->
+
+<div
+  id="copyToast"
+  class="copy-toast"
+  role="status"
+  aria-live="polite"
+>
+  Copied!
+</div>
+
+
+<script>
+"use strict";
+
+
+/* ============================================================
+   CONSTANTS
+   ============================================================ */
+
+const ROLE = Object.freeze({
+
+  RED: "red",
+
+  BLUE: "blue",
+
+  NEUTRAL: "neutral",
+
+  ASSASSIN: "assassin"
+
+});
+
+
+/* ============================================================
+   APPLICATION STATE
+   ============================================================ */
+
+let vocabularyPool = [];
+
+let currentCards = [];
+
+
+/* ============================================================
+   DOM REFERENCES
+   ============================================================ */
+
+const board =
+  document.getElementById("board");
+
+const settingsButton =
+  document.getElementById("settingsButton");
+
+const settingsModal =
+  document.getElementById("settingsModal");
+
+const closeModalButton =
+  document.getElementById("closeModalButton");
+
+const wordInput =
+  document.getElementById("wordInput");
+
+const wordCounter =
+  document.getElementById("wordCounter");
+
+const generateButton =
+  document.getElementById("generateButton");
+
+const reshuffleButton =
+  document.getElementById("reshuffleButton");
+
+const modalStatus =
+  document.getElementById("modalStatus");
+
+const teacherKeyButton =
+  document.getElementById("teacherKeyButton");
+
+const keyCopyButton =
+  document.getElementById("keyCopyButton");
+
+const copyToast =
+  document.getElementById("copyToast");
+
+
+/* ============================================================
+   VOCABULARY PARSING
+   ============================================================ */
+
+function parseVocabulary(text) {
+
+  /*
+    Supports:
+      newline
+      comma
+      tab
+  */
+
+  const rawWords =
+    text
+      .split(/[\n,\t]+/)
+      .map(
+        word => word.trim()
+      )
+      .filter(Boolean);
+
+
+  const uniqueWords = [];
+
+  const seen = new Set();
+
+
+  for (const word of rawWords) {
+
+    const normalized =
+      word.toLocaleLowerCase();
+
+
+    if (!seen.has(normalized)) {
+
+      seen.add(normalized);
+
+      uniqueWords.push(word);
+
+    }
+
+  }
+
+
+  return uniqueWords;
+}
+
+
+function updateWordCounter() {
+
+  const words =
+    parseVocabulary(
+      wordInput.value
+    );
+
+  const count =
+    words.length;
+
+
+  wordCounter.textContent =
+    `${count} valid unique word${
+      count === 1
+        ? ""
+        : "s"
+    }`;
+
+
+  wordCounter.classList.toggle(
+    "valid",
+    count >= 16
+  );
+
+
+  wordCounter.classList.toggle(
+    "invalid",
+    count < 16
+  );
+}
+
+
+/* ============================================================
+   RANDOMIZATION
+   ============================================================ */
+
+function shuffle(array) {
+
+  const result =
+    [...array];
+
+
+  /*
+    Fisher-Yates shuffle.
+  */
+
+  for (
+    let i = result.length - 1;
+    i > 0;
+    i--
+  ) {
+
+    const j =
+      Math.floor(
+        Math.random() *
+        (i + 1)
+      );
+
+
+    [
+      result[i],
+      result[j]
+    ] =
+    [
+      result[j],
+      result[i]
+    ];
+
+  }
+
+
+  return result;
+}
+
+
+function selectSixteenWords() {
+
+  return shuffle(
+    vocabularyPool
+  ).slice(0, 16);
+}
+
+
+function createRoleList() {
+
+  return shuffle([
+
+    ROLE.RED,
+    ROLE.RED,
+    ROLE.RED,
+    ROLE.RED,
+    ROLE.RED,
+
+    ROLE.BLUE,
+    ROLE.BLUE,
+    ROLE.BLUE,
+    ROLE.BLUE,
+    ROLE.BLUE,
+
+    ROLE.NEUTRAL,
+    ROLE.NEUTRAL,
+    ROLE.NEUTRAL,
+    ROLE.NEUTRAL,
+    ROLE.NEUTRAL,
+
+    ROLE.ASSASSIN
+
+  ]);
+}
+
+
+/* ============================================================
+   GAME GENERATION
+   ============================================================ */
+
+function generateGame() {
+
+  vocabularyPool =
+    parseVocabulary(
+      wordInput.value
+    );
+
+
+  if (
+    vocabularyPool.length < 16
+  ) {
+
+    const needed =
+      16 -
+      vocabularyPool.length;
+
+
+    modalStatus.textContent =
+      `You need ${needed} more unique word${
+        needed === 1
+          ? ""
+          : "s"
+      }.`;
+
+    return;
+  }
+
+
+  const selectedWords =
+    selectSixteenWords();
+
+
+  const roles =
+    createRoleList();
+
+
+  currentCards =
+    shuffle(
+
+      selectedWords.map(
+        (word, index) => ({
+
+          word,
+
+          role:
+            roles[index],
+
+          revealed:
+            false
+
+        })
+      )
+
+    );
+
+
+  renderBoard();
+
+
+  modalStatus.textContent =
+    vocabularyPool.length > 16
+      ? `Board generated from ${
+          vocabularyPool.length
+        } available words.`
+      : "Board generated.";
+
+
+  closeModal();
+
+  notifyKeyWindowsOfNewGame();
+}
+
+
+/* ============================================================
+   BOARD RENDERING
+   ============================================================ */
+
+function renderBoard() {
+
+  board.innerHTML = "";
+
+
+  currentCards.forEach(
+    (cardData, index) => {
+
+      const card =
+        document.createElement(
+          "button"
+        );
+
+
+      card.type =
+        "button";
+
+
+      card.className =
+        "card";
+
+
+      card.setAttribute(
+        "aria-label",
+        `Card ${index + 1}: ${cardData.word}`
+      );
+
+
+      if (
+        cardData.revealed
+      ) {
+
+        card.classList.add(
+          "revealed",
+          cardData.role
+        );
+
+      }
+
+
+      const word =
+        document.createElement(
+          "span"
+        );
+
+
+      word.className =
+        "word";
+
+
+      word.textContent =
+        cardData.word;
+
+
+      const warning =
+        document.createElement(
+          "span"
+        );
+
+
+      warning.className =
+        "assassin-warning";
+
+
+      warning.textContent =
+        "!";
+
+
+      warning.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      card.appendChild(
+        word
+      );
+
+      card.appendChild(
+        warning
+      );
+
+      card.addEventListener(
+        "click",
+        () => revealCard(index)
+      );
+
+      board.appendChild(
+        card
+      );
+
+    }
+  );
+}
+
+
+/* ============================================================
+   CARD REVEAL
+   ============================================================ */
+
+function revealCard(index) {
+
+  const card =
+    currentCards[index];
+
+
+  if (
+    !card ||
+    card.revealed
+  ) {
+
+    return;
+  }
+
+
+  card.revealed =
+    true;
+
+
+  renderBoard();
+
+  notifyKeyWindowsOfReveal(index);
+}
+
+
+/* ============================================================
+   TEACHER KEY WINDOW
+   ============================================================ */
+
+let openKeyWindows = [];
+
+function openTeacherKeyWindow() {
+
+  if (
+    currentCards.length !== 16
+  ) {
+
+    showToast(
+      "Generate a game first."
+    );
+
+    return;
+  }
+
+
+  const keyData =
+    encodeURIComponent(
+      JSON.stringify(currentCards)
+    );
+
+  const baseUrl =
+    window.location.href.split("#")[0];
+
+  const keyUrl =
+    `${baseUrl}#key=${keyData}`;
+
+
+  try {
+
+    const keyWin =
+      window.open(
+        keyUrl,
+        "_blank"
+      );
+
+
+    if (keyWin) {
+
+      openKeyWindows.push(keyWin);
+
+    } else {
+
+      showToast(
+        "Please allow popups to open the Teacher Key window."
+      );
+
+    }
+
+  } catch (err) {
+
+    showToast(
+      "Unable to open Teacher Key window."
+    );
+
+  }
+}
+
+
+function notifyKeyWindowsOfReveal(index) {
+
+  openKeyWindows =
+    openKeyWindows.filter(
+      win => {
+        try {
+          return win && !win.closed;
+        } catch (e) {
+          return false;
+        }
+      }
+    );
+
+
+  openKeyWindows.forEach(
+    win => {
+      try {
+        if (
+          typeof win.updateRevealedStatus ===
+            "function"
+        ) {
+          win.updateRevealedStatus(index, true);
+        }
+      } catch (e) {}
+    }
+  );
+}
+
+
+function notifyKeyWindowsOfNewGame() {
+
+  openKeyWindows =
+    openKeyWindows.filter(
+      win => {
+        try {
+          return win && !win.closed;
+        } catch (e) {
+          return false;
+        }
+      }
+    );
+
+
+  const keyData =
+    encodeURIComponent(
+      JSON.stringify(currentCards)
+    );
+
+  const newHash =
+    `#key=${keyData}`;
+
+
+  openKeyWindows.forEach(
+    win => {
+      try {
+        if (
+          typeof win.loadNewCards ===
+            "function"
+        ) {
+          win.loadNewCards(currentCards);
+        } else {
+          win.location.hash = newHash;
+        }
+      } catch (e) {}
+    }
+  );
+}
+
+
+window.syncCardFromKey = function(index, revealed) {
+
+  if (currentCards[index]) {
+
+    currentCards[index].revealed =
+      revealed;
+
+    renderBoard();
+
+  }
+};
+
+
+function renderTeacherKeyBoard() {
+
+  board.innerHTML = "";
+
+
+  currentCards.forEach(
+    (cardData, index) => {
+
+      const card =
+        document.createElement(
+          "button"
+        );
+
+
+      card.type =
+        "button";
+
+
+      card.className =
+        `card ${cardData.role}`;
+
+
+      if (cardData.revealed) {
+        card.classList.add(
+          "is-revealed"
+        );
+      }
+
+
+      card.setAttribute(
+        "aria-label",
+        `Teacher Key Card ${index + 1}: ${cardData.word} (${cardData.role}${cardData.revealed ? ', already guessed' : ''})`
+      );
+
+
+      const word =
+        document.createElement(
+          "span"
+        );
+
+
+      word.className =
+        "word";
+
+
+      word.textContent =
+        cardData.word;
+
+
+      const warning =
+        document.createElement(
+          "span"
+        );
+
+
+      warning.className =
+        "assassin-warning";
+
+
+      warning.textContent =
+        "!";
+
+
+      warning.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      const revealedTag =
+        document.createElement(
+          "span"
+        );
+
+
+      revealedTag.className =
+        "card-revealed-tag";
+
+
+      revealedTag.textContent =
+        "✓ GUESSED";
+
+
+      revealedTag.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+
+      card.appendChild(word);
+      card.appendChild(warning);
+      card.appendChild(revealedTag);
+
+
+      card.addEventListener(
+        "click",
+        () => {
+          cardData.revealed =
+            !cardData.revealed;
+
+          card.classList.toggle(
+            "is-revealed",
+            cardData.revealed
+          );
+
+          card.setAttribute(
+            "aria-label",
+            `Teacher Key Card ${index + 1}: ${cardData.word} (${cardData.role}${cardData.revealed ? ', already guessed' : ''})`
+          );
+
+          if (
+            window.opener &&
+            !window.opener.closed
+          ) {
+            try {
+              if (
+                typeof window.opener.syncCardFromKey ===
+                  "function"
+              ) {
+                window.opener.syncCardFromKey(
+                  index,
+                  cardData.revealed
+                );
+              }
+            } catch (e) {}
+          }
+        }
+      );
+
+
+      board.appendChild(card);
+    }
+  );
+}
+
+
+function initTeacherKeyView(hashPayload) {
+
+  document.body.classList.add(
+    "teacher-key-view"
+  );
+
+  document.title =
+    "Teacher Key — Vocabulary Codenames";
+
+
+  const titleEl =
+    document.querySelector(".title");
+
+  if (titleEl) {
+    titleEl.textContent =
+      "Vocabulary Codenames";
+  }
+
+
+  const subtitleEl =
+    document.querySelector(".subtitle");
+
+  if (subtitleEl) {
+    subtitleEl.textContent =
+      "Teacher Key (Secret Tab — Do Not Screen Share)";
+
+    subtitleEl.style.color =
+      "var(--gold-bright)";
+
+    subtitleEl.style.fontWeight =
+      "700";
+  }
+
+
+  try {
+
+    currentCards =
+      JSON.parse(
+        decodeURIComponent(hashPayload)
+      );
+
+  } catch (err) {
+
+    currentCards = [];
+
+  }
+
+
+  const topActions =
+    document.querySelector(".top-actions");
+
+  if (topActions) {
+
+    topActions.innerHTML = "";
+
+
+    const pillStrip =
+      document.createElement("div");
+
+    pillStrip.className =
+      "teacher-key-pill-strip";
+
+    pillStrip.innerHTML = `
+      <span class="role-pill red" title="5 Red Cards">🔴 5 Red</span>
+      <span class="role-pill blue" title="5 Blue Cards">🔵 5 Blue</span>
+      <span class="role-pill neutral" title="5 Neutral Cards">⬜ 5 Neutral</span>
+      <span class="role-pill assassin" title="1 Assassin Card">💀 1 Assassin</span>
+    `;
+
+    topActions.appendChild(pillStrip);
+
+
+    const keyCopyBtn =
+      document.createElement("button");
+
+    keyCopyBtn.className =
+      "key-copy-button";
+
+    keyCopyBtn.type =
+      "button";
+
+    keyCopyBtn.title =
+      "Copy complete spymaster key";
+
+    keyCopyBtn.innerHTML = `
+      <span class="key-icon" aria-hidden="true">🔑</span>
+      <span>Key Copy</span>
+    `;
+
+    keyCopyBtn.addEventListener(
+      "click",
+      copyMasterKey
+    );
+
+    topActions.appendChild(keyCopyBtn);
+
+  }
+
+
+  window.updateRevealedStatus =
+    function(index, revealed) {
+
+      if (currentCards[index]) {
+
+        currentCards[index].revealed =
+          revealed;
+
+        const cards =
+          board.querySelectorAll(".card");
+
+        if (cards[index]) {
+
+          cards[index].classList.toggle(
+            "is-revealed",
+            revealed
+          );
+
+          cards[index].setAttribute(
+            "aria-label",
+            `Teacher Key Card ${index + 1}: ${currentCards[index].word} (${currentCards[index].role}${revealed ? ', already guessed' : ''})`
+          );
+
+        }
+
+      }
+
+    };
+
+
+  window.loadNewCards =
+    function(newCards) {
+
+      currentCards =
+        JSON.parse(
+          JSON.stringify(newCards)
+        );
+
+      renderTeacherKeyBoard();
+
+    };
+
+
+  window.addEventListener(
+    "hashchange",
+    () => {
+
+      if (
+        window.location.hash.startsWith("#key=")
+      ) {
+
+        try {
+
+          currentCards =
+            JSON.parse(
+              decodeURIComponent(
+                window.location.hash.slice(5)
+              )
+            );
+
+          renderTeacherKeyBoard();
+
+        } catch (e) {}
+
+      }
+
+    }
+  );
+
+
+  renderTeacherKeyBoard();
+}
+
+
+/* ============================================================
+   ROLE WORD EXTRACTION
+   ============================================================ */
+
+function wordsForRole(role) {
+
+  return currentCards
+    .filter(
+      card =>
+        card.role === role
+    )
+    .map(
+      card =>
+        card.word
+    );
+}
+
+
+/* ============================================================
+   ASCII BOARD
+   ============================================================ */
+
+function roleLetter(role) {
+
+  switch (role) {
+
+    case ROLE.RED:
+      return "R";
+
+    case ROLE.BLUE:
+      return "B";
+
+    case ROLE.ASSASSIN:
+      return "A";
+
+    case ROLE.NEUTRAL:
+      return " ";
+
+    default:
+      return " ";
+
+  }
+}
+
+
+function createAsciiBoard() {
+
+  if (
+    currentCards.length !== 16
+  ) {
+
+    return "No game has been generated.";
+  }
+
+
+  const rows = [];
+
+
+  for (
+    let row = 0;
+    row < 4;
+    row++
+  ) {
+
+    const cells = [];
+
+
+    for (
+      let column = 0;
+      column < 4;
+      column++
+    ) {
+
+      const index =
+        row * 4 + column;
+
+
+      const letter =
+        roleLetter(
+          currentCards[index].role
+        );
+
+
+      cells.push(
+        letter
+          ? ` ${letter} `
+          : "   "
+      );
+
+    }
+
+
+    rows.push(
+      `|${cells.join("|")}|`
+    );
+
+  }
+
+
+  return rows.join("\n");
+}
+
+
+/* ============================================================
+   MASTER KEY
+   ============================================================ */
+
+function createMasterKey() {
+
+  if (
+    currentCards.length !== 16
+  ) {
+
+    return "";
+  }
+
+
+  const red =
+    wordsForRole(
+      ROLE.RED
+    );
+
+
+  const blue =
+    wordsForRole(
+      ROLE.BLUE
+    );
+
+
+  const assassin =
+    wordsForRole(
+      ROLE.ASSASSIN
+    );
+
+
+  return [
+
+    "🗝 VOCABULARY CODENAMES — SPYMASTER KEY",
+
+    "",
+
+    `🔴 RED TEAM WORDS (5): ${
+      red.join(", ")
+    }`,
+
+    "",
+
+    `🔵 BLUE TEAM WORDS (5): ${
+      blue.join(", ")
+    }`,
+
+    "",
+
+    `💀 ASSASSIN WORD (1): ${
+      assassin.join(", ")
+    }`,
+
+    "",
+
+    "BOARD:",
+
+    createAsciiBoard()
+
+  ].join("\n");
+}
+
+
+/* ============================================================
+   CLIPBOARD
+   ============================================================ */
+
+async function copyText(text) {
+
+  if (!text) {
+
+    showToast(
+      "Generate a game first."
+    );
+
+    return false;
+  }
+
+
+  /*
+    Preferred modern Clipboard API.
+  */
+
+  try {
+
+    if (
+      navigator.clipboard &&
+      typeof navigator.clipboard.writeText ===
+        "function"
+    ) {
+
+      await navigator.clipboard.writeText(
+        text
+      );
+
+      return true;
+    }
+
+  } catch (error) {
+
+    /*
+      Fall through to legacy method.
+    */
+
+  }
+
+
+  /*
+    Legacy fallback.
+  */
+
+  const temporary =
+    document.createElement(
+      "textarea"
+    );
+
+
+  temporary.value =
+    text;
+
+
+  temporary.setAttribute(
+    "readonly",
+    ""
+  );
+
+
+  temporary.style.position =
+    "fixed";
+
+  temporary.style.left =
+    "-9999px";
+
+  temporary.style.top =
+    "0";
+
+
+  document.body.appendChild(
+    temporary
+  );
+
+
+  temporary.select();
+
+
+  let success =
+    false;
+
+
+  try {
+
+    success =
+      document.execCommand(
+        "copy"
+      );
+
+  } catch (error) {
+
+    success =
+      false;
+  }
+
+
+  document.body.removeChild(
+    temporary
+  );
+
+
+  return success;
+}
+
+
+async function copyMasterKey() {
+
+  const text =
+    createMasterKey();
+
+
+  const success =
+    await copyText(text);
+
+
+  if (success) {
+
+    showToast(
+      "Key copied!"
+    );
+
+  } else {
+
+    showToast(
+      "Clipboard access was unavailable."
+    );
+
+  }
+}
+
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+
+let toastTimer =
+  null;
+
+
+function showToast(message) {
+
+  copyToast.textContent =
+    message;
+
+
+  copyToast.classList.add(
+    "show"
+  );
+
+
+  clearTimeout(
+    toastTimer
+  );
+
+
+  toastTimer =
+    setTimeout(
+      () => {
+
+        copyToast.classList.remove(
+          "show"
+        );
+
+      },
+      1500
+    );
+}
+
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+function openModal() {
+
+  settingsModal.classList.add(
+    "open"
+  );
+
+
+  setTimeout(
+    () =>
+      wordInput.focus(),
+    50
+  );
+}
+
+
+function closeModal() {
+
+  settingsModal.classList.remove(
+    "open"
+  );
+}
+
+
+settingsButton.addEventListener(
+  "click",
+  openModal
+);
+
+
+closeModalButton.addEventListener(
+  "click",
+  closeModal
+);
+
+
+settingsModal.addEventListener(
+  "click",
+  event => {
+
+    if (
+      event.target ===
+      settingsModal
+    ) {
+
+      closeModal();
+    }
+
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key === "Escape" &&
+      settingsModal.classList.contains(
+        "open"
+      )
+    ) {
+
+      closeModal();
+    }
+
+  }
+);
+
+
+/* ============================================================
+   EVENT HANDLERS
+   ============================================================ */
+
+wordInput.addEventListener(
+  "input",
+  updateWordCounter
+);
+
+
+generateButton.addEventListener(
+  "click",
+  generateGame
+);
+
+
+reshuffleButton.addEventListener(
+  "click",
+  generateGame
+);
+
+
+if (teacherKeyButton) {
+  teacherKeyButton.addEventListener(
+    "click",
+    openTeacherKeyWindow
+  );
+}
+
+
+keyCopyButton.addEventListener(
+  "click",
+  copyMasterKey
+);
+
+
+/* ============================================================
+   INITIAL STATE
+   ============================================================ */
+
+if (window.location.hash.startsWith("#key=")) {
+  initTeacherKeyView(window.location.hash.slice(5));
+} else {
+  updateWordCounter();
+}
+
+</script>
+
+</body>
+</html>

@@ -13,25 +13,26 @@
 
 <body>
 
-    <!-- Introduction Modal -->
+    <!-- Login Modal -->
     <div id="loginModal" class="modal-overlay">
         <div class="modal-content">
             <h2>Welcome to Parallel Lines & Transversals Practice!</h2>
-            <div class="intro-description">
-                <p>
-                    <strong>Why Transversals Matter:</strong> Transversals intersect multiple lines to create dynamic angle relationships—such as alternate interior, alternate exterior, and corresponding angles. While mastering these geometric relationships can be challenging and requires keen spatial visualization and algebraic reasoning, it is one of the most foundational topics in geometry and essential for geometric proofs and trigonometry.
-                </p>
-            </div>
-            <div class="warning-box">
-                <span class="icon">⚠️</span>
-                <div>
-                    <p><strong>IMPORTANT PRACTICE TIPS:</strong></p>
-                    <p>• <strong>Work slowly and carefully:</strong> Double-check angle positions and relationship types before submitting.</p>
-                    <p>• <strong>Save all scratch work:</strong> Write out your steps and algebra. Keep your scratch work as your teacher may ask to review your solution process.</p>
-                </div>
-            </div>
+            <p>Please enter your information:</p>
             <form id="loginForm">
-                <button type="submit" id="beginBtn">Begin Practice</button>
+                <div class="form-group">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" required minlength="2" placeholder="e.g. Alex">
+                </div>
+                <div class="form-group">
+                    <label for="lastInitial">Last Initial:</label>
+                    <input type="text" id="lastInitial" required maxlength="1" pattern="[A-Za-z]" placeholder="e.g. B">
+                </div>
+                <div class="warning-box">
+                    <span class="icon">⚠️</span>
+                    <p><strong>IMPORTANT REMINDER:</strong><br>Keep all scratch work used to complete this practice
+                        session.<br>Your teacher may ask to review your work process.</p>
+                </div>
+                <button type="submit" id="beginBtn" disabled>Begin Practice</button>
             </form>
         </div>
     </div>

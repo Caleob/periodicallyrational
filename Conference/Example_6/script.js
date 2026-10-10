@@ -587,10 +587,21 @@ class GameManager {
     setupLogin() {
         const modal = document.getElementById('loginModal');
         modal.classList.add('active');
+        const fName = document.getElementById('firstName');
+        const lInit = document.getElementById('lastInitial');
+        const btn = document.getElementById('beginBtn');
         const form = document.getElementById('loginForm');
+
+        const validate = () => {
+            btn.disabled = !(fName.value.length >= 2 && lInit.value.length === 1 && /[a-zA-Z]/.test(lInit.value));
+        };
+        fName.addEventListener('input', validate);
+        lInit.addEventListener('input', validate);
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+            this.user.firstName = fName.value;
+            this.user.lastInitial = lInit.value.toUpperCase();
             modal.classList.remove('active');
             this.startSequence();
         });
@@ -935,6 +946,7 @@ class GameManager {
         let reportText = `
 PARALLEL LINES & TRANSVERSALS REPORT
 ------------------------------------
+Student: ${this.user.firstName} ${this.user.lastInitial}
 Date: ${new Date().toLocaleDateString()}
 Total Points: ${this.totalScore} / ${maxTotal} (${getPct(this.totalScore, maxTotal)}%)
 
@@ -974,7 +986,7 @@ Session Status: Completed all ${totalProblems} problems.
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Transverslas_Report.txt`;
+        a.download = `Transversals_Report_${this.user.firstName}${this.user.lastInitial}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

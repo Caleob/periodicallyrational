@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FeedbackFlow - Flexible Educational Feedback Synthesizer</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --bg-card: #1e293b;
+      --bg-input: #0f172a;
+      --border-color: #334155;
+      --border-hover: #475569;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-primary: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-light: rgba(59, 130, 246, 0.15);
+      --success-bg: #10b981;
+      --success-hover: #059669;
+      --danger-bg: #ef4444;
+      --danger-hover: #dc2626;
+      --warning-bg: #f59e0b;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-input: #f8fafc;
+      --border-color: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --accent-primary: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-light: rgba(37, 99, 235, 0.1);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color var(--transition-normal), color var(--transition-normal);
+      overflow-x: hidden;
+    }
+
+    .header {
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #10b981);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 1.15rem;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    .brand-text h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-text span {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    .btn-primary {
+      background-color: var(--accent-primary);
+      color: white;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background-color: var(--success-bg);
+      color: white;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-success:hover {
+      background-color: var(--success-hover);
+    }
+
+    .btn-danger {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: var(--danger-bg);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background-color: var(--danger-bg);
+      color: white;
+    }
+
+    .btn-icon-only {
+      padding: 0.5rem;
+      border-radius: var(--radius-md);
+      aspect-ratio: 1;
+    }
+
+    .app-container {
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      gap: 1.25rem;
+      padding: 1.25rem;
+      max-width: 1650px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+    }
+
+    @media (max-width: 1080px) {
+      .app-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .panel-badge {
+      background-color: var(--accent-light);
+      color: var(--accent-primary);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .criteria-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .criterion-card {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.1rem;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .criterion-card:hover {
+      border-color: var(--border-hover);
+    }
+
+    .criterion-card.has-selection {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 1px var(--accent-primary);
+    }
+
+    .criterion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+      gap: 0.5rem;
+    }
+
+    .criterion-name-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .criterion-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .criterion-max-pts {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .selected-level-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+    }
+
+    .selected-level-badge.visible {
+      opacity: 1;
+    }
+
+    .level-buttons-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .level-btn {
+      flex: 1 1 calc(20% - 0.5rem);
+      min-width: 75px;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+
+    .level-btn:hover {
+      background-color: var(--bg-tertiary);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+
+    .level-score {
+      font-weight: 800;
+      font-size: 1.05rem;
+      line-height: 1;
+    }
+
+    .level-label {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.1;
+      word-break: break-word;
+    }
+
+    .level-btn.active {
+      background-color: var(--accent-light);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      box-shadow: 0 0 0 1px var(--accent-primary);
+    }
+
+    .level-btn.active .level-label {
+      color: var(--accent-primary);
+    }
+
+    .score-summary-banner {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(16, 185, 129, 0.12));
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .score-display-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .score-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .score-value {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .score-value span {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .include-score-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .include-score-toggle input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent-primary);
+      cursor: pointer;
+    }
+
+    .quick-inserts-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .quick-inserts-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .chip-btn {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .chip-btn:hover {
+      background-color: var(--accent-light);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+
+    .preview-panel {
+      position: sticky;
+      top: 4.8rem;
+      height: fit-content;
+    }
+
+    .textarea-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feedback-textarea {
+      width: 100%;
+      height: 330px;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .feedback-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.25rem 0;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .stats-group {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn-copy {
+      flex: 2;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+    }
+
+    .btn-reset {
+      flex: 1;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-container {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: 92%;
+      max-width: 950px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px);
+      transition: transform var(--transition-normal);
+      overflow: hidden;
+    }
+
+    .modal-overlay.active .modal-container {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-tabs {
+      display: flex;
+      background-color: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0 1.5rem;
+      gap: 1rem;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 0.5rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-primary);
+      border-bottom-color: var(--accent-primary);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.45rem 0.65rem;
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      font-size: 0.85rem;
+      transition: border-color var(--transition-fast);
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+
+    .config-criterion-item {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .config-criterion-top {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .config-levels-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      padding-left: 0.5rem;
+      border-left: 2px solid var(--border-color);
+    }
+
+    .config-level-row {
+      display: grid;
+      grid-template-columns: 80px 140px 1fr 36px;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 640px) {
+      .config-level-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .snippet-config-item {
+      display: grid;
+      grid-template-columns: 180px 1fr 36px;
+      gap: 0.75rem;
+      align-items: center;
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-secondary);
+    }
+
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    .toast {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all var(--transition-fast);
+      pointer-events: auto;
+    }
+
+    .toast.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-success { border-left: 4px solid var(--success-bg); }
+    .toast-info { border-left: 4px solid var(--accent-primary); }
+    .toast-warning { border-left: 4px solid var(--warning-bg); }
+
+    .confirm-dialog {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      width: 90%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .confirm-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .confirm-text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .confirm-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon">F</div>
+      <div class="brand-text">
+        <h1>FeedbackFlow</h1>
+        <span>Virtual Grading Feedback Synthesizer</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="themeToggleBtn" title="Toggle Light/Dark Theme">
+        <span id="themeIcon">🌙</span> <span id="themeText">Dark</span>
+      </button>
+      <button class="btn btn-primary" id="openConfigBtn">
+        ⚙️ Manage Rubric & Snippets
+      </button>
+    </div>
+  </header>
+
+  <main class="app-container">
+    
+    <!-- Left Panel: Rubric Criteria Selectors -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>📝 Rubric Criteria</span>
+          <span class="panel-badge" id="criteriaCountBadge">4 Categories</span>
+        </div>
+        <button class="btn btn-secondary" id="clearSelectionsBtn" style="font-size: 0.75rem; padding: 0.3rem 0.65rem;">
+          Deselect All
+        </button>
+      </div>
+
+      <!-- Real-time Score Summary Banner -->
+      <div class="score-summary-banner">
+        <div class="score-display-group">
+          <span class="score-title">Current Score</span>
+          <div class="score-value" id="scoreBannerValue">0 <span>/ 16 (0%)</span></div>
+        </div>
+        <label class="include-score-toggle">
+          <input type="checkbox" id="includeScoreCheckbox">
+          <span>Include score in text</span>
+        </label>
+      </div>
+
+      <!-- Criteria List Container -->
+      <div class="criteria-list" id="criteriaListContainer">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Quick Insert Hotkey Buttons Toolbar -->
+      <div class="quick-inserts-container">
+        <div class="quick-inserts-label">⚡ Quick-Insert Hotkey Snippets</div>
+        <div class="quick-chips" id="quickChipsContainer">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Panel: Live Feedback Synthesizer Preview -->
+    <section class="panel preview-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>✨ Synthesized Feedback</span>
+        </div>
+        <span class="panel-badge" style="background-color: rgba(16, 185, 129, 0.15); color: var(--success-bg);">
+          Live Output
+        </span>
+      </div>
+
+      <div class="textarea-wrapper">
+        <textarea 
+          id="feedbackOutput" 
+          class="feedback-textarea" 
+          placeholder="Select rubric criteria levels or click quick-insert buttons to synthesize cohesive feedback..."
+        ></textarea>
+        <div class="feedback-stats">
+          <div class="stats-group">
+            <span id="statWords">0 words</span>
+            <span>•</span>
+            <span id="statSentences">0 sentences</span>
+            <span>•</span>
+            <span id="statChars">0 characters</span>
+          </div>
+          <span style="font-size: 0.7rem; color: var(--text-muted);">Editable in-place</span>
+        </div>
+      </div>
+
+      <div class="preview-actions">
+        <button class="btn btn-success btn-copy" id="copyFeedbackBtn">
+          📋 Copy Feedback
+        </button>
+        <button class="btn btn-secondary btn-reset" id="resetFormBtn" title="Reset current grading selections for next submission">
+          🔄 Reset
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="modal-overlay" id="configModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title">⚙️ Rubric & Snippet Configuration</div>
+        <button class="btn btn-secondary btn-icon-only" id="closeConfigBtn">&times;</button>
+      </div>
+
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="rubricTab">Flexible Rubric Builder</button>
+        <button class="tab-btn" data-tab="snippetsTab">Quick Snippets Manager</button>
+        <button class="tab-btn" data-tab="backupTab">Templates & Import/Export</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Tab 1: Flexible Rubric Builder -->
+        <div class="tab-content active" id="rubricTab">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">
+              Customize category titles, variable score points, descriptors, and feedback statements for each tier.
+            </p>
+            <button class="btn btn-primary" id="addCriterionBtn" style="font-size: 0.8rem;">
+              + Add Category
+            </button>
+          </div>
+          <div id="configCriteriaList" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Quick Snippets Manager -->
+        <div class="tab-content" id="snippetsTab">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">
+              Manage quick-insert hotkey buttons and predefined action phrases.
+            </p>
+            <button class="btn btn-primary" id="addSnippetBtn" style="font-size: 0.8rem;">
+              + Add Snippet
+            </button>
+          </div>
+          <div id="configSnippetsList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Tab 3: Backup & Import/Export -->
+        <div class="tab-content" id="backupTab">
+          <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div>
+              <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem;">Export Configuration</h4>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                Download active rubric criteria, variable scoring levels, and snippets as a local JSON file.
+              </p>
+              <button class="btn btn-secondary" id="exportConfigBtn">
+                📥 Export Configuration (.json)
+              </button>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border-color);">
+
+            <div>
+              <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem;">Import Configuration</h4>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                Upload a previously saved JSON template file to instantly load custom scoring structures.
+              </p>
+              <input type="file" id="importFileInput" accept=".json" style="display: none;">
+              <button class="btn btn-secondary" id="importConfigBtn">
+                📤 Import Configuration (.json)
+              </button>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border-color);">
+
+            <div>
+              <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--danger-bg);">Reset to Factory Defaults</h4>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                Restore original rubric categories and default hotkey snippets.
+              </p>
+              <button class="btn btn-danger" id="restoreDefaultsBtn">
+                ⚠️ Restore Defaults
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Settings save automatically</span>
+        <button class="btn btn-primary" id="saveConfigAndCloseBtn">Save & Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="confirmModal">
+    <div class="confirm-dialog">
+      <div class="confirm-title" id="confirmModalTitle">Are you sure?</div>
+      <div class="confirm-text" id="confirmModalText">This action cannot be undone.</div>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary" id="confirmCancelBtn">Cancel</button>
+        <button class="btn btn-danger" id="confirmOkBtn">Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // Default rubric data structure supporting array of custom level objects
+    const DEFAULT_CONFIG = {
+      options: {
+        includeScoreInFeedback: false
+      },
+      criteria: [
+        {
+          id: "crit_thesis",
+          title: "Thesis & Focus",
+          levels: [
+            { score: 0, label: "Incomplete", text: "The submission lacks a discernible central thesis or focal argument." },
+            { score: 1, label: "Emerging", text: "A main thesis is present but remains vague, broad, or difficult to trace throughout the work." },
+            { score: 2, label: "Developing", text: "The central thesis is clear, though it would benefit from greater specificity and nuance." },
+            { score: 3, label: "Proficient", text: "Presents a strong, clear, and well-focused thesis that guides the entire submission." },
+            { score: 4, label: "Advanced", text: "Formulates an exceptionally insightful, compelling, and sophisticated central thesis." }
+          ]
+        },
+        {
+          id: "crit_evidence",
+          title: "Evidence & Analysis",
+          levels: [
+            { score: 0, label: "Incomplete", text: "Minimal or no relevant supporting evidence or critical analysis is provided." },
+            { score: 1, label: "Emerging", text: "Includes basic evidence, but analysis is largely summary or superficial." },
+            { score: 2, label: "Developing", text: "Uses adequate evidence to support main points, with sound analytical connections." },
+            { score: 3, label: "Proficient", text: "Integrates compelling evidence seamlessly with strong, thoughtful critical analysis." },
+            { score: 4, label: "Advanced", text: "Demonstrates masterful integration of evidence with original, insightful synthesis." }
+          ]
+        },
+        {
+          id: "crit_structure",
+          title: "Structure & Organization",
+          levels: [
+            { score: 0, label: "Incomplete", text: "Organization is unclear, making logical progression difficult to follow." },
+            { score: 1, label: "Emerging", text: "Basic structure is present, but transitions are abrupt and paragraphing is disjointed." },
+            { score: 2, label: "Developing", text: "Follows a logical layout with clear paragraph breaks and basic transitional flow." },
+            { score: 3, label: "Proficient", text: "Well-structured narrative with smooth transitions and cohesive thematic progression." },
+            { score: 4, label: "Advanced", text: "Seamless, sophisticated structure that elevates the logical momentum of the submission." }
+          ]
+        },
+        {
+          id: "crit_mechanics",
+          title: "Mechanics & Style",
+          levels: [
+            { score: 0, label: "Incomplete", text: "Frequent grammatical or mechanical errors significantly impede readability." },
+            { score: 1, label: "Emerging", text: "Multiple mechanical or stylistic errors distract from the overall clarity." },
+            { score: 2, label: "Developing", text: "Demonstrates good mechanical control with minor errors that do not hinder understanding." },
+            { score: 3, label: "Proficient", text: "Clear, articulate writing with strong academic voice and negligible mechanical errors." },
+            { score: 4, label: "Advanced", text: "Flawless grammar, engaging prose, and exceptional precision in vocabulary and style." }
+          ]
+        }
+      ],
+      snippets: [
+        { id: "snip_praise", label: "👏 Excellent Effort", text: "Great effort demonstrated throughout this submission—keep up the strong momentum!" },
+        { id: "snip_office", label: "🕒 Office Hours", text: "Feel free to stop by during office hours if you would like to review these concepts together in detail." },
+        { id: "snip_resubmit", label: "🔄 Resubmit Policy", text: "You may revise and resubmit this assignment within 5 business days for partial credit regain." },
+        { id: "snip_format", label: "📐 Formatting Note", text: "Please review the required assignment formatting guidelines before your next submission." },
+        { id: "snip_late", label: "⏳ Late Penalty", text: "Please note that a standard late submission deduction has been applied to this score." }
+      ]
+    };
+
+    let config = loadConfig();
+    let selectedLevels = {}; // Map of criterionId -> levelIndex (number)
+    let confirmationCallback = null;
+
+    function loadConfig() {
+      try {
+        const saved = localStorage.getItem("feedbackflow_v2_config");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && Array.isArray(parsed.criteria) && Array.isArray(parsed.snippets)) {
+            return normalizeConfig(parsed);
+          }
+        }
+      } catch (e) {
+        console.warn("Could not load config from localStorage", e);
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+    }
+
+    function normalizeConfig(parsed) {
+      if (!parsed.options) {
+        parsed.options = { includeScoreInFeedback: false };
+      }
+      // Migrate older object-level maps to array of objects if necessary
+      parsed.criteria.forEach(crit => {
+        if (!Array.isArray(crit.levels) && typeof crit.levels === 'object') {
+          const newLevels = [];
+          Object.keys(crit.levels).sort((a, b) => Number(a) - Number(b)).forEach(key => {
+            const numKey = Number(key);
+            const defaultLabels = ["Incomplete", "Emerging", "Developing", "Proficient", "Advanced"];
+            newLevels.push({
+              score: isNaN(numKey) ? 0 : numKey,
+              label: defaultLabels[numKey] || `Level ${numKey}`,
+              text: crit.levels[key]
+            });
+          });
+          crit.levels = newLevels;
+        }
+      });
+      return parsed;
+    }
+
+    function saveConfig() {
+      try {
+        localStorage.setItem("feedbackflow_v2_config", JSON.stringify(config));
+      } catch (e) {
+        console.warn("Could not save config to localStorage", e);
+      }
+    }
+
+    function renderRubricCriteria() {
+      const container = document.getElementById("criteriaListContainer");
+      const badge = document.getElementById("criteriaCountBadge");
+      container.innerHTML = "";
+
+      badge.textContent = `${config.criteria.length} Categor${config.criteria.length === 1 ? 'y' : 'ies'}`;
+
+      config.criteria.forEach((criterion) => {
+        const card = document.createElement("div");
+        const selectedIdx = selectedLevels[criterion.id];
+        const hasSel = selectedIdx !== undefined && selectedIdx < criterion.levels.length;
+
+        card.className = `criterion-card ${hasSel ? 'has-selection' : ''}`;
+        card.id = `card_${criterion.id}`;
+
+        // Calculate max achievable score for criterion
+        const maxScore = Math.max(...criterion.levels.map(l => Number(l.score) || 0), 0);
+        const selectedLevel = hasSel ? criterion.levels[selectedIdx] : null;
+
+        card.innerHTML = `
+          <div class="criterion-header">
+            <div class="criterion-name-group">
+              <span class="criterion-name">${escapeHtml(criterion.title)}</span>
+              <span class="criterion-max-pts">(${maxScore} max)</span>
+            </div>
+            <span class="selected-level-badge ${hasSel ? 'visible' : ''}" 
+                  style="${hasSel ? `background-color: var(--accent-light); color: var(--accent-primary); border: 1px solid var(--accent-primary);` : ''}">
+              ${hasSel ? `${selectedLevel.score} · ${escapeHtml(selectedLevel.label)}` : ''}
+            </span>
+          </div>
+          <div class="level-buttons-wrap">
+            ${criterion.levels.map((lvlObj, idx) => {
+              const isActive = selectedIdx === idx;
+              return `
+                <button 
+                  class="level-btn ${isActive ? 'active' : ''}" 
+                  data-criterion="${criterion.id}" 
+                  data-index="${idx}"
+                  title="${escapeHtml(lvlObj.text)}"
+                >
+                  <span class="level-score">${lvlObj.score}</span>
+                  <span class="level-label">${escapeHtml(lvlObj.label)}</span>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      // Event listeners for level selection
+      container.querySelectorAll(".level-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const critId = btn.getAttribute("data-criterion");
+          const idx = parseInt(btn.getAttribute("data-index"));
+
+          if (selectedLevels[critId] === idx) {
+            delete selectedLevels[critId];
+          } else {
+            selectedLevels[critId] = idx;
+          }
+
+          renderRubricCriteria();
+          updateScoreSummary();
+          synthesizeFeedback();
+        });
+      });
+
+      updateScoreSummary();
+    }
+
+    function renderQuickSnippets() {
+      const container = document.getElementById("quickChipsContainer");
+      container.innerHTML = "";
+
+      config.snippets.forEach(snippet => {
+        const chip = document.createElement("button");
+        chip.className = "chip-btn";
+        chip.type = "button";
+        chip.innerHTML = `${escapeHtml(snippet.label)}`;
+        chip.title = snippet.text;
+        chip.addEventListener("click", () => {
+          appendSnippetToFeedback(snippet.text);
+          showToast(`Inserted: "${snippet.label}"`, "info");
+        });
+        container.appendChild(chip);
+      });
+    }
+
+    function calculateTotalScore() {
+      let earned = 0;
+      let totalMax = 0;
+
+      config.criteria.forEach(crit => {
+        const maxCritScore = Math.max(...crit.levels.map(l => Number(l.score) || 0), 0);
+        totalMax += maxCritScore;
+
+        const selectedIdx = selectedLevels[crit.id];
+        if (selectedIdx !== undefined && crit.levels[selectedIdx]) {
+          earned += Number(crit.levels[selectedIdx].score) || 0;
+        }
+      });
+
+      const percentage = totalMax > 0 ? Math.round((earned / totalMax) * 100) : 0;
+      return { earned, totalMax, percentage };
+    }
+
+    function updateScoreSummary() {
+      const { earned, totalMax, percentage } = calculateTotalScore();
+      const banner = document.getElementById("scoreBannerValue");
+      banner.innerHTML = `${earned} <span>/ ${totalMax} (${percentage}%)</span>`;
+
+      const checkbox = document.getElementById("includeScoreCheckbox");
+      checkbox.checked = !!config.options.includeScoreInFeedback;
+    }
+
+    function synthesizeFeedback() {
+      const textarea = document.getElementById("feedbackOutput");
+      const sentences = [];
+
+      // Join selected criteria level sentences in configured order
+      config.criteria.forEach(crit => {
+        const selectedIdx = selectedLevels[crit.id];
+        if (selectedIdx !== undefined && crit.levels[selectedIdx]) {
+          let text = (crit.levels[selectedIdx].text || "").trim();
+          if (text) {
+            if (!/[.!?]$/.test(text)) {
+              text += ".";
+            }
+            sentences.push(text);
+          }
+        }
+      });
+
+      let fullOutput = sentences.join(" ");
+
+      // Optional score summary block appended at the VERY END
+      if (config.options.includeScoreInFeedback) {
+        let selectedEarned = 0;
+        let selectedMax = 0;
+        const selectedItems = [];
+        let maxTitleLen = 0;
+
+        config.criteria.forEach(crit => {
+          const selectedIdx = selectedLevels[crit.id];
+          if (selectedIdx !== undefined && crit.levels[selectedIdx]) {
+            const earned = Number(crit.levels[selectedIdx].score) || 0;
+            const maxCritScore = Math.max(...crit.levels.map(l => Number(l.score) || 0), 0);
+            selectedEarned += earned;
+            selectedMax += maxCritScore;
+            
+            selectedItems.push({
+              title: crit.title,
+              earned: earned,
+              max: maxCritScore
+            });
+
+            if (crit.title.length > maxTitleLen) {
+              maxTitleLen = crit.title.length;
+            }
+          }
+        });
+
+        if (selectedItems.length > 0) {
+          const padLen = Math.max(maxTitleLen + 3, 14);
+          const summaryLines = [
+            `Score ${selectedEarned}/${selectedMax}`,
+            `------`
+          ];
+
+          selectedItems.forEach(item => {
+            const paddedTitle = item.title.padEnd(padLen, ' ');
+            summaryLines.push(`${paddedTitle}${item.earned}/${item.max}`);
+          });
+
+          const summaryBlock = summaryLines.join("\n");
+
+          if (fullOutput.trim().length > 0) {
+            fullOutput = fullOutput.trim() + "\n\n" + summaryBlock;
+          } else {
+            fullOutput = summaryBlock;
+          }
+        }
+      }
+
+      textarea.value = fullOutput;
+      updateFeedbackStats();
+    }
+
+    function appendSnippetToFeedback(snippetText) {
+      const textarea = document.getElementById("feedbackOutput");
+      let currentVal = textarea.value;
+      let addition = snippetText.trim();
+
+      if (!/[.!?]$/.test(addition)) {
+        addition += ".";
+      }
+
+      // Preserve score summary block at the very end if present
+      const summaryRegex = /(\n\nScore \d+\/\d+\n------[\s\S]*)$/;
+      const match = currentVal.match(summaryRegex);
+
+      if (match) {
+        const summaryBlock = match[1];
+        const narrativeBefore = currentVal.substring(0, currentVal.length - summaryBlock.length).trim();
+        const newNarrative = narrativeBefore ? (narrativeBefore + " " + addition) : addition;
+        textarea.value = newNarrative + summaryBlock;
+      } else {
+        let trimmed = currentVal.trim();
+        if (trimmed.length > 0) {
+          textarea.value = trimmed + " " + addition;
+        } else {
+          textarea.value = addition;
+        }
+      }
+
+      updateFeedbackStats();
+    }
+
+    function updateFeedbackStats() {
+      const text = document.getElementById("feedbackOutput").value.trim();
+      
+      const charCount = text.length;
+      const wordCount = text ? text.split(/\s+/).filter(Boolean).length : 0;
+      const sentenceCount = text ? (text.match(/[^.!?]+[.!?]+/g) || [text]).length : 0;
+
+      document.getElementById("statWords").textContent = `${wordCount} word${wordCount === 1 ? '' : 's'}`;
+      document.getElementById("statSentences").textContent = `${sentenceCount} sentence${sentenceCount === 1 ? '' : 's'}`;
+      document.getElementById("statChars").textContent = `${charCount} char${charCount === 1 ? '' : 's'}`;
+    }
+
+    function renderConfigModal() {
+      renderConfigCriteria();
+      renderConfigSnippets();
+    }
+
+    function renderConfigCriteria() {
+      const container = document.getElementById("configCriteriaList");
+      container.innerHTML = "";
+
+      config.criteria.forEach((crit, critIndex) => {
+        const item = document.createElement("div");
+        item.className = "config-criterion-item";
+        
+        item.innerHTML = `
+          <div class="config-criterion-top">
+            <input type="text" class="form-input crit-title-input" value="${escapeHtml(crit.title)}" data-crit-index="${critIndex}" placeholder="Category Title (e.g. Thesis)">
+            <button class="btn btn-danger btn-icon-only delete-crit-btn" data-crit-index="${critIndex}" title="Delete Category">&times;</button>
+          </div>
+
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-top: 0.2rem;">
+            Scoring Tiers & Descriptors:
+          </div>
+
+          <div class="config-levels-list" id="configLevelsList_${critIndex}">
+            ${crit.levels.map((lvlObj, levelIndex) => `
+              <div class="config-level-row">
+                <input type="number" class="form-input level-score-input" value="${lvlObj.score}" data-crit-index="${critIndex}" data-level-index="${levelIndex}" placeholder="Pts">
+                <input type="text" class="form-input level-label-input" value="${escapeHtml(lvlObj.label)}" data-crit-index="${critIndex}" data-level-index="${levelIndex}" placeholder="Label (e.g. Proficient)">
+                <input type="text" class="form-input level-text-input" value="${escapeHtml(lvlObj.text)}" data-crit-index="${critIndex}" data-level-index="${levelIndex}" placeholder="Feedback paragraph text for this tier">
+                <button class="btn btn-danger btn-icon-only delete-level-btn" data-crit-index="${critIndex}" data-level-index="${levelIndex}" ${crit.levels.length <= 1 ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''} title="Remove Tier">&times;</button>
+              </div>
+            `).join("")}
+          </div>
+
+          <div>
+            <button class="btn btn-secondary add-level-btn" data-crit-index="${critIndex}" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">
+              + Add Tier Level
+            </button>
+          </div>
+        `;
+
+        container.appendChild(item);
+      });
+
+      // Bind Category Title changes
+      container.querySelectorAll(".crit-title-input").forEach(input => {
+        input.addEventListener("input", (e) => {
+          const cIdx = parseInt(e.target.getAttribute("data-crit-index"));
+          config.criteria[cIdx].title = e.target.value;
+          saveConfig();
+        });
+      });
+
+      // Bind Score Point input changes
+      container.querySelectorAll(".level-score-input").forEach(input => {
+        input.addEventListener("input", (e) => {
+          const cIdx = parseInt(e.target.getAttribute("data-crit-index"));
+          const lIdx = parseInt(e.target.getAttribute("data-level-index"));
+          config.criteria[cIdx].levels[lIdx].score = Number(e.target.value);
+          saveConfig();
+        });
+      });
+
+      // Bind Descriptor Label input changes
+      container.querySelectorAll(".level-label-input").forEach(input => {
+        input.addEventListener("input", (e) => {
+          const cIdx = parseInt(e.target.getAttribute("data-crit-index"));
+          const lIdx = parseInt(e.target.getAttribute("data-level-index"));
+          config.criteria[cIdx].levels[lIdx].label = e.target.value;
+          saveConfig();
+        });
+      });
+
+      // Bind Feedback Paragraph Text changes
+      container.querySelectorAll(".level-text-input").forEach(input => {
+        input.addEventListener("input", (e) => {
+          const cIdx = parseInt(e.target.getAttribute("data-crit-index"));
+          const lIdx = parseInt(e.target.getAttribute("data-level-index"));
+          config.criteria[cIdx].levels[lIdx].text = e.target.value;
+          saveConfig();
+        });
+      });
+
+      // Add Level button handler
+      container.querySelectorAll(".add-level-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const cIdx = parseInt(btn.getAttribute("data-crit-index"));
+          const levels = config.criteria[cIdx].levels;
+          const lastScore = levels.length > 0 ? Number(levels[levels.length - 1].score) || 0 : -1;
+          
+          levels.push({
+            score: lastScore + 1,
+            label: `Level ${levels.length}`,
+            text: "Synthesized feedback statement for this tier."
+          });
+
+          saveConfig();
+          renderConfigCriteria();
+          showToast("Tier level added", "info");
+        });
+      });
+
+      // Delete Level button handler
+      container.querySelectorAll(".delete-level-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const cIdx = parseInt(btn.getAttribute("data-crit-index"));
+          const lIdx = parseInt(btn.getAttribute("data-level-index"));
+
+          if (config.criteria[cIdx].levels.length <= 1) return;
+
+          config.criteria[cIdx].levels.splice(lIdx, 1);
+          saveConfig();
+          renderConfigCriteria();
+          showToast("Tier level removed", "warning");
+        });
+      });
+
+      // Delete Criterion button handler
+      container.querySelectorAll(".delete-crit-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const cIdx = parseInt(btn.getAttribute("data-crit-index"));
+          showConfirmModal("Delete Category", `Are you sure you want to delete "${config.criteria[cIdx].title}"?`, () => {
+            config.criteria.splice(cIdx, 1);
+            saveConfig();
+            renderConfigCriteria();
+            renderRubricCriteria();
+            synthesizeFeedback();
+            showToast("Category removed", "warning");
+          });
+        });
+      });
+    }
+
+    function renderConfigSnippets() {
+      const container = document.getElementById("configSnippetsList");
+      container.innerHTML = "";
+
+      config.snippets.forEach((snip, index) => {
+        const item = document.createElement("div");
+        item.className = "snippet-config-item";
+
+        item.innerHTML = `
+          <input type="text" class="form-input snippet-label-input" value="${escapeHtml(snip.label)}" data-index="${index}" placeholder="Button Label (e.g. 👏 Praise)">
+          <input type="text" class="form-input snippet-text-input" value="${escapeHtml(snip.text)}" data-index="${index}" placeholder="Injected Snippet Sentence">
+          <button class="btn btn-danger btn-icon-only delete-snippet-btn" data-index="${index}" title="Delete Snippet">&times;</button>
+        `;
+
+        container.appendChild(item);
+      });
+
+      container.querySelectorAll(".snippet-label-input").forEach(input => {
+        input.addEventListener("input", (e) => {
+          const idx = parseInt(e.target.getAttribute("data-index"));
+          config.snippets[idx].label = e.target.value;
+          saveConfig();
+        });
+      });
+
+      container.querySelectorAll(".snippet-text-input").forEach(input => {
+        input.addEventListener("input", (e) => {
+          const idx = parseInt(e.target.getAttribute("data-index"));
+          config.snippets[idx].text = e.target.value;
+          saveConfig();
+        });
+      });
+
+      container.querySelectorAll(".delete-snippet-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const idx = parseInt(btn.getAttribute("data-index"));
+          config.snippets.splice(idx, 1);
+          saveConfig();
+          renderConfigSnippets();
+          renderQuickSnippets();
+          showToast("Snippet removed", "warning");
+        });
+      });
+    }
+
+    function exportConfiguration() {
+      const jsonStr = JSON.stringify(config, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `FeedbackFlow_Rubric_Config_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Configuration template exported!", "success");
+    }
+
+    function importConfiguration(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && Array.isArray(imported.criteria) && Array.isArray(imported.snippets)) {
+            config = normalizeConfig(imported);
+            saveConfig();
+            selectedLevels = {};
+            renderRubricCriteria();
+            renderQuickSnippets();
+            renderConfigModal();
+            synthesizeFeedback();
+            showToast("Template imported successfully!", "success");
+          } else {
+            showToast("Invalid configuration file structure", "warning");
+          }
+        } catch (err) {
+          showToast("Error parsing JSON template", "warning");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+      
+      let icon = "ℹ️";
+      if (type === "success") icon = "✅";
+      if (type === "warning") icon = "⚠️";
+
+      toast.innerHTML = `<span>${icon}</span> <span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => toast.classList.add("visible"), 10);
+
+      setTimeout(() => {
+        toast.classList.remove("visible");
+        setTimeout(() => toast.remove(), 250);
+      }, 3000);
+    }
+
+    function showConfirmModal(title, text, onConfirm) {
+      document.getElementById("confirmModalTitle").textContent = title;
+      document.getElementById("confirmModalText").textContent = text;
+      confirmationCallback = onConfirm;
+      document.getElementById("confirmModal").classList.add("active");
+    }
+
+    function hideConfirmModal() {
+      document.getElementById("confirmModal").classList.remove("active");
+      confirmationCallback = null;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderRubricCriteria();
+      renderQuickSnippets();
+      synthesizeFeedback();
+
+      document.getElementById("feedbackOutput").addEventListener("input", updateFeedbackStats);
+
+      // Score inclusion checkbox handler
+      document.getElementById("includeScoreCheckbox").addEventListener("change", (e) => {
+        config.options.includeScoreInFeedback = e.target.checked;
+        saveConfig();
+        synthesizeFeedback();
+      });
+
+      // Copy to Clipboard Button
+      const copyBtn = document.getElementById("copyFeedbackBtn");
+      copyBtn.addEventListener("click", () => {
+        const text = document.getElementById("feedbackOutput").value;
+        if (!text.trim()) {
+          showToast("Feedback text box is empty!", "warning");
+          return;
+        }
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(onCopySuccess).catch(fallbackCopy);
+        } else {
+          fallbackCopy();
+        }
+
+        function fallbackCopy() {
+          const textarea = document.getElementById("feedbackOutput");
+          textarea.select();
+          try {
+            document.execCommand('copy');
+            onCopySuccess();
+          } catch (err) {
+            showToast("Failed to copy feedback", "warning");
+          }
+        }
+
+        function onCopySuccess() {
+          const originalText = copyBtn.innerHTML;
+          copyBtn.innerHTML = `✓ Copied!`;
+          copyBtn.style.backgroundColor = "var(--success-hover)";
+          showToast("Feedback copied to clipboard!", "success");
+
+          setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+            copyBtn.style.backgroundColor = "";
+          }, 2000);
+        }
+      });
+
+      // Reset / Clear Selections
+      document.getElementById("resetFormBtn").addEventListener("click", () => {
+        selectedLevels = {};
+        renderRubricCriteria();
+        synthesizeFeedback();
+        showToast("Selections reset for next student", "info");
+      });
+
+      document.getElementById("clearSelectionsBtn").addEventListener("click", () => {
+        selectedLevels = {};
+        renderRubricCriteria();
+        synthesizeFeedback();
+      });
+
+      // Config Modal Toggle
+      const configModal = document.getElementById("configModal");
+      document.getElementById("openConfigBtn").addEventListener("click", () => {
+        renderConfigModal();
+        configModal.classList.add("active");
+      });
+
+      document.getElementById("closeConfigBtn").addEventListener("click", () => {
+        configModal.classList.remove("active");
+      });
+
+      document.getElementById("saveConfigAndCloseBtn").addEventListener("click", () => {
+        renderRubricCriteria();
+        renderQuickSnippets();
+        synthesizeFeedback();
+        configModal.classList.remove("active");
+        showToast("Configuration saved!", "success");
+      });
+
+      // Tab navigation
+      const tabBtns = document.querySelectorAll(".tab-btn");
+      tabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          tabBtns.forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+          
+          btn.classList.add("active");
+          const targetTab = btn.getAttribute("data-tab");
+          document.getElementById(targetTab).classList.add("active");
+        });
+      });
+
+      // Add Category Button
+      document.getElementById("addCriterionBtn").addEventListener("click", () => {
+        config.criteria.push({
+          id: `crit_${Date.now()}`,
+          title: "New Rubric Category",
+          levels: [
+            { score: 0, label: "Incomplete", text: "Incomplete or missing requirement." },
+            { score: 2, label: "Developing", text: "Meets basic requirements with room for growth." },
+            { score: 4, label: "Proficient", text: "Demonstrates full skill and understanding." }
+          ]
+        });
+        saveConfig();
+        renderConfigCriteria();
+        showToast("New rubric category added", "info");
+      });
+
+      // Add Snippet Button
+      document.getElementById("addSnippetBtn").addEventListener("click", () => {
+        config.snippets.push({
+          id: `snip_${Date.now()}`,
+          label: "📌 Note",
+          text: "Please remember to check assignment requirements carefully."
+        });
+        saveConfig();
+        renderConfigSnippets();
+        showToast("New snippet added", "info");
+      });
+
+      // Backup & Restore handlers
+      document.getElementById("exportConfigBtn").addEventListener("click", exportConfiguration);
+
+      const fileInput = document.getElementById("importFileInput");
+      document.getElementById("importConfigBtn").addEventListener("click", () => {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          importConfiguration(e.target.files[0]);
+          e.target.value = "";
+        }
+      });
+
+      // Restore Defaults
+      document.getElementById("restoreDefaultsBtn").addEventListener("click", () => {
+        showConfirmModal("Restore Defaults?", "This will reset all rubric categories, levels, and snippets to factory defaults.", () => {
+          config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+          saveConfig();
+          selectedLevels = {};
+          renderRubricCriteria();
+          renderQuickSnippets();
+          renderConfigModal();
+          synthesizeFeedback();
+          showToast("Restored default configuration", "info");
+        });
+      });
+
+      document.getElementById("confirmCancelBtn").addEventListener("click", hideConfirmModal);
+      document.getElementById("confirmOkBtn").addEventListener("click", () => {
+        if (confirmationCallback) confirmationCallback();
+        hideConfirmModal();
+      });
+
+      // Theme toggle
+      const themeBtn = document.getElementById("themeToggleBtn");
+      const themeIcon = document.getElementById("themeIcon");
+      const themeText = document.getElementById("themeText");
+
+      themeBtn.addEventListener("click", () => {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const nextTheme = currentTheme === "dark" ? "light" : "dark";
+        
+        document.documentElement.setAttribute("data-theme", nextTheme);
+        themeIcon.textContent = nextTheme === "dark" ? "🌙" : "☀️";
+        themeText.textContent = nextTheme === "dark" ? "Dark" : "Light";
+      });
+    });
+  </script>
+</body>
+</html>

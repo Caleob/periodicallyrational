@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ideas & Proofs — Periodically Rational</title>
+  <title>Writing & Ideas — Periodically Rational</title>
+  <meta name="description" content="Conference presentations, essays on STEM education, and curated reading by Caleob King.">
   <style>
     :root {
       --bg: #fbfbf9;
@@ -12,6 +13,9 @@
       --muted: #5f6368;
       --border: #e0ded9;
       --accent: #1a4d80;
+      --accent-hover: #123356;
+      --badge-bg: #eef2f6;
+      --badge-text: #204060;
     }
 
     * { box-sizing: border-box; }
@@ -48,7 +52,7 @@
 
     .subtitle {
       color: var(--muted);
-      margin: 0 0 20px 0;
+      margin: 0 0 24px 0;
       font-style: italic;
       font-size: 1.05em;
     }
@@ -57,31 +61,94 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 22px 24px;
-      margin: 20px 0;
+      margin: 22px 0;
       background: var(--card-bg);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
     }
 
     .card h2 {
-      margin-top: 0;
+      margin: 0;
       font-size: 1.3em;
       color: #111;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.72em;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      border-radius: 4px;
+      padding: 3px 8px;
     }
 
     .card-meta {
       font-size: 0.88em;
       color: var(--muted);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    a.button {
+      display: inline-block;
+      background: #1a1a1a;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 9px 16px;
+      border-radius: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.9em;
+      font-weight: 500;
+      margin-top: 12px;
+      transition: background 0.2s ease;
+    }
+
+    a.button:hover {
+      background: #333333;
     }
 
     footer {
       margin-top: 48px;
-      padding-top: 20px;
+      padding-top: 22px;
       border-top: 1px solid var(--border);
       color: var(--muted);
       font-size: 0.88em;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    footer p {
+      margin: 6px 0;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -91,23 +158,52 @@
   <a class="back-link" href="../index.html">← Return to Periodically Rational</a>
 </div>
 
-<h1>Ideas & Mathematical Proofs</h1>
-<p class="subtitle">Short notes, geometric proofs, classroom puzzles, and reflections.</p>
+<h1>Writing & Ideas</h1>
+<p class="subtitle">Presentations, essays on STEM education, and curated reading.</p>
 
+<!-- 1. The Classroom Genie Presentation -->
 <div class="card">
-  <div class="card-meta">Field Notes • Mathematics Education</div>
-  <h2>Why Visual Proofs Matter in Middle & High School</h2>
-  <p>Rigorous formal proofs often intimidate students before they have developed spatial and conceptual intuition. By starting with dynamic, interactive demonstrations—where parameters can be dragged, stretched, and tested—students formulate conjectures organically before writing a single line of symbolic logic.</p>
+  <div class="card-header">
+    <h2>The Classroom Genie: Building Custom Classroom Tools</h2>
+    <span class="badge">Conference Talk</span>
+  </div>
+  <div class="card-meta">Prepared for the 2026 Pearson Virtual Educator Conference</div>
+  <p>How can classroom educators design and deploy custom, interactive browser-based learning tools without needing to be professional programmers? This presentation explores using modern AI workflows to create tailored educational software for student Chromebooks—complete with full slides, live interactive demonstrations, and practical prompt frameworks.</p>
+  <a class="button" href="../Conference/index.html">Launch Presentation & Demos →</a>
 </div>
 
+<!-- 2. Recommended Reading: Wess Trabelsi -->
 <div class="card">
-  <div class="card-meta">Upcoming Essays</div>
-  <h2>Notes in Progress</h2>
-  <p>Articles on elegant algebraic proofs, surprising geometric properties, and computational thinking in the secondary math classroom will appear here as they are published.</p>
+  <div class="card-header">
+    <h2>Recommended Reading: "Cognitive Superloading"</h2>
+    <span class="badge">Curated Reading</span>
+  </div>
+  <div class="card-meta">By Wess Trabelsi • Substack</div>
+  <p><em>"Thoughtful, analytical, and deeply relevant. This piece explores cognitive load and student agency in the age of AI with rare clarity and nuance."</em></p>
+  <p>An incisive essay that moves beyond surface-level hype to examine what happens to student cognition, mental models, and retention when interacting with AI tools in learning environments.</p>
+  <a class="button" href="https://wesstrabelsi.substack.com/p/cognitive-superloading?utm_campaign=post-expanded-share&utm_medium=web&triedRedirect=true" target="_blank" rel="noopener">Read on Substack →</a>
 </div>
+
+<!-- 3. Notes & Forthcoming Writing -->
+<div class="card">
+  <div class="card-header">
+    <h2>Forthcoming Writing & Essays</h2>
+    <span class="badge">Notes</span>
+  </div>
+  <div class="card-meta">STEM Pedagogy & Classroom Technology</div>
+  <p>Additional essays exploring mathematics pedagogy, inquiry-based science activities, and practical software design for the secondary classroom are in preparation and will be shared here.</p>
+</div>
+
+<hr style="border: none; border-top: 1px solid var(--border); margin: 32px 0;">
 
 <footer>
-  <p>© Periodically Rational • Hosted at <a href="https://www.periodicallyrational.com">www.periodicallyrational.com</a></p>
+  <p><strong>Periodically Rational</strong> • Science, mathematics, and classroom inquiry by Caleob King.</p>
+  <p>
+    <a href="../index.html">Home</a> •
+    <a href="../AboutMe/index.html">About & Contact</a> •
+    <a href="../Apps/index.html">Classroom Tools</a> •
+    <a href="https://github.com/Caleob" target="_blank" rel="noopener">GitHub</a>
+  </p>
 </footer>
 
 </body>

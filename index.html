@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Periodically Rational — Educational Apps & Math</title>
-  <meta name="description" content="Educational apps, interactive math tools, proofs, and conference presentation materials by Caleob King.">
+  <title>Periodically Rational — Science, Mathematics & Classroom Tools</title>
+  <meta name="description" content="Science and mathematics education, browser-native classroom tools, and writings by Caleob King.">
   <style>
     :root {
       --bg: #fbfbf9;
@@ -55,7 +55,7 @@
     nav.quick-nav {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
       margin-top: 14px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 0.9em;
@@ -64,9 +64,10 @@
     nav.quick-nav a {
       color: var(--accent);
       text-decoration: none;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 6px;
       background: rgba(26, 77, 128, 0.06);
+      font-weight: 500;
       transition: background 0.2s, color 0.2s;
     }
 
@@ -84,7 +85,7 @@
     .intro-banner {
       background: #f4f6f8;
       border-left: 4px solid var(--accent);
-      padding: 14px 18px;
+      padding: 16px 20px;
       border-radius: 0 8px 8px 0;
       margin-bottom: 28px;
       font-size: 0.98em;
@@ -111,7 +112,7 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .card h2 {
@@ -138,6 +139,36 @@
       color: var(--badge-live-text);
     }
 
+    /* About Card Layout */
+    .about-card-body {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    .mini-portrait {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .about-card-content {
+      flex: 1;
+    }
+
+    @media (max-width: 560px) {
+      .about-card-body {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+
     p {
       margin: 8px 0;
     }
@@ -160,22 +191,17 @@
       background: #333333;
     }
 
-    .path-label {
-      font-family: monospace;
-      font-size: 0.85em;
-      color: #666;
-      background: #f0f0ed;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-
     footer {
       margin-top: 48px;
-      padding-top: 20px;
+      padding-top: 22px;
       border-top: 1px solid var(--border);
       color: var(--muted);
       font-size: 0.88em;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    footer p {
+      margin: 6px 0;
     }
 
     footer a {
@@ -192,74 +218,64 @@
 
 <header>
   <h1>Periodically Rational</h1>
-  <p class="subtitle">Educational apps, math proofs, and conference materials</p>
-  <nav class="quick-nav" aria-label="Quick links">
-    <a href="./Conference/index.html">Conference Presentation</a>
-    <a href="./Apps/index.html">Student Apps</a>
-    <a href="./Ideas/index.html">Ideas & Proofs</a>
-    <a href="./AboutMe/index.html">About Me</a>
+  <p class="subtitle">Discussions about STEM education</p>
+  <nav class="quick-nav" aria-label="Main Navigation">
+    <a href="./AboutMe/index.html">About Caleob King</a>
+    <a href="./Apps/index.html">Classroom Tools</a>
+    <a href="./Ideas/index.html">Writing & Ideas</a>
   </nav>
 </header>
 
 <div class="intro-banner">
-  Welcome to <strong>Periodically Rational</strong> — a clean, ad-free educational hub designed for students, teachers, and math enthusiasts. All interactive tools run directly in your browser without requiring student logins or downloads.
+  Welcome to <strong>Periodically Rational</strong> — a space for discussions on STEM education, teacher-created classroom tools, and mathematical ideas. Here you'll find interactive browser resources designed for real classrooms: ad-free, account-free, and built to spark genuine curiosity.
 </div>
 
 <hr>
 
-<div class="card">
-  <div class="card-header">
-    <h2>Conference Presentation: The Classroom Genie</h2>
-    <span class="badge live">Interactive Slides & Demos</span>
-  </div>
-  <p>Building custom educational tools and interactive web applications without code. Includes full slide deck, audio controls, live embedded demos, prompt recipes, and downloadable project packages.</p>
-  <a class="button" href="./Conference/index.html">Launch Presentation →</a>
-  <p style="font-size: 0.88em; color: #666; margin-top: 10px;">
-    Direct link: <span class="path-label">/Conference/</span>
-  </p>
-</div>
-
-<div class="card">
-  <div class="card-header">
-    <h2>Student Learning Apps</h2>
-    <span class="badge live">Student Portal</span>
-  </div>
-  <p>Interactive simulations and practice tools designed for classroom instruction. Fully safe for student Chromebooks with zero tracking and zero external account requirements.</p>
-  <a class="button" href="./Apps/index.html">Explore Student Apps →</a>
-  <p style="font-size: 0.88em; color: #666; margin-top: 10px;">
-    Direct link: <span class="path-label">/Apps/</span>
-  </p>
-</div>
-
-<div class="card">
-  <div class="card-header">
-    <h2>Ideas & Proofs</h2>
-    <span class="badge">Notes & Essays</span>
-  </div>
-  <p>Short mathematical essays, geometric proofs, and classroom reflections — continuing the spirit of the original college blog.</p>
-  <a class="button" href="./Ideas/index.html">Read Ideas & Proofs →</a>
-  <p style="font-size: 0.88em; color: #666; margin-top: 10px;">
-    Direct link: <span class="path-label">/Ideas/</span>
-  </p>
-</div>
-
+<!-- 1. About Caleob King -->
 <div class="card">
   <div class="card-header">
     <h2>About Caleob King</h2>
-    <span class="badge">Bio & Background</span>
+    <span class="badge">Educator & Builder</span>
   </div>
-  <p>Learn more about the educator behind Periodically Rational, teaching philosophy, and contact details.</p>
-  <a class="button" href="./AboutMe/index.html">View About Me →</a>
-  <p style="font-size: 0.88em; color: #666; margin-top: 10px;">
-    Direct link: <span class="path-label">/AboutMe/</span>
-  </p>
+  <div class="about-card-body">
+    <img src="./AboutMe/Caleob%20King%20Portrait.png" alt="Caleob King Portrait" class="mini-portrait">
+    <div class="about-card-content">
+      <p>Secondary educator specializing in science and mathematics. Dedicated to creating intuitive learning experiences that cultivate genuine curiosity, conceptual understanding, and teacher-empowered classroom software.</p>
+      <a class="button" href="./AboutMe/index.html">Read Bio & Teaching Philosophy →</a>
+    </div>
+  </div>
+</div>
+
+<!-- 2. Interactive Classroom Tools -->
+<div class="card">
+  <div class="card-header">
+    <h2>Interactive Classroom Tools</h2>
+    <span class="badge live">Chromebook Ready</span>
+  </div>
+  <p>Lightweight, browser-native tools and simulations for students and teachers. Crafted for independent practice, conceptual discovery, and collaborative exploration—loading instantly on any device with no student logins required.</p>
+  <a class="button" href="./Apps/index.html">Explore Classroom Tools →</a>
+</div>
+
+<!-- 3. Writing & Ideas -->
+<div class="card">
+  <div class="card-header">
+    <h2>Writing & Ideas</h2>
+    <span class="badge">Talks, Essays & Reading</span>
+  </div>
+  <p>Essays on STEM pedagogy, reflections on artificial intelligence in education, and conference presentations—including <em>The Classroom Genie</em> prepared for the 2026 Pearson Virtual Educator Conference, along with curated readings and notes.</p>
+  <a class="button" href="./Ideas/index.html">Explore Writing & Ideas →</a>
 </div>
 
 <hr>
 
 <footer>
-  <p><strong>Periodically Rational</strong> • Hosted via GitHub Pages • Domain: <a href="https://www.periodicallyrational.com">www.periodicallyrational.com</a></p>
-  <p>Created by Caleob King for students and educators.</p>
+  <p><strong>Periodically Rational</strong> • Science, mathematics, and classroom inquiry by Caleob King.</p>
+  <p>
+    <a href="./AboutMe/index.html">About & Contact</a> •
+    <a href="https://github.com/Caleob" target="_blank" rel="noopener">GitHub</a> •
+    <a href="https://www.periodicallyrational.com">periodicallyrational.com</a>
+  </p>
 </footer>
 
 </body>
