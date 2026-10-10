@@ -98,29 +98,14 @@ You only have to do this once.
 
 ### Phase 2: Upload Your Files to GitHub
 
-Now you upload the website files from your computer to your empty GitHub repository.
+> **Great news:** This step has **already been completed for you!** All 139 files (including your presentation, all 13 interactive tools, audio tracks, and student hubs) have been cleanly packaged, committed, and pushed to your GitHub repository at [https://github.com/Caleob/periodicallyrational](https://github.com/Caleob/periodicallyrational).
 
-- [ ] **1. Open PowerShell in your folder**
-  - Open PowerShell on your computer.
-  - Paste and run this command to make sure you are in your project folder:
-    ```powershell
-    cd C:\Users\caleo\Documents\PeriodicallyRational
-    ```
-- [ ] **2. Initialize and Stage Your Files**
-  - Run the following commands one by one (or copy and paste all together):
-    ```powershell
-    git init
-    git branch -M main
-    git add .
-    git commit -m "Launch Periodically Rational website, presentation, and student hubs"
-    ```
-- [ ] **3. Connect to your GitHub Repo and Push**
-  - Run:
-    ```powershell
-    git remote add origin https://github.com/Caleob/periodicallyrational.git
-    git push -u origin main
-    ```
-  - *Note:* If a browser window pops up asking you to sign into GitHub, click **Authorize** or sign in. This grants Windows permission to send your files to your account.
+If you ever need to manually push changes in the future, these are the commands that were used:
+- [x] **1. Initialized repository and created main branch** (`git init; git branch -M main`) — *Done!*
+- [x] **2. Staged and committed all files** (`git add .; git commit -m "..."`) — *Done!*
+- [x] **3. Connected remote and pushed to GitHub** (`git remote add origin ...; git push -u origin main`) — *Done!*
+
+You can verify your files right now by visiting [github.com/Caleob/periodicallyrational](https://github.com/Caleob/periodicallyrational). All files are waiting for you there!
 
 ---
 
