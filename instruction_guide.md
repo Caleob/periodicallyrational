@@ -166,7 +166,7 @@ Whenever you build a new tool or calculator for your students:
 4. **Give your students the link**:
    `https://www.periodicallyrational.com/Apps/fraction-bars/`
 
-Students can open that link directly on school Chromebooks without sign-in prompts, ads, or administrative concerns.
+Students can open that link directly in any browser on student devices without sign-in prompts, ads, or administrative concerns.
 
 ---
 
