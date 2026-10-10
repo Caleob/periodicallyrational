@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transversal Angles Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .level-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .level-selector button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        .level-selector button.active {
+            background: #667eea;
+            color: white;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .diagram-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        svg {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .interaction-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .stage {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+        }
+        .stage.active {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        .stage.completed {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+        .stage h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stage-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .stage.completed .stage-number {
+            background: #4caf50;
+        }
+        .angle-naming {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .angle-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .angle-label {
+            font-weight: bold;
+            min-width: 100px;
+        }
+        .drop-zone {
+            width: 60px;
+            height: 50px;
+            border: 2px dashed #999;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: all 0.3s;
+        }
+        .drop-zone.blue {
+            border-color: #2196F3;
+            background: #e3f2fd;
+        }
+        .drop-zone.red {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+        .drop-zone.filled {
+            border-style: solid;
+            border-width: 3px;
+        }
+        .drop-zone.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+        .drop-zone.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .point-bank {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .point-chip {
+            padding: 10px 16px;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            cursor: move;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+        .point-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .point-chip.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .relationship-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .option-btn {
+            padding: 12px 24px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+        .option-btn.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        .option-btn.correct {
+            border-color: #4caf50;
+            background: #4caf50;
+            color: white;
+        }
+        .option-btn.incorrect {
+            border-color: #f44336;
+            background: #f44336;
+            color: white;
+        }
+        .solve-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        input[type="number"] {
+            width: 120px;
+            padding: 12px;
+            font-size: 1.2em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+        }
+        input[type="number"].correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+        input[type="number"].incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+        .check-btn, .new-problem-btn {
+            padding: 12px 32px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .check-btn:hover, .new-problem-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .check-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .new-problem-btn {
+            background: #4caf50;
+            display: block;
+            margin: 20px auto 0;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .feedback.incorrect {
+            background: #ffebee;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📐 Parallel Lines & Transversals Practice</h1>
+        
+        <div class="level-selector">
+            <button class="active" onclick="setLevel(1)">Level 1: Value & Variable</button>
+            <button onclick="setLevel(2)">Level 2: Expression & Value</button>
+            <button onclick="setLevel(3)">Level 3: Two Expressions</button>
+        </div>
+
+        <div class="main-content">
+            <div class="diagram-section">
+                <svg id="diagram" width="500" height="500"></svg>
+            </div>
+
+            <div class="interaction-section">
+                <!-- Stage 1: Name the Angles -->
+                <div class="stage active" id="stage1">
+                    <h2><span class="stage-number">1</span> Name the Angles</h2>
+                    <div class="angle-naming">
+                        <div class="angle-group">
+                            <span class="angle-label" style="color: #2196F3;">Blue Angle:</span>
+                            <span style="font-size: 1.2em;">∠</span>
+                            <div class="drop-zone blue" data-angle="blue" data-pos="0"></div>
+                            <div class="drop-zone blue" data-angle="blue" data-pos="1"></div>
+                            <div class="drop-zone blue" data-angle="blue" data-pos="2"></div>
+                        </div>
+                        <div class="angle-group">
+                            <span class="angle-label" style="color: #f44336;">Red Angle:</span>
+                            <span style="font-size: 1.2em;">∠</span>
+                            <div class="drop-zone red" data-angle="red" data-pos="0"></div>
+                            <div class="drop-zone red" data-angle="red" data-pos="1"></div>
+                            <div class="drop-zone red" data-angle="red" data-pos="2"></div>
+                        </div>
+                    </div>
+                    <div class="point-bank" id="pointBank"></div>
+                    <button class="check-btn" onclick="checkStage1()">Check Names</button>
+                    <div class="feedback" id="feedback1"></div>
+                </div>
+
+                <!-- Stage 2: Identify Relationship -->
+                <div class="stage" id="stage2">
+                    <h2><span class="stage-number">2</span> Identify Angle Relationship</h2>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Angle Pair Type:</strong>
+                        <div class="relationship-options" id="typeOptions">
+                            <button class="option-btn" data-type="corresponding">Corresponding</button>
+                            <button class="option-btn" data-type="alternate-interior">Alternate Interior</button>
+                            <button class="option-btn" data-type="alternate-exterior">Alternate Exterior</button>
+                            <button class="option-btn" data-type="consecutive-interior">Consecutive Interior</button>
+                            <button class="option-btn" data-type="vertical">Vertical</button>
+                            <button class="option-btn" data-type="none">None of the Above</button>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Angle Relationship:</strong>
+                        <div class="relationship-options" id="relationOptions">
+                            <button class="option-btn" data-relation="congruent">Congruent (=)</button>
+                            <button class="option-btn" data-relation="supplementary">Supplementary (+ = 180°)</button>
+                        </div>
+                    </div>
+                    <button class="check-btn" onclick="checkStage2()">Check Relationship</button>
+                    <div class="feedback" id="feedback2"></div>
+                </div>
+
+                <!-- Stage 3: Solve -->
+                <div class="stage" id="stage3">
+                    <h2><span class="stage-number">3</span> Solve for the Variable</h2>
+                    <div class="solve-input">
+                        <span id="variableName" style="font-size: 1.3em; font-weight: bold;">x =</span>
+                        <input type="number" id="solutionInput" placeholder="?">
+                        <span style="font-size: 1.2em;">°</span>
+                    </div>
+                    <button class="check-btn" onclick="checkStage3()">Check Solution</button>
+                    <div class="feedback" id="feedback3"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="new-problem-btn" onclick="generateProblem()">New Problem</button>
+    </div>
+
+    <script>
+        let currentLevel = 1;
+        let problem = {};
+        let stage1Complete = false;
+        let stage2Complete = false;
+        let draggedElement = null;
+
+        const angleTypes = {
+            corresponding: { congruent: true },
+            'alternate-interior': { congruent: true },
+            'alternate-exterior': { congruent: true },
+            'consecutive-interior': { supplementary: true },
+            vertical: { congruent: true }
+        };
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            currentLevel = Math.floor(Math.random() * 3) + 1;
+            document.querySelectorAll('.level-selector button').forEach((btn, i) => {
+                btn.classList.toggle('active', i + 1 === currentLevel);
+            });
+            generateProblem();
+        });
+
+        function setLevel(level) {
+            currentLevel = level;
+            document.querySelectorAll('.level-selector button').forEach((btn, i) => {
+                btn.classList.toggle('active', i + 1 === level);
+            });
+            generateProblem();
+        }
+
+        function generateProblem() {
+            stage1Complete = false;
+            stage2Complete = false;
+            
+            // Reset stages
+            document.querySelectorAll('.stage').forEach(s => {
+                s.classList.remove('completed');
+            });
+            document.getElementById('stage1').classList.add('active');
+            document.getElementById('stage2').classList.remove('active');
+            document.getElementById('stage3').classList.remove('active');
+            
+            // Clear feedback
+            document.querySelectorAll('.feedback').forEach(f => f.innerHTML = '');
+            
+            // Generate random points
+            const points = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            
+            // Select angle type and relationship
+            const types = ['corresponding', 'alternate-interior', 'alternate-exterior', 'consecutive-interior', 'vertical'];
+            const angleType = types[Math.floor(Math.random() * types.length)];
+            const isCongruent = angleTypes[angleType].congruent || false;
+            const isSupplementary = angleTypes[angleType].supplementary || false;
+            
+            // Generate angle values based on level
+            let angle1Val, angle2Val, variable, expression1, expression2;
+            variable = Math.random() > 0.5 ? 'x' : 'y';
+            
+            if (currentLevel === 1) {
+                // Level 1: value and variable
+                if (isCongruent) {
+                    angle1Val = Math.floor(Math.random() * 120) + 30;
+                    angle2Val = angle1Val;
+                    expression1 = angle1Val.toString();
+                    expression2 = variable;
+                } else {
+                    angle1Val = Math.floor(Math.random() * 120) + 30;
+                    angle2Val = 180 - angle1Val;
+                    expression1 = angle1Val.toString();
+                    expression2 = variable;
+                }
+            } else if (currentLevel === 2) {
+                // Level 2: expression and value
+                const coef = Math.floor(Math.random() * 3) + 1;
+                const offset = Math.floor(Math.random() * 40) - 20;
+                
+                if (isCongruent) {
+                    angle1Val = Math.floor(Math.random() * 120) + 30;
+                    const varVal = (angle1Val - offset) / coef;
+                    angle2Val = angle1Val;
+                    
+                    expression1 = angle1Val.toString();
+                    expression2 = offset >= 0 ? `${coef}${variable} + ${offset}` : `${coef}${variable} - ${Math.abs(offset)}`;
+                    variable = variable;
+                    problem.solution = Math.round(varVal);
+                } else {
+                    angle1Val = Math.floor(Math.random() * 120) + 30;
+                    const varVal = (180 - angle1Val - offset) / coef;
+                    angle2Val = 180 - angle1Val;
+                    
+                    expression1 = angle1Val.toString();
+                    expression2 = offset >= 0 ? `${coef}${variable} + ${offset}` : `${coef}${variable} - ${Math.abs(offset)}`;
+                    problem.solution = Math.round(varVal);
+                }
+            } else {
+                // Level 3: two expressions
+                const coef1 = Math.floor(Math.random() * 3) + 1;
+                const offset1 = Math.floor(Math.random() * 40) - 20;
+                const coef2 = Math.floor(Math.random() * 3) + 1;
+                const offset2 = Math.floor(Math.random() * 40) - 20;
+                
+                if (isCongruent) {
+                    const varVal = (offset2 - offset1) / (coef1 - coef2);
+                    angle1Val = coef1 * varVal + offset1;
+                    angle2Val = angle1Val;
+                    problem.solution = Math.round(varVal);
+                } else {
+                    const varVal = (180 - offset1 - offset2) / (coef1 + coef2);
+                    angle1Val = coef1 * varVal + offset1;
+                    angle2Val = 180 - angle1Val;
+                    problem.solution = Math.round(varVal);
+                }
+                
+                expression1 = offset1 >= 0 ? `${coef1}${variable} + ${offset1}` : `${coef1}${variable} - ${Math.abs(offset1)}`;
+                expression2 = offset2 >= 0 ? `${coef2}${variable} + ${offset2}` : `${coef2}${variable} - ${Math.abs(offset2)}`;
+            }
+            
+            // For level 1, calculate solution
+            if (currentLevel === 1) {
+                problem.solution = isCongruent ? angle1Val : angle2Val;
+            }
+            
+            // Determine point arrangement based on angle type
+            let bluePoints, redPoints;
+            if (angleType === 'vertical') {
+                bluePoints = ['B', 'E', 'D'];
+                redPoints = ['A', 'E', 'C'];
+            } else if (angleType === 'corresponding') {
+                bluePoints = ['B', 'E', 'F'];
+                redPoints = ['D', 'G', 'H'];
+            } else if (angleType === 'alternate-interior') {
+                bluePoints = ['C', 'E', 'F'];
+                redPoints = ['F', 'G', 'D'];
+            } else if (angleType === 'alternate-exterior') {
+                bluePoints = ['B', 'E', 'F'];
+                redPoints = ['H', 'G', 'D'];
+            } else {
+                bluePoints = ['C', 'E', 'F'];
+                redPoints = ['D', 'G', 'F'];
+            }
+            
+            problem = {
+                angleType,
+                isCongruent,
+                isSupplementary,
+                angle1Val: Math.round(angle1Val),
+                angle2Val: Math.round(angle2Val),
+                expression1,
+                expression2,
+                variable,
+                solution: problem.solution,
+                bluePoints,
+                redPoints,
+                allPoints: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+            };
+            
+            drawDiagram();
+            setupPointBank();
+            setupStage2();
+            setupStage3();
+        }
+
+        function drawDiagram() {
+            const svg = document.getElementById('diagram');
+            svg.innerHTML = '';
+            
+            const NS = 'http://www.w3.org/2000/svg';
+            
+            // Draw parallel lines
+            const line1 = document.createElementNS(NS, 'line');
+            line1.setAttribute('x1', '50');
+            line1.setAttribute('y1', '150');
+            line1.setAttribute('x2', '450');
+            line1.setAttribute('y2', '150');
+            line1.setAttribute('stroke', '#333');
+            line1.setAttribute('stroke-width', '3');
+            svg.appendChild(line1);
+            
+            const line2 = document.createElementNS(NS, 'line');
+            line2.setAttribute('x1', '50');
+            line2.setAttribute('y1', '350');
+            line2.setAttribute('x2', '450');
+            line2.setAttribute('y2', '350');
+            line2.setAttribute('stroke', '#333');
+            line2.setAttribute('stroke-width', '3');
+            svg.appendChild(line2);
+            
+            // Draw transversal
+            const trans = document.createElementNS(NS, 'line');
+            trans.setAttribute('x1', '100');
+            trans.setAttribute('y1', '50');
+            trans.setAttribute('x2', '350');
+            trans.setAttribute('y2', '450');
+            trans.setAttribute('stroke', '#333');
+            trans.setAttribute('stroke-width', '3');
+            svg.appendChild(trans);
+            
+            // Point positions
+            const positions = {
+                A: [100, 50], B: [50, 150], C: [450, 150],
+                D: [50, 350], E: [155, 150], F: [250, 250],
+                G: [295, 350], H: [450, 350]
+            };
+            
+            // Draw points
+            problem.allPoints.forEach(p => {
+                const circle = document.createElementNS(NS, 'circle');
+                circle.setAttribute('cx', positions[p][0]);
+                circle.setAttribute('cy', positions[p][1]);
+                circle.setAttribute('r', '6');
+                circle.setAttribute('fill', '#333');
+                svg.appendChild(circle);
+                
+                const text = document.createElementNS(NS, 'text');
+                text.setAttribute('x', positions[p][0] + 12);
+                text.setAttribute('y', positions[p][1] + 5);
+                text.setAttribute('font-size', '20');
+                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('fill', '#333');
+                text.textContent = p;
+                svg.appendChild(text);
+            });
+            
+            // Draw blue angle arc
+            drawAngleArc(svg, positions[problem.bluePoints[1]], 40, '#2196F3', problem.expression1);
+            
+            // Draw red angle arc
+            drawAngleArc(svg, positions[problem.redPoints[1]], 40, '#f44336', problem.expression2);
+        }
+
+        function drawAngleArc(svg, center, radius, color, label) {
+            const NS = 'http://www.w3.org/2000/svg';
+            const path = document.createElementNS(NS, 'path');
+            const startAngle = -30 * Math.PI / 180;
+            const endAngle = 30 * Math.PI / 180;
+            
+            const x1 = center[0] + radius * Math.cos(startAngle);
+            const y1 = center[1] + radius * Math.sin(startAngle);
+            const x2 = center[0] + radius * Math.cos(endAngle);
+            const y2 = center[1] + radius * Math.sin(endAngle);
+            
+            path.setAttribute('d', `M ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2} L ${center[0]} ${center[1]} Z`);
+            path.setAttribute('fill', color);
+            path.setAttribute('opacity', '0.3');
+            path.setAttribute('stroke', color);
+            path.setAttribute('stroke-width', '2');
+            svg.appendChild(path);
+            
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', center[0] + radius + 10);
+            text.setAttribute('y', center[1] + 5);
+            text.setAttribute('font-size', '18');
+            text.setAttribute('font-weight', 'bold');
+            text.setAttribute('fill', color);
+            text.textContent = label;
+            svg.appendChild(text);
+        }
+
+        function setupPointBank() {
+            const bank = document.getElementById('pointBank');
+            bank.innerHTML = '';
+            
+            problem.allPoints.forEach(p => {
+                const chip = document.createElement('div');
+                chip.className = 'point-chip';
+                chip.textContent = p;
+                chip.draggable = true;
+                chip.dataset.point = p;
+                
+                chip.addEventListener('dragstart', e => {
+                    draggedElement = p;
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                
+                bank.appendChild(chip);
+            });
+            
+            // Setup drop zones
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.textContent = '';
+                zone.classList.remove('filled', 'correct', 'incorrect');
+                
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                });
+                
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (draggedElement && !zone.classList.contains('filled')) {
+                        zone.textContent = draggedElement;
+                        zone.classList.add('filled');
+                        
+                        // Mark point as used
+                        document.querySelectorAll('.point-chip').forEach(chip => {
+                            if (chip.dataset.point === draggedElement) {
+                                chip.classList.add('used');
+                                chip.draggable = false;
+                            }
+                        });
+                    }
+                });
+                
+                zone.addEventListener('click', () => {
+                    if (zone.classList.contains('filled') && !stage1Complete) {
+                        const point = zone.textContent;
+                        zone.textContent = '';
+                        zone.classList.remove('filled');
+                        
+                        // Unmark point
+                        document.querySelectorAll('.point-chip').forEach(chip => {
+                            if (chip.dataset.point === point) {
+                                chip.classList.remove('used');
+                                chip.draggable = true;
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        function checkStage1() {
+            const blueZones = Array.from(document.querySelectorAll('.drop-zone.blue')).map(z => z.textContent);
+            const redZones = Array.from(document.querySelectorAll('.drop-zone.red')).map(z => z.textContent);
+            
+            const blueCorrect = JSON.stringify(blueZones) === JSON.stringify(problem.bluePoints);
+            const redCorrect = JSON.stringify(redZones) === JSON.stringify(problem.redPoints);
+            
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                const angle = zone.dataset.angle;
+                const correct = angle === 'blue' ? blueCorrect : redCorrect;
+                zone.classList.toggle('correct', correct);
+                zone.classList.toggle('incorrect', !correct);
+            });
+            
+            const feedback = document.getElementById('feedback1');
+            if (blueCorrect && redCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.textContent = '✓ Perfect! Both angles named correctly.';
+                stage1Complete = true;
+                document.getElementById('stage1').classList.add('completed');
+                document.getElementById('stage2').classList.add('active');
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.textContent = '✗ Not quite. Check the vertex and rays of each angle.';
+            }
+        }
+
+        function setupStage2() {
+            document.querySelectorAll('#typeOptions .option-btn').forEach(btn => {
+                btn.classList.remove('selected', 'correct', 'incorrect');
+                btn.onclick = () => {
+                    document.querySelectorAll('#typeOptions .option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+            });
+            
+            document.querySelectorAll('#relationOptions .option-btn').forEach(btn => {
+                btn.classList.remove('selected', 'correct', 'incorrect');
+                btn.onclick = () => {
+                    document.querySelectorAll('#relationOptions .option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+            });
+        }
+
+        function checkStage2() {
+            if (!stage1Complete) return;
+            
+            const selectedType = document.querySelector('#typeOptions .option-btn.selected');
+            const selectedRelation = document.querySelector('#relationOptions .option-btn.selected');
+            
+            if (!selectedType || !selectedRelation) {
+                document.getElementById('feedback2').innerHTML = '<span class="feedback incorrect">Please select both options.</span>';
+                return;
+            }
+            
+            const typeCorrect = selectedType.dataset.type === problem.angleType;
+            const relationCorrect = (selectedRelation.dataset.relation === 'congruent' && problem.isCongruent) ||
+                                   (selectedRelation.dataset.relation === 'supplementary' && problem.isSupplementary);
+            
+            selectedType.classList.toggle('correct', typeCorrect);
+            selectedType.classList.toggle('incorrect', !typeCorrect);
+            selectedRelation.classList.toggle('correct', relationCorrect);
+            selectedRelation.classList.toggle('incorrect', !relationCorrect);
+            
+            const feedback = document.getElementById('feedback2');
+            if (typeCorrect && relationCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Rug Problem</title>
+<style>
+:root{
+  --ink:#0e1d23; --panel:#15292f; --line:#27434b; --text:#eef3f1; --muted:#93aab0;
+  --saffron:#f2b84b; --madder:#a8324a; --indigo:#2a2f6e; --mint:#5fd4a0; --rose:#ff8a8a;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:"Avenir Next","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--ink);color:var(--text);font-family:var(--sans);display:grid;grid-template-columns:minmax(280px,22vw) 1fr;overflow:hidden}
+aside{background:var(--panel);border-right:1px solid var(--line);padding:28px 22px;display:flex;flex-direction:column;min-height:0}
+aside h2{font-family:var(--serif);font-size:30px;margin:0 0 4px;font-weight:600}
+aside p{margin:0 0 18px;color:var(--muted);font-size:15px}
+.tablewrap{overflow-y:auto;flex:1;min-height:0}
+table{width:100%;border-collapse:collapse;font-size:19px}
+th{text-align:left;font-weight:500;color:var(--muted);font-size:14px;padding:6px 8px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
+td{padding:12px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+td.n{color:var(--muted);width:2.2em}
+td.empty{color:var(--muted);font-size:16px;line-height:1.4;border:0;padding-top:20px}
+tr.new{animation:flash .7s ease-out}
+@keyframes flash{from{background:rgba(242,184,75,.25)}to{background:transparent}}
+.low,.high{color:var(--rose)} .ok{color:var(--mint);font-weight:700}
+.arr{opacity:.65;font-size:.85em;margin-left:6px}
+.eq .gv{color:var(--saffron);font-style:normal}
+tr.win td{background:rgba(95,212,160,.12)}
+main{display:flex;flex-direction:column;padding:22px 40px 26px;min-width:0;min-height:0}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:20px}
+h1{font-family:var(--serif);font-size:34px;margin:0;font-weight:600;letter-spacing:.2px}
+.btns{display:flex;gap:10px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--text);padding:9px 16px;font-size:16px}
+button:hover{border-color:var(--saffron)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+button.go{background:var(--saffron);color:#231a05;border-color:var(--saffron);font-weight:700;font-size:22px;padding:12px 30px}
+select{font:inherit;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:9px 12px;cursor:pointer;font-size:16px}
+.stage{flex:1;min-height:0;margin:14px 0 8px;border-radius:18px;border:1px solid var(--line);
+  background:repeating-linear-gradient(90deg,#173038 0 118px,#12272e 118px 120px);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.stage svg{width:100%;height:100%;max-height:100%}
+.mx{fill:var(--saffron);font-style:italic;font-family:var(--serif);filter:drop-shadow(0 0 6px rgba(242,184,75,.8));animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.6}}
+svg text{font-family:var(--serif);fill:var(--text)}
+.eq{text-align:center;font-family:var(--serif);font-size:clamp(40px,5.6vw,84px);line-height:1.05;font-weight:500;margin:6px 0 0;white-space:nowrap}
+.eq i{color:var(--saffron)} .eq sup{font-size:.55em;vertical-align:.55em}
+.story{text-align:center;color:var(--muted);font-size:19px;margin:4px 0 12px;min-height:1.3em}
+div.fm{display:flex;justify-content:center;align-items:center;gap:14px}
+label{font-size:22px;font-family:var(--serif)}
+input{font:inherit;font-size:30px;width:200px;text-align:center;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:var(--panel);color:var(--text)}
+input:disabled{opacity:.5}
+.msg{min-height:34px;text-align:center;font-size:24px;margin-top:12px}
+.msg.good{color:var(--mint);font-weight:700}
+@media (prefers-reduced-motion:reduce){.mx,tr.new{animation:none}}
+@media (max-width:760px){body{grid-template-columns:1fr;overflow:auto}aside{max-height:30vh}}
+#lhs,.slot{display:inline-block;transition:opacity .2s ease,transform .2s ease}
+.out{opacity:0;transform:translateY(-.3em) scale(.75)}
+.pre{opacity:0;transform:translateY(.3em) scale(.75);transition:none!important}
+.gv{text-shadow:0 0 18px rgba(242,184,75,.9)}
+.res{color:var(--text)} .res.okc{color:var(--mint)}
+.fly{position:fixed;margin:0;transform-origin:0 0;line-height:1.05;font-family:var(--serif);white-space:nowrap;z-index:50;pointer-events:none;text-shadow:0 0 14px rgba(242,184,75,.7)}
+.dim{color:var(--muted)}
+</style>
+</head>
+<body>
+<aside>
+  <h2>Guesses</h2>
+  <p>A guess within 0.01 of x counts as correct.</p>
+  <div class="tablewrap">
+    <table><thead><tr><th>#</th><th>Guess</th><th>Result</th></tr></thead><tbody id="rows"></tbody></table>
+  </div>
+</aside>
+
+<main>
+  <header>
+    <h1>How wide is x?</h1>
+    <div class="btns">
+      <select id="level">
+        <option value="0">Level 0: x²</option>
+        <option value="1" selected>Level 1: Concrete</option>
+        <option value="2">Level 2: Abstract</option>
+        <option value="3">Level 3: No solutions</option>
+        <option value="4">Level 4: Negative Area</option>
+      </select>
+      <button id="reveal" type="button">Reveal x</button>
+      <button id="again" type="button">New rug</button>
+    </div>
+  </header>
+  <div class="stage"><svg id="rug" viewBox="0 0 760 400" role="img" aria-label="Rug diagram"></svg></div>
+  <div class="eq" id="eq"></div>
+  <div class="story" id="story"></div>
+  <div class="fm" id="f">
+    <label for="g">Your guess: x =</label>
+    <input id="g" inputmode="decimal" autocomplete="off" placeholder="0.00">
+    <button class="go" id="check" type="button">Check</button>
+  </div>
+  <div class="msg" id="msg" aria-live="polite"></div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+const rint = (lo,hi) => lo + Math.floor(Math.random()*(hi-lo+1));
+const MINUS = "\u2212";
+let a1,a2,a,b,c,X,guesses,solved,runId=0,busy=false;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt = n => String(+n.toFixed(3));
+
+const root = bb => (bb + Math.sqrt(bb*bb + 4*a*c)) / (2*a);   // positive root of a x^2 - b x = c
+function newRug(){
+  runId++; busy = false; document.querySelectorAll('.fly').forEach(n => n.remove());
+  const level = parseInt($("level").value);
+
+  if (level === 0) {
+    a1 = 1; a2 = 1; a = 1; b = 0;
+    c = rint(2, 20);
+    X = Math.sqrt(c);
+  } else if (level === 1) {
+    a1 = pick([2,3,4,5]); a2 = pick([2,3,4,5]);
+    a = a1*a2;
+    c = rint(1,7);
+    let tries = 0;
+    do { b = rint(-a,a); X = root(b); }
+    while ((Math.abs(b) > a1*X + 1e-9 || (b === 0 && tries < 2)) && tries++ < 500);
+    if (Math.abs(b) > a1*X + 1e-9){ b = 0; X = root(0); }
+  } else if (level === 2) {
+    a1 = pick([2,3,4,5]); a2 = pick([2,3,4,5]);
+    a = a1*a2;
+    X = (Math.random() < 0.75 ? -1 : 1) * (Math.random() * 3 + 0.5);
+    b = rint(-a, a);
+    c = a*X*X - b*X; 
+    c = Math.round(c * 10) / 10;
+    let D = b*b + 4*a*c;
+    if (D >= 0) {
+      let root1 = (b + Math.sqrt(D))/(2*a);
+      let root2 = (b - Math.sqrt(D))/(2*a);
+      X = Math.abs(root1 - X) < Math.abs(root2 - X) ? root1 : root2;
+    } else {
+      X = NaN; // fallback
+    }
+  } else if (level === 3) {
+    a1 = pick([2,3,4,5]); a2 = pick([2,3,4,5]);
+    a = a1*a2;
+    b = rint(-a, a);
+    c = Math.floor(-b*b / (4*a)) - rint(1, 5);
+    X = NaN;
+  } else if (level === 4) {
+    a1 = 1; a2 = 1; a = 1; b = 0;
+    c = -rint(2, 20);
+    X = NaN;
+  }
+
+  guesses = []; solved = false;
+  $("g").disabled = false; $("check").disabled = false; $("g").value = "";
+  $("msg").textContent = ""; $("msg").className = "msg";
+  draw(); drawEq(); renderRows(); $("g").focus();
+}
+
+function drawEq(){
+  const sx = id => `<span class="slot" id="${id}"><i>x</i></span>`;
+  let t = `<span id="lhs"><span>${a==1?"":a}${sx("sq")}<sup>2</sup></span>`;
+  if (b > 0) t += ` ${MINUS} ${b==1?"":b}${sx("sl")}`;
+  if (b < 0) t += ` + ${-b==1?"":-b}${sx("sl")}`;
+  $("eq").innerHTML = t + `</span> <span id="eqsign">=</span> ${fmt(c)}`;
+  const base = a1==1 && a2==1 ? `An x by x square` : `A ${a1}x by ${a2}x rug`;
+  $("story").textContent =
+    b > 0 ? `${base} with a ${b} by x section cut out has a total area of ${fmt(c)}.` :
+    b < 0 ? `${base} with a ${-b} by x section added has a total area of ${fmt(c)}.` :
+            `${base} has a total area of ${fmt(c)}.`;
+}
+
+function draw(){
+  let X_vis = (!isNaN(X) && X > 0.1) ? X : 1.5;
+  const cut = b > 0, flap = b < 0, L = Math.abs(b);
+  if (cut && L > a1*X_vis) X_vis = (L + 0.5) / a1; // guarantee cut fits visually
+  const w0 = a1*X_vis, h0 = a2*X_vis, tot = h0 + (flap ? X_vis : 0);
+  const sc = Math.min(380/w0, 235/tot);
+  const w = w0*sc, h = h0*sc, nl = L*sc, nw = X_vis*sc;
+  const ox = (760-w)/2 - 20, oy = 84;
+  const fs = Math.max(13, Math.min(26, nw*0.6, nl*0.8));
+  const lab = (n,x,y,anc,rot) =>
+    `<text x="${x}" y="${y}" font-size="30" text-anchor="${anc}"${rot?` transform="rotate(-90 ${x} ${y})"`:""}>${n==1?"":n}<tspan class="mx">x</tspan></text>`;
+  let d, extra = "";
+  if (cut){
+    d = `M${ox},${oy} L${ox+w},${oy} L${ox+w},${oy+h-nw} L${ox+w-nl},${oy+h-nw} L${ox+w-nl},${oy+h} L${ox},${oy+h} Z`;
+    extra = `<rect x="${ox+w-nl}" y="${oy+h-nw}" width="${nl}" height="${nw}" fill="none" stroke="#f2b84b" stroke-width="2" stroke-dasharray="7 6"/>
+      <text x="${ox+w-nl/2}" y="${oy+h-nw/2+fs*0.35}" font-size="${fs}" text-anchor="middle">${b}</text>
+      <text x="${ox+w+14}" y="${oy+h-nw/2+10}" font-size="30"><tspan class="mx">x</tspan></text>
+      <text x="${ox+w-nl/2}" y="${oy+h+26}" font-size="19" text-anchor="middle" fill-opacity=".7" style="font-family:var(--sans)">cut out</text>`;
+  } else if (flap){
+    d = `M${ox},${oy} L${ox+w},${oy} L${ox+w},${oy+h} L${ox+nl},${oy+h} L${ox+nl},${oy+h+nw} L${ox},${oy+h+nw} Z`;
+    extra = `<text x="${ox+nl/2}" y="${oy+h+nw/2+fs*0.35}" font-size="${fs}" text-anchor="middle">${L}</text>
+      <text x="${ox-14}" y="${oy+h+nw/2+10}" font-size="30" text-anchor="end"><tspan class="mx">x</tspan></text>
+      <text x="${ox+nl/2}" y="${oy+h+nw+26}" font-size="19" text-anchor="middle" fill-opacity=".7" style="font-family:var(--sans)">added</text>`;
+  } else {
+    d = `M${ox},${oy} L${ox+w},${oy} L${ox+w},${oy+h} L${ox},${oy+h} Z`;
+  }
+  const cap = (x1,y1,x2,y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#93aab0" stroke-width="2"/>`;
+  $("rug").innerHTML = `
+  <defs>
+    <pattern id="weave" width="26" height="26" patternUnits="userSpaceOnUse">
+      <path d="M13 2 L24 13 L13 24 L2 13 Z" fill="none" stroke="#f2b84b" stroke-opacity=".35" stroke-width="2"/>
+      <circle cx="13" cy="13" r="2.5" fill="#a8324a"/>
+    </pattern>
+    <clipPath id="clip"><path d="${d}"/></clipPath>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000" flood-opacity=".5"/></filter>
+  </defs>
+  <g filter="url(#sh)"><path d="${d}" fill="#2a2f6e"/></g>
+  <g clip-path="url(#clip)">
+    <path d="${d}" fill="url(#weave)"/>
+    <path d="${d}" fill="none" stroke="#a8324a" stroke-width="32"/>
+    <path d="${d}" fill="none" stroke="#f2b84b" stroke-width="14"/>
+  </g>
+  <rect x="608" y="70" width="132" height="90" rx="14" fill="#0e1d23" stroke="#27434b" stroke-width="2"/>
+  <text x="674" y="100" font-size="21" text-anchor="middle" style="font-family:var(--sans)" fill-opacity=".75">total area</text>
+  <text x="674" y="144" font-size="44" text-anchor="middle" font-weight="700">${fmt(c)}</text>
+  ${cap(ox,oy-22,ox+w,oy-22)}${cap(ox,oy-30,ox,oy-14)}${cap(ox+w,oy-30,ox+w,oy-14)}
+  ${lab(a1, ox+w/2, oy-34, "middle")}
+  ${cap(ox-22,oy,ox-22,oy+h)}${cap(ox-30,oy,ox-14,oy)}${cap(ox-30,oy+h,ox-14,oy+h)}
+  ${lab(a2, ox-36, oy+h/2, "middle", true)}
+  ${extra}`;
+}
+
+function sgn(n){ return fmt(n).replace('-', MINUS); }
+function rowHTML(g,i){
+  const cls = g.ok ? "ok" : (g.lhs < c ? "low" : "high");
+  const arrow = g.ok ? "\u2713" : (g.lhs < c ? "\u2191" : "\u2193");
+  const res = g.pending ? `<td id="pend"><span class="dim">\u2026</span></td>`
+                        : `<td>${sgn(g.lhs)}<span class="arr ${cls}">${arrow}</span></td>`;
+  return `<tr class="${g.pending ? "new" : (g.ok ? "win" : "")}"><td class="n">${i+1}</td><td>${fmt(g.v)}</td>${res}</tr>`;
+}
+function renderRows(){
+  const rows = $("rows");
+  if (!guesses.length){
+    rows.innerHTML = `<tr><td class="empty" colspan="3">No guesses yet. Type a value for x and press Check.</td></tr>`;
+    return;
+  }
+  rows.innerHTML = guesses.map(rowHTML).join("");      // fills top down; newest row lands at the bottom
+  const w = document.querySelector(".tablewrap"); w.scrollTop = w.scrollHeight;
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
+async function swap(el, html, my){
+  el.classList.add("out"); await sleep(200);
+  if (my !== runId) return false;
+  el.innerHTML = html; el.classList.add("pre"); el.classList.remove("out");
+  void el.offsetWidth; el.classList.remove("pre");
+  await sleep(380);
+  return my === runId;
+}
+
+async function animate(g, my){
+  const sub = `(<span class="gv">${fmt(g.v)}</span>)`;
+  if (!await swap($("sq"), sub, my)) return false;                  // 1. quadratic x
+  if ($("sl") && !await swap($("sl"), sub, my)) return false;       // 2. linear x
+  await sleep(250); if (my !== runId) return false;
+  if (!await swap($("lhs"), `<span class="res${g.ok ? " okc" : ""}" id="res">${sgn(g.lhs)}</span>`, my)) return false;  // 3. total -> result
+  if (!g.ok) $("eqsign").textContent = "\u2260";
+  const verdict = g.ok ? "within 0.01 of x" : (g.lhs < c ? "result too low \u2191" : "result too high \u2193");
+  $("story").textContent = `The left side comes out to ${sgn(g.lhs)} and the target is ${fmt(c)}: ${verdict}`;
+  await sleep(350); if (my !== runId) return false;
+  const resEl = $("res"), cell = $("pend");                         // 4. result -> table
+  if (resEl && cell && !reduce){
+    const r1 = resEl.getBoundingClientRect(), r2 = cell.getBoundingClientRect(), cs = getComputedStyle(resEl);
+    const k = 19 / parseFloat(cs.fontSize);
+    const fl = document.createElement("div");
+    fl.className = "fly"; fl.textContent = resEl.textContent;
+    fl.style.cssText = `left:${r1.left}px;top:${r1.top}px;font-size:${cs.fontSize};color:${cs.color}`;
+    document.body.appendChild(fl); resEl.style.opacity = .25;
+    const dx = r2.left + 8 - r1.left, dy = r2.top + (r2.height - r1.height*k)/2 - r1.top;
+    const an = fl.animate([{transform:"translate(0,0) scale(1)"},{transform:`translate(${dx}px,${dy}px) scale(${k})`}],
+                          {duration:750, easing:"cubic-bezier(.5,0,.2,1)", fill:"forwards"});
+    await an.finished.catch(()=>{});
+    fl.remove(); resEl.style.opacity = 1;
+    if (my !== runId) return false;
+  }
+  g.pending = false;
+  if (cell){
+    const cls = g.ok ? "ok" : (g.lhs < c ? "low" : "high");
+    const arrow = g.ok ? "\u2713" : (g.lhs < c ? "\u2191" : "\u2193");
+    cell.removeAttribute("id");
+    cell.innerHTML = `${sgn(g.lhs)}<span class="arr ${cls}">${arrow}</span>`;
+    if (g.ok) cell.parentElement.classList.add("win");
+  }
+  if (!g.ok) {
+    await sleep(2000);
+    if (my === runId) drawEq();
+  }
+  return true;
+}
+
+async function submitGuess(){
+  if (solved || busy) return;
+  const v = parseFloat($("g").value);
+  if (!isFinite(v)){ $("msg").className="msg"; $("msg").textContent = "Enter a number, like 1.25"; return; }
+  const my = runId; busy = true; $("check").disabled = true;
+  const ok = (!isNaN(X)) && Math.abs(v - X) <= 0.01 + 1e-9;
+  const g = {v, ok, lhs: a*v*v - b*v, pending: true};
+  guesses.push(g);
+  $("g").value = ""; $("msg").className = "msg"; $("msg").textContent = "";
+  drawEq(); renderRows();
+  await animate(g, my);
+  if (my !== runId) return;
+  busy = false;
+  if (ok){
+    solved = true; $("g").disabled = true;
+    $("msg").className = "msg good";
+    $("msg").textContent = `Nice. x \u2248 ${X.toFixed(3)}, and your guess is within 0.01.`;
+  } else { $("check").disabled = false; $("g").focus(); }
+}
+$("check").addEventListener("click", submitGuess);
+$("g").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); submitGuess(); } });
+
+$("reveal").addEventListener("click", () => {
+  $("msg").className = "msg";
+  if (isNaN(X)) {
+    $("msg").textContent = `No real solutions!`;
+  } else {
+    $("msg").textContent = `x \u2248 ${X.toFixed(3)}`;
+  }
+});
+$("again").addEventListener("click", newRug);
+$("level").addEventListener("change", newRug);
+newRug();
+</script>
+</body>
+</html>

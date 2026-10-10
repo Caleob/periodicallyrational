@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap');
+
+.no-spin {
+    -moz-appearance: textfield;
+}
+.no-spin::-webkit-outer-spin-button,
+.no-spin::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.font-handwritten {
+    font-family: 'Caveat', cursive;
+}

@@ -1,0 +1,41 @@
+Act as an expert educational productivity developer and front-end engineer. Build a fast, lightweight, and 100% private single-page web utility called "Lesson Transcript & Link Prep" to help virtual teachers clean classroom video recordings and transcript files (.vtt) for use with external AI summarization tools.
+
+### Technical & Privacy Guardrails:
+1. Pure Client-Side Execution: Zero external AI APIs, zero server calls, and zero external trackers. All transcript parsing, sanitization, and regex matching execute entirely in browser memory.
+2. Complete Standalone Architecture: Clean, modular structure using HTML5, modern CSS3, and native JavaScript (split across index.html, style.css, and script.js).
+3. FERPA Privacy by Design: Automatically identify the primary instructor and anonymize all student speakers to prevent personally identifiable information (PII) from ever being passed into commercial AI models.
+
+### User Interface & Layout:
+- Modern EdTech Design: Clean slate/neutral background (#f8fafc), white cards with subtle borders and shadows, crisp typography (Clash Display headings, Outfit body text), and vivid purple primary accents (#4f46e5).
+- Responsive Two-Column Input Deck:
+  * Column 1 (Transcript Upload): An intuitive drag-and-drop zone for `.vtt` caption files, with a fallback file picker button and file confirmation status.
+  * Column 2 (Recording & Passcode Info): Direct input fields for "Recording URL" and "Passcode (optional)", accompanied by a high-visibility "Paste from Clipboard" button that automatically parses meeting invitations.
+
+### Core Processing & Business Logic:
+
+1. Intelligent Clipboard Extraction:
+   - When the user clicks "Paste from Clipboard", inspect the clipboard string:
+     * Extract the meeting recording URL using regex (matching http/https URLs).
+     * Extract the meeting passcode using case-insensitive regex matching patterns like "Passcode: [code]", "Access Passcode: [code]", or "Password: [code]".
+     * Populate the respective input fields immediately and update the live preview.
+
+2. WebVTT Sanitization & Anonymization Engine:
+   - When a `.vtt` file is dropped or selected:
+     * Strip WebVTT headers (`WEBVTT`, `Kind: captions`, `Language:`, `NOTE`, etc.).
+     * Remove timing lines containing arrow timestamps (`00:00:00.000 --> 00:00:05.000`) and cue sequence numbers.
+     * Clean voice tags (`<v Name>`) and HTML tags (`<b>`, `<i>`, `<c>`).
+     * Analyze speaker frequency to automatically identify the main speaker (the teacher).
+     * Anonymize other speakers: replace student speaker names with `STUDENT: [speech]`.
+     * Clean speech continuation: deduplicate progressive live-caption fragments and smoothly merge consecutive lines from the same speaker into natural paragraphs.
+
+3. Two Dedicated Output Cards:
+   - Card 1: Hyperlinked Recording & Passcode
+     * Renders a live preview with a clickable link (`Watch the Lesson Recording`) and an optional styled passcode badge.
+     * "Copy Link & Passcode" action: writes a dual-format clipboard payload (rich HTML `<a href="...">` and plain text fallback) so it pastes as a live hyperlink in Google Docs, Word, Outlook, Gmail, or Canvas LMS.
+   - Card 2: Completely Cleaned Transcript
+     * A full-width, scrollable, editable `<textarea>` containing the clean, timestamp-free transcript.
+     * Live word counter badge.
+     * "Copy Transcript" button that copies the sanitized text with one click, ready for the teacher to paste into ChatGPT, Claude, Gemini, or any AI resource for lesson recaps.
+
+4. Action Controls:
+   - A "Clear All" reset button to quickly wipe inputs, file state, and outputs for the next lesson.

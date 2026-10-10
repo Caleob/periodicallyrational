@@ -1,0 +1,45 @@
+Act as an expert educational front-end engineer and geometric visualization specialist. Build a zero-dependency, interactive web manipulative called "Rotate & Relate: Similar Right Triangles" designed to help secondary geometry students master the Altitude-to-the-Hypotenuse Theorem through tactile side-matching and kinematic transformation animations.
+
+### Technical Stack & Architectural Triad:
+Split the implementation into 3 clean, modular standalone files with zero external dependencies (no React, D3, or Tailwind; pure HTML5, CSS3, and ES6+ JavaScript):
+1. `Elements_On_Screen.html`: Semantic HTML5 markup, SVG container scaffolding, UI cards, and modal elements.
+2. `How_It_Looks.css`: Modern "Dark Cyber-Geometry" theme (#0a0a0f canvas, #12121a cards, glowing neon accents: cyan #38bdf8, gold #fbbf24, violet #a855f7), responsive layout, and typography.
+3. `What_It_Does.js`: Procedural geometry generator, SVG coordinate rendering, pointer-driven patch cord physics, similarity verification engine, and multi-stage transformation animator.
+
+### Pedagogical Core: Altitude-to-the-Hypotenuse:
+When an altitude is drawn from the right angle of a right triangle to its hypotenuse, it creates two smaller sub-triangles that are similar to each other and to the parent triangle.
+The tool must randomly generate a primary right triangle (vertices labeled A, B, C with altitude to point D), select two of the three triangles (Large, Medium, or Small), and challenge students to:
+1. Match corresponding sides using 3 color-coded virtual patch leads.
+2. Formulate the exact geometric similarity statement in correct corresponding vertex order.
+3. Trigger an animated transformation proof that translates, reflects, and rotates the triangles into concurrency to verify their work visually.
+
+### Interactive Components & Behavior:
+
+1. Dynamic SVG Geometry Workspace:
+   - Procedurally generate a non-isosceles right triangle with altitude $CD \perp AB$.
+   - Display angle markers ($90^\circ$ squares) and distinct vertex labels.
+   - Render the two selected triangles to be compared.
+
+2. Color-Coded Patch Cords (Drag & Connect):
+   - Provide 3 virtual patch cords:
+     * Red Cord: Connects corresponding Short Legs.
+     * Blue Cord: Connects corresponding Long Legs.
+     * Yellow Cord: Connects corresponding Hypotenuses.
+   - Use unified Pointer Events (`pointerdown`, `pointermove`, `pointerup`) with live SVG quadratic bezier curve rendering while dragging between side midpoint anchor pins.
+
+3. Similarity Statement Builder:
+   - Provide interactive dropdowns or text inputs for the similarity statement:
+     $\Delta \text{ [ _ _ _ ] } \sim \Delta \text{ [ _ _ _ ] }$
+   - Ensure the student must match vertices in exact corresponding order (e.g., matching right angle to right angle, acute to acute).
+
+4. The Kinematic Transformation Animation (The "Aha!" Moment):
+   - When the student clicks "Check & Animate":
+     * Stage 1 (Translation): Glide the second triangle across the canvas until hypotenuse midpoints coincide.
+     * Stage 2 (Reflection): If the two triangles have opposite spatial chirality, smoothly reflect across the axis.
+     * Stage 3 (Rotation): Rotate the second triangle into concurrency so it nests directly inside or coincides with the first.
+   - As the triangles align, if the patch cords were connected correctly, the cords shrink into glowing alignment rings. If incorrect, mismatched cords visibly twist and flash amber/red.
+
+5. Controls & Feedback:
+   - "New Problem": Generates a new randomized right triangle configuration.
+   - "Reset Cords": Clears connected leads.
+   - Real-time score and streak tracking.

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallel Lines & Transversals Practice</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://graspablemath.com/shared/libs/gmath/gm-inject.js"
+        onerror="console.error('Failed to load Graspable Math script. Check internet connection or CSP.');"></script>
+</head>
+
+<body>
+
+    <!-- Introduction Modal -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Welcome to Parallel Lines & Transversals Practice!</h2>
+            <div class="intro-description">
+                <p>
+                    <strong>Why Transversals Matter:</strong> Transversals intersect multiple lines to create dynamic angle relationships—such as alternate interior, alternate exterior, and corresponding angles. While mastering these geometric relationships can be challenging and requires keen spatial visualization and algebraic reasoning, it is one of the most foundational topics in geometry and essential for geometric proofs and trigonometry.
+                </p>
+            </div>
+            <div class="warning-box">
+                <span class="icon">⚠️</span>
+                <div>
+                    <p><strong>IMPORTANT PRACTICE TIPS:</strong></p>
+                    <p>• <strong>Work slowly and carefully:</strong> Double-check angle positions and relationship types before submitting.</p>
+                    <p>• <strong>Save all scratch work:</strong> Write out your steps and algebra. Keep your scratch work as your teacher may ask to review your solution process.</p>
+                </div>
+            </div>
+            <form id="loginForm">
+                <button type="submit" id="beginBtn">Begin Practice</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="problemCompleteModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Problem Complete!</h2>
+            <p id="problemSummaryText">Problem 1/6</p>
+            <div class="completion-stats">
+                <p>Current Total Score: <span id="interimScore" class="score-highlight">0</span></p>
+                <p class="text-muted" id="levelSummary">Level 1 Points: +0</p>
+                <p id="problemBreakdown" class="score-breakdown"></p>
+            </div>
+            <button id="nextProblemBtn" class="primary-btn">Next Problem ➡</button>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completionModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>🎉 Thanks for practicing!</h2>
+            <p>You have completed the assigned problem set.</p>
+            <div class="completion-stats">
+                <p>Final Score: <span id="finalScore" class="score-highlight">0</span></p>
+                <p>Please download your report below and submit it to your teacher.</p>
+            </div>
+            <button id="downloadReportBtn" class="primary-btn">Download Report 📥</button>
+        </div>
+    </div>
+
+    <!-- Graspable Math Help Modal -->
+    <div id="graspableHelpModal" class="modal-overlay fullscreen">
+        <div class="modal-content-fullscreen">
+            <button class="close-modal-btn" id="closeGraspableBtn" title="Close Help">&times;</button>
+            <div id="graspableContainer" class="graspable-container">
+                <div class="placeholder-content">
+                    <h3>Graspable Math Equation Help</h3>
+                    <p>Material to help with equation solving will appear here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="appContainer" class="container">
+
+        <!-- Main Grid -->
+        <main class="main-grid">
+
+            <!-- Left Column: Diagram -->
+            <section class="diagram-section">
+                <div class="score-overlay">Score: <span id="currentScore">0</span></div>
+                <div class="svg-container">
+                    <div id="levelBadge" class="level-badge">Level 1: Value & Variable</div>
+                    <svg id="geometryDiagram" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                        <!-- SVG Content will be injected by JS -->
+                    </svg>
+                </div>
+            </section>
+
+            <!-- Right Column: Stages -->
+            <section class="interaction-section">
+
+                <!-- Stages Container -->
+                <div class="stages-container">
+
+                    <!-- Stage 1 -->
+                    <div id="stage1" class="stage-card">
+                        <div class="stage-header">
+                            <div class="header-left">
+                                <div class="stage-badge">1</div>
+                                <h3>Name the Angles</h3>
+                            </div>
+                            <button id="checkStage1Btn" class="icon-check-btn" title="Check Answer">
+                                ✔️
+                            </button>
+                        </div>
+                        <div class="stage-content">
+                            <div class="naming-area compact">
+                                <div class="angle-row-compact">
+                                    <span class="color-label blue">Blue: ∠</span>
+                                    <div class="drop-zone blue" data-target="blue" data-index="0"></div>
+                                    <div class="drop-zone blue" data-target="blue" data-index="1"></div>
+                                    <div class="drop-zone blue" data-target="blue" data-index="2"></div>
+                                </div>
+                                <div class="angle-row-compact">
+                                    <span class="color-label red">Red: ∠</span>
+                                    <div class="drop-zone red" data-target="red" data-index="0"></div>
+                                    <div class="drop-zone red" data-target="red" data-index="1"></div>
+                                    <div class="drop-zone red" data-target="red" data-index="2"></div>
+                                </div>
+                            </div>
+                            <div id="pointBank" class="point-bank">
+                                <!-- Draggable points will be injected here -->
+                            </div>
+                            <div id="feedback1" class="feedback-msg"></div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 2 -->
+                    <div id="stage2" class="stage-card locked">
+                        <div class="stage-header">
+                            <div class="header-left">
+                                <div class="stage-badge">2</div>
+                                <h3>Identify Relationship</h3>
+                            </div>
+                            <button id="checkStage2Btn" class="icon-check-btn" disabled title="Check Answer">
+                                ✔️
+                            </button>
+                        </div>
+                        <div class="stage-content">
+                            <div class="selection-group">
+                                <h4>Angle Pair Type</h4>
+                                <div class="options-grid" id="typeOptions">
+                                    <button class="option-btn" data-value="corresponding">Corresponding</button>
+                                    <button class="option-btn" data-value="alternate-interior">Alt. Interior</button>
+                                    <button class="option-btn" data-value="alternate-exterior">Alt. Exterior</button>
+                                    <button class="option-btn" data-value="consecutive-interior">Consec.
+                                        Interior</button>
+                                    <button class="option-btn" data-value="vertical">Vertical</button>
+                                    <button class="option-btn" data-value="none">None</button>
+                                </div>
+                            </div>
+                            <div class="selection-group">
+                                <h4>Relationship</h4>
+                                <div class="options-grid" id="relationOptions">
+                                    <button class="option-btn" data-value="congruent">Congruent (≅)</button>
+                                    <button class="option-btn" data-value="supplementary">Supplementary (180°)</button>
+                                </div>
+                            </div>
+                            <div id="feedback2" class="feedback-msg"></div>
+                        </div>
+                    </div>
+
+                    <div id="stage3" class="stage-card locked">
+                        <div class="stage-header">
+                            <div class="header-left">
+                                <div class="stage-badge">3</div>
+                                <h3>Solve for Variable</h3>
+                            </div>
+                            <div class="header-right" style="display: flex; gap: 0.5rem;">
+                                <button id="graspableHelpBtn" class="icon-check-btn graspable-btn" disabled
+                                    title="Equation Solving Help">
+                                    <img src="Graspable_Math_Logo.png" alt="Graspable Math Help"
+                                        class="graspable-logo-icon">
+                                </button>
+                                <button id="checkStage3Btn" class="icon-check-btn" disabled title="Check Answer">
+                                    ✔️
+                                </button>
+                            </div>
+                        </div>
+                        <div class="stage-content">
+                            <div class="solve-area">
+                                <span id="variableLabel" class="var-label">x = </span>
+                                <input type="number" id="solutionInput" class="solve-input" placeholder="?">
+                                <span class="degree-symbol">°</span>
+                            </div>
+                            <div id="feedback3" class="feedback-msg"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

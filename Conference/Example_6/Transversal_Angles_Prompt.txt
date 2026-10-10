@@ -1,0 +1,48 @@
+Act as an expert educational software architect specializing in scaffolded secondary mathematics instruction. Build an interactive, responsive web application for high school geometry students to master angle relationships formed by parallel lines cut by a transversal line.
+
+### Core Pedagogical Architecture: The 3-Stage Gated State Machine
+To ensure deep conceptual mastery, students cannot simply guess answers or skip ahead. Every problem must follow a strictly scaffolded 3-stage sequence where subsequent stages remain locked until the current stage is verified:
+
+1. Stage 1: Angle Naming (Geometric Notation):
+   - Highlight two specific target angles on the dynamic SVG diagram with high-contrast color badges (Blue and Red).
+   - Provide a draggable/clickable point bank containing the labeled line points.
+   - Challenge students to construct the standard 3-point geometric name for both angles (e.g., $\angle AGH$ and $\angle GHD$) by dragging or selecting points into 3-slot target drop zones.
+   - Validate vertex ordering (the vertex point MUST be in the center position).
+
+2. Stage 2: Relationship Identification & Geometric Properties:
+   - Once Stage 1 is verified, unlock Stage 2.
+   - Angle Pair Classification: Interactive selector for the relationship type:
+     * Alternate Interior Angles
+     * Alternate Exterior Angles
+     * Corresponding Angles
+     * Consecutive (Same-Side) Interior Angles
+     * Consecutive (Same-Side) Exterior Angles
+     * Linear Pair / Vertical Angles
+   - Property Determination: Toggle between Congruent ($\cong$) or Supplementary ($180^\circ$).
+   - Provide instant, non-punitive corrective feedback explaining the geometric rationale.
+
+3. Stage 3: Algebraic Application & Equation Solving:
+   - Once Stage 2 is verified, unlock Stage 3.
+   - Display dynamic algebraic expressions or numerical values next to the target angles (e.g., $(3x + 15)^\circ$ and $(5x - 25)^\circ$).
+   - Challenge students to set up the equation, solve for the variable $x$, and submit their numerical answer.
+   - Include a built-in scratchpad or steps modal to help students structure their algebraic working.
+
+### Dynamic SVG Geometry & Problem Engine:
+- Procedural Diagram Generator:
+  * Two horizontal parallel lines ($l_1, l_2$) intersected by a transversal line ($t$).
+  * The transversal angle must vary dynamically between $45^\circ$ and $135^\circ$ (excluding $90^\circ$) so no two consecutive problems look identical.
+  * Render clear angle arcs, vertex points, and arrowheads.
+  * Dynamically calculate text label offsets so letters never collide with lines or angle arcs.
+
+### Difficulty Levels & Session Flow:
+- Level 1: Numerical angle values and simple single-step variables.
+- Level 2: Linear expressions paired with numerical values.
+- Level 3: Systems with algebraic expressions on both angles requiring multi-step equation solving.
+- Session Management & Export:
+  * Student login modal (first name and last initial only—100% offline, zero server storage).
+  * 6-problem session set with real-time accuracy scoring.
+  * End-of-session downloadable performance summary report (timestamped text file) containing problem breakdown, accuracy, and attempts for easy submission to the teacher.
+
+### Technical Guardrails:
+- Pure client-side execution (HTML5, CSS3, ES6 JavaScript) with zero required backend or database.
+- Responsive, accessible design with clear focus states and keyboard navigation.

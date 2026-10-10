@@ -1,0 +1,50 @@
+Act as an expert educational software engineer and secondary mathematics curriculum specialist. Build an interactive, zero-dependency, single-file HTML/CSS/JavaScript web application called "The Rug Problem" to help algebra and geometry students master quadratic equations (of the form ax² ± bx = c) through an intuitive geometric area model.
+
+### Technical & Environmental Constraints:
+- Zero Dependencies: Pure native HTML5, SVG, CSS3, and modern JavaScript combined inside one standalone `index.html` file.
+- Client-Side Privacy: Operates entirely in browser memory; no backend server, cookies, or external CDN dependencies.
+- Rich Aesthetics: High-contrast dark theme with sophisticated typography (serif headings like Palatino/Iowan Old Style, clean sans-serif UI) and rich jewel tones (saffron #f2b84b, madder red #a8324a, deep indigo #2a2f6e, mint #5fd4a0).
+
+### Core Pedagogical Architecture: The Rug Problem
+Rather than treating quadratic equations as abstract formula manipulation, model equations as physical Persian woven rugs:
+1. An initial rectangular rug of dimensions (a₁·x) by (a₂·x), yielding a base quadratic area of a·x² (where a = a₁·a₂).
+2. A linear modification strip:
+   - If b > 0: A rectangular corner section of dimensions (b by x) is cut out from the rug.
+   - If b < 0: An extra rectangular flap of dimensions (|b| by x) is sewn onto the bottom of the rug.
+3. The resulting net area equals a target value c: a·x² - b·x = c (or a·x² + |b|·x = c).
+4. The student must determine the unknown width x. A guess within 0.01 of the true positive root counts as correct.
+
+### Key Interactive Features:
+
+1. Procedural SVG Rug Stage:
+   - Render a textured Persian rug using SVG pattern definitions (diamond weave pattern with saffron accents and madder circular medallions).
+   - Accurately draw the polygon path representing the net rug geometry:
+     * Full rectangle if b = 0.
+     * Cutout notch with dashed yellow border and cutout dimensions if b > 0.
+     * Attached rectangular flap with dimensions if b < 0.
+   - Render clear dimension arrows and labels for side lengths (a₁·x, a₂·x) with glowing pulsating markers for the unknown variable x.
+   - Include a prominent total area badge showing the numerical target area c.
+
+2. Equation & Narrative Synchronization:
+   - Dynamic equation display showing the active quadratic form with styled x slots (e.g., 6x² - 2x = 4).
+   - Clear verbal story banner explaining the geometry in plain English (e.g., "A 2x by 3x rug with a 2 by x section cut out has a total area of 4.00").
+
+3. Animated Kinesthetic Guess & Evaluation:
+   - Numerical guess input with "Check" button and Enter key submission.
+   - Multi-step substitution animation:
+     * Step 1: The guessed number smoothly replaces each instance of x in the equation slots with glowing saffron highlights.
+     * Step 2: The evaluated left-hand side is computed and compared against target area c.
+     * Step 3: Fly animation—the evaluated result element detaches and smoothly glides across the screen into the active cell of the guess-history table.
+     * Step 4: Directional feedback—display whether the result is too low (↑) or too high (↓) with color-coded badges, or mark with a checkmark (✓) and celebrate when within 0.01.
+
+4. Guess History & Scaffolding Table:
+   - A sticky sidebar table tracking all student guesses, chronological attempt numbers, and evaluation results.
+   - Allows students to engage in bisection / binary-search numerical reasoning to home in on the root.
+
+5. Scaffolded Level Progression:
+   - Level 0: Pure x² squares (x² = c).
+   - Level 1: Concrete rugs with physical integer dimensions and clean positive roots.
+   - Level 2: Abstract quadratics with decimal roots.
+   - Level 3: No real solutions (negative discriminant D < 0)—helping students discover why some quadratics cannot produce real geometric dimensions.
+   - Level 4: Negative Area boundary conditions.
+   - Action controls: "Reveal x" button for teacher demonstration or stuck students, and "New rug" button for unlimited procedural practice.

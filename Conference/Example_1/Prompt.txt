@@ -1,0 +1,32 @@
+Act as an expert educational front-end developer. Build a safe, versatile, single-file HTML/CSS/JavaScript web app featuring a dynamic wheel picker system that supports either a single wheel (for student picking or quick draws) or two side-by-side wheels (for compare/contrast discussions and pairings).
+
+Strict Technical Guardrails:
+1. Zero Dependencies: Use pure vanilla JavaScript and standard HTML5 Canvas only. Do not reference external CDNs, frameworks, stylesheets, remote fonts, or external image/audio files.
+2. Self-Contained Output: Return all HTML, CSS, and JavaScript in one continuous code block inside a single file.
+
+Interface & Setup Panel:
+- Design a modern, distraction-free, high-contrast dark theme optimized for virtual screen sharing.
+- At the top, include a collapsible "Setup & Settings" drawer:
+  * Mode Selector Toggle: "Single Wheel" vs. "Dual Wheels". Switching modes dynamically toggles the visible inputs and display layout.
+  * In "Single Wheel" mode: Show one <textarea> for List 1 (e.g., student roster or prompt bank).
+  * In "Dual Wheels" mode: Show two side-by-side <textareas> for List 1 and List 2 (e.g., Vocab Set A vs. Set B, or Students vs. Tasks).
+  * Options: A checkbox for "Remove selected item(s) after spin" (default: checked).
+  * An "Update Wheels" button to parse lists and refresh the canvas.
+
+Wheel & Canvas Behavior:
+- Main Display:
+  * Single Wheel Mode: Centered large canvas with a fixed indicator arrow at the top and a prominent "Spin Wheel" button.
+  * Dual Wheels Mode: Two equal-sized side-by-side canvases ("Wheel 1" and "Wheel 2"), each with its own top indicator arrow and distinct header, controlled by a shared "Spin Both Wheels" button.
+- Parsing & Sanitization:
+  * When "Update Wheels" is clicked, clean each list (strip empty lines, trim extra whitespace, eliminate internal duplicates).
+  * Dynamically calculate slice angles (2π / N) for each wheel. Render alternating, vibrant, high-contrast slice colors with clean, radially rotated text labels centered in each slice.
+- Spin Physics & Fair Removal:
+  * Spinning must use realistic deceleration (physics easing) with randomized duration and rotation velocity.
+  * In Dual Wheel mode, ensure both wheels spin independently and never land on identical items if the two lists share terms.
+  * If "Remove selected item after spin" is active: When a wheel lands on an item, remove that winning item from that wheel's active pool. Crucially, if that same item exists in the other wheel's active list, remove it from there as well so it cannot appear again in either wheel. Update both wheels immediately.
+
+Audio & Result Reveal:
+- Web Audio Synthesis: Use the native browser Web Audio API to procedurally generate a subtle, mechanical tick as slices pass the top pointer, and a pleasant completion chime when the wheel(s) stop.
+- Dynamic Result Banner:
+  * Single Wheel: Display "Selected: [Winning Item]" with an option to manually undo removal if needed.
+  * Dual Wheels: Display "Compare & Contrast: Identify one critical similarity and one fundamental difference between [Item 1] and [Item 2]."

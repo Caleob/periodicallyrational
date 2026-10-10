@@ -1,0 +1,35 @@
+Act as a university chemistry education specialist and expert front-end developer. Build an advanced, interactive single-file web application called "Redox Reaction Interactive" to help high school and AP/College Chemistry students master oxidation numbers, half-reactions, and electron transfer pathways in chemical equations.
+
+### Technical & Environmental Constraints:
+- Zero Dependencies: Pure native HTML5, CSS3, and modern JavaScript combined inside one standalone `index.html` file.
+- Client-Side Privacy: Operates entirely in browser memory; no backend server, tracking, or cloud requirements.
+- Crisp Scientific Typography: Ensure precise rendering of chemical formulas with proper subscripts ($H_2O$), ionic charge superscripts ($Fe^{3+}$, $SO_4^{2-}$), coefficients, and reaction symbols ($\to$, $+$).
+
+### Core Instructional Workflow & Features:
+
+1. Dynamic Chemical Equation Stage:
+   - Display balanced chemical equations (e.g., $2Mg + O_2 \to 2MgO$, $Zn + Cu^{2+} \to Zn^{2+} + Cu$, etc.) with high-contrast, scalable chemical notation.
+   - For each atom in both reactants and products, provide an interactive "Oxidation State Drop-Zone Box" placed directly above or below the chemical symbol.
+
+2. Interactive Oxidation State Assignment:
+   - Provide a clean number bank ($-3, -2, -1, 0, +1, +2, +3, +4, +5, +6, +7$) that students can click or drag to assign oxidation states to each individual atom.
+   - Validation & Feedback:
+     * Instant validation against foundational chemical rules: free elements have an oxidation number of 0; monoatomic ions equal their charge; Group 1 alkali metals are +1; Oxygen is typically -2; Hydrogen is +1 with nonmetals; the sum of oxidation states in a neutral compound must equal 0, or equal the polyatomic ion's charge.
+     * Clear color-coded feedback (green for correct, amber/red for incorrect with guidance).
+
+3. OIL RIG Electron Transfer Analysis:
+   - Once oxidation states are correctly assigned, prompt students to analyze electron transfer:
+     * **Oxidation Is Loss (OIL):** Identify which species lost electrons, the change in oxidation number (e.g., $0 \to +2$), and which substance acts as the reducing agent.
+     * **Reduction Is Gain (RIG):** Identify which species gained electrons, the change in oxidation number (e.g., $+2 \to 0$), and which substance acts as the oxidizing agent.
+   - Animate the electron transfer pathway: visual glowing particle or arc tracing the flow of electrons from the oxidized species to the reduced species across the reaction arrow.
+
+4. Guided "Help Mode" (Ambient Scaffolding):
+   - Include an interactive "Need Help?" toggle button.
+   - When activated, the entire screen transitions to an ambient warm warning theme (safety orange background tint) with:
+     * Step-by-step oxidation rule reminders.
+     * Visual breakdown of compound charges and arithmetic balance equations.
+     * Guided prompts that walk the student through deducing the unknown element's state without giving away the final answer.
+
+5. Problem Bank & Progress Tracker:
+   - Multi-problem set with diverse reaction types (synthesis, single displacement, combustion, disproportionation).
+   - Problem counter, student nickname header, and session completion celebrations.

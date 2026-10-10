@@ -1,0 +1,22 @@
+Assume I have images for each of the vocab words
+
+Evaporation
+
+Condensation
+
+Precipitation
+
+Transpiration
+
+Accumulation (Collection)
+
+Runoff
+
+Groundwater
+
+Water Vapor
+
+and the images are stored as pic_1.png, pic_2.png and so on.
+
+Make a simple memory game that can be displayed on screen. Make it a single html file and use some simple alt text or generated art so it works even without the stored images (if they are missing). Have a "New Game" button that starts a new game with a shuffled order. There should be 16 cards on screen, the images and the words. Use a water theme, fun sound effects with a mute button and smooth animations.
+

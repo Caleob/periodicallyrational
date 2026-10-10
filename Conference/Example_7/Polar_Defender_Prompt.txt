@@ -1,0 +1,40 @@
+Act as an expert educational game designer and senior creative technologist. Build an arcade-style, high-intensity math game called "POLAR DEFENDER" that transforms polar coordinate plotting into an engaging radar defense intercept simulator.
+
+### Game Premise & Narrative:
+The player acts as an intercept defense operator at the Unified Polar Defense Command. Incoming hostile airborne threats appear on a 360-degree radar display at specific polar coordinates $(r, \theta)$. The player must interpret the coordinate telemetry and fire the central defense turret to neutralize threats before they breach shield perimeter.
+
+### Architectural Structure:
+- Structure the application cleanly across 3 standalone files: `index.html`, `style.css`, and `script.js`.
+- Integrate external audio sound effects and musical tracks (`Playing_Music.mp3`, `Pause_Music.mp3`, `Win_Music.mp3`, `Turret_Fire.mp3`, `Turret_Miss.mp3`, `Enemy_Fire.mp3`, `Enemy_Explode.mp3`) with robust audio unlock handlers conforming to browser autoplay security policies.
+
+### Core Screens & Game Flow:
+
+1. Clearance / Login Terminal:
+   - Retro tactical command UI asking for a "Call Sign" (e.g. VIPER, GHOST, MATHWIZ) with strict privacy guidelines (no real names).
+   - Challenge Tier Selection:
+     * Recruit: 10 Shields, extended target fuse, continuous angle guidance, 1.0x score multiplier.
+     * Veteran: 7 Shields, standard fuse, standard angle guidelines, 1.25x score multiplier.
+     * Commander: 5 Shields, fast threat emergence, radians & negative radius equivalents, 1.5x score multiplier.
+   - Animated "Credentials Accepted" security clearance sequence.
+
+2. Mission Briefing Overlay:
+   - Interactive 3-step walkthrough of polar coordinate mechanics ($r$ = distance from center radar pole, $\theta$ = counterclockwise angle from the positive x-axis).
+   - Quick start and skip controls.
+
+3. Combat HUD & Radar Canvas:
+   - Radar Canvas: 520x520 circular radar screen featuring concentric range rings ($r = 1$ to $5$), radial angle spokes ($0^\circ, 30^\circ, 45^\circ, 60^\circ, 90^\circ\dots$), and a continuous rotating phosphor sweep beam.
+   - Threat Telemetry Panel: Displays the intercepted signal $(r, \theta)$ in prominent glowing green typography.
+   - Center Turret: Pivot base with dual cannon barrels that rotate dynamically toward the player's aim angle, featuring realistic rotation easing, muzzle flash, and recoil kickback.
+   - Firing Mechanism: Clicking the radar canvas locks coordinates and automatically rotates and fires the turret. Players can also aim and press the Spacebar or "Fire Cannon" button.
+   - Threat Destruction & Miss Consequences: Direct hits trigger a particle explosion with screen shake and sound effect. Misses trigger a counter-attack laser from the threat, depleting shield integrity.
+   - Shield Integrity Bar: Segmented health indicators that flash crimson upon damage.
+   - Wave Progression & Escalation:
+     * Wave 1-2: Standard positive degree angles ($0^\circ-360^\circ$) at integer radii.
+     * Wave 3-4: Introduction of radian angles ($\frac{\pi}{6}, \frac{\pi}{4}, \frac{\pi}{3}, \frac{\pi}{2}, \pi, \frac{3\pi}{2}\dots$).
+     * Wave 5+: Negative radius equivalents on Commander tier ($(-r, \theta)$ maps opposite through the pole to $(r, \theta + 180^\circ)$).
+   - Audio & Music Control Bar: Live toggles for Music, Sound FX, Mission Briefing, and Pause ("Temporal Delay").
+   - Victory & Game Over Screens: Detailed operational debrief with final score, accuracy percentage, longest streak, and rank classification.
+
+### Visual Aesthetic & Game Feel:
+- Cyberpunk tactical military CRT monitor styling: deep obsidian (#050b08), glowing radar green (#00ff88), neon alert amber (#ffb700), warning crimson (#ff2244).
+- Dynamic screen shake on explosions, glowing phosphor trails, and particle emitter effects.

@@ -1,0 +1,43 @@
+Act as an expert educational web application developer. Build a flexible, safe, single-file HTML/CSS/JavaScript web application that turns any list of 16+ vocabulary words into an interactive 4x4 "Codenames" vocabulary game with instant spymaster text-export tools for virtual or hybrid classrooms.
+
+### Strict Technical Guardrails:
+1. Zero Dependencies: Use vanilla JavaScript and standard browser DOM APIs only. No external CSS frameworks, CDN scripts, icon libraries, fonts, or server calls.
+2. Complete Standalone File: Deliver everything in a single, continuous code block containing all HTML, CSS, and JS (`index.html`).
+3. Zero-PII & Local State: Operates entirely client-side in browser memory. Do not store or request any personal or student data.
+
+### Card Role Distribution (4x4 / 16-Tile Grid):
+When generating a new game, randomly distribute the 16 selected words into the following secret roles:
+- 5 Red Team Words
+- 5 Blue Team Words
+- 5 Neutral / Bystander Words
+- 1 Assassin Word
+
+### Core Workflow & Interface Requirements:
+
+1. Word Input & Game Setup Section:
+   - Textarea: Allow teachers to paste 16 or more vocabulary words (must handle newline, comma, or tab separation smoothly).
+   - Word Counter & Validation: Display a real-time counter of valid unique words entered.
+   - Smart Picker: If more than 16 words are provided, randomly select 16 words when generating the game while keeping the unused words available for a quick "Reshuffle Board" action.
+   - "Generate Game" and "Reshuffle / New Game" buttons.
+
+2. Spymaster Copy Utility (Direct Messaging Tools):
+   - Provide high-visibility "One-Click Copy" buttons that copy formatted, plain-text strings directly to the clipboard (with a temporary "Copied!" visual confirmation feedback) to quickly direct message spymasters in Zoom, Teams, Google Meet, or Discord:
+     * [Copy Red Key]: Formatted as `🔴 RED TEAM WORDS (5): Word1, Word2, Word3, Word4, Word5`
+     * [Copy Blue Key]: Formatted as `🔵 BLUE TEAM WORDS (5): Word1, Word2, Word3, Word4, Word5`
+     * [Copy Assassin]: Formatted as `💀 ASSASSIN WORD (1): Word`
+     * [Copy Master Key]: Formatted as a neat 4-section summary of all secret roles.
+
+3. Interactive 4x4 Game Board:
+   - Display a responsive 4x4 grid of large, easy-to-read cards.
+   - Default Player View: Cards start neutral/hidden with large, bold word text.
+   - Interactive Reveal: Clicking a card flips/reveals its identity with distinct color coding:
+     * Red Team: High-contrast red background with white text.
+     * Blue Team: High-contrast blue background with white text.
+     * Neutral: Soft gray background with strike-through text.
+     * Assassin: Dark charcoal/black background with white text and a clear warning indicator.
+   - Spymaster Peek Toggle: Include a "Show Spymaster Color Overlays" toggle switch that subtly colors all card borders/badges so the teacher running the board on screen-share can see all secret roles without revealing them to student players.
+
+4. UI & Visual Design:
+   - Modern, high-contrast visual design optimized for split-screen usage or video conference screen sharing.
+   - Smooth hover effects, clear focus states, and scalable typography using modern system UI fonts (`system-ui`, `sans-serif`).
+   - Clean structural sections with clean spacing and clear visual hierarchy.

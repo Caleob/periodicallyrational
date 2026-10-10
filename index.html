@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Periodically Rational — Educational Apps & Math</title>
+  <meta name="description" content="Educational apps, interactive math tools, proofs, and conference presentation materials by Caleob King.">
+  <style>
+    :root {
+      --bg: #fbfbf9;
+      --card-bg: #ffffff;
+      --text: #222222;
+      --muted: #5f6368;
+      --border: #e0ded9;
+      --accent: #1a4d80;
+      --accent-hover: #123356;
+      --badge-bg: #eef2f6;
+      --badge-text: #204060;
+      --badge-live-bg: #e6f4ea;
+      --badge-live-text: #137333;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Georgia, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif;
+      max-width: 780px;
+      margin: 40px auto;
+      padding: 0 24px;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    header {
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 2.3em;
+      margin: 0 0 6px 0;
+      letter-spacing: -0.02em;
+      color: #111;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 16px 0;
+      font-style: italic;
+      font-size: 1.05em;
+    }
+
+    nav.quick-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.9em;
+    }
+
+    nav.quick-nav a {
+      color: var(--accent);
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(26, 77, 128, 0.06);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    nav.quick-nav a:hover {
+      background: rgba(26, 77, 128, 0.14);
+      color: var(--accent-hover);
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+
+    .intro-banner {
+      background: #f4f6f8;
+      border-left: 4px solid var(--accent);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 28px;
+      font-size: 0.98em;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin: 20px 0;
+      background: var(--card-bg);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.35em;
+      color: #111;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.72em;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      border-radius: 4px;
+      padding: 3px 8px;
+    }
+
+    .badge.live {
+      background: var(--badge-live-bg);
+      color: var(--badge-live-text);
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    a.button {
+      display: inline-block;
+      background: #1a1a1a;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.92em;
+      font-weight: 500;
+      margin-top: 10px;
+      transition: background 0.2s ease;
+    }
+
+    a.button:hover {
+      background: #333333;
+    }
+
+    .path-label {
+      font-family: monospace;
+      font-size: 0.85em;
+      color: #666;
+      background: #f0f0ed;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    footer {
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.88em;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Periodically Rational</h1>
+  <p class="subtitle">Educational apps, math proofs, and conference materials</p>
+  <nav class="quick-nav" aria-label="Quick links">
+    <a href="./Conference/">Conference Presentation</a>
+    <a href="./Apps/">Student Apps</a>
+    <a href="./Ideas/">Ideas & Proofs</a>
+    <a href="./AboutMe/">About Me</a>
+  </nav>
+</header>
+
+<div class="intro-banner">
+  Welcome to <strong>Periodically Rational</strong> — a clean, ad-free educational hub designed for students, teachers, and math enthusiasts. All interactive tools run directly in your browser without requiring student logins or downloads.
+</div>
+
+<hr>
+
+<div class="card">
+  <div class="card-header">
+    <h2>Conference Presentation: The Classroom Genie</h2>
+    <span class="badge live">Interactive Slides & Demos</span>
+  </div>
+  <p>Building custom educational tools and interactive web applications without code. Includes full slide deck, audio controls, live embedded demos, prompt recipes, and downloadable project packages.</p>
+  <a class="button" href="./Conference/">Launch Presentation →</a>
+  <p style="font-size: 0.88em; color: #666; margin-top: 10px;">
+    Direct link: <span class="path-label">/Conference/</span>
+  </p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2>Student Learning Apps</h2>
+    <span class="badge live">Student Portal</span>
+  </div>
+  <p>Interactive simulations and practice tools designed for classroom instruction. Fully safe for student Chromebooks with zero tracking and zero external account requirements.</p>
+  <a class="button" href="./Apps/">Explore Student Apps →</a>
+  <p style="font-size: 0.88em; color: #666; margin-top: 10px;">
+    Direct link: <span class="path-label">/Apps/</span>
+  </p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2>Ideas & Proofs</h2>
+    <span class="badge">Notes & Essays</span>
+  </div>
+  <p>Short mathematical essays, geometric proofs, and classroom reflections — continuing the spirit of the original college blog.</p>
+  <a class="button" href="./Ideas/">Read Ideas & Proofs →</a>
+  <p style="font-size: 0.88em; color: #666; margin-top: 10px;">
+    Direct link: <span class="path-label">/Ideas/</span>
+  </p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2>About Caleob King</h2>
+    <span class="badge">Bio & Background</span>
+  </div>
+  <p>Learn more about the educator behind Periodically Rational, teaching philosophy, and contact details.</p>
+  <a class="button" href="./AboutMe/">View About Me →</a>
+  <p style="font-size: 0.88em; color: #666; margin-top: 10px;">
+    Direct link: <span class="path-label">/AboutMe/</span>
+  </p>
+</div>
+
+<hr>
+
+<footer>
+  <p><strong>Periodically Rational</strong> • Hosted via GitHub Pages • Domain: <a href="https://www.periodicallyrational.com">www.periodicallyrational.com</a></p>
+  <p>Created by Caleob King for students and educators.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rotate & Relate - Similar Right Triangles</title>
+  <link rel="stylesheet" href="How_It_Looks.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <span class="badge">Spatial Reasoning</span>
+        <h1>Rotate &amp; Relate</h1>
+        <p class="subtitle">Altitude to the Hypotenuse &amp; Geometric Correspondence</p>
+      </div>
+      <div class="header-actions">
+        <button id="btn-new-problem" class="btn btn-secondary" title="Generate a new randomized triangle">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+          </svg>
+          New Triangle
+        </button>
+        <button id="btn-reset" class="btn btn-ghost" title="Reset current problem answers">
+          Reset
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace-grid">
+      <!-- Left Panel: Geometry Canvas -->
+      <section class="canvas-panel">
+        <div class="canvas-toolbar">
+          <div class="highlight-toggles">
+            <button id="btn-highlight-t1" class="toggle-btn" data-highlight="t1">
+              <span class="indicator t1-dot"></span> Highlight Triangle 1
+            </button>
+            <button id="btn-highlight-t2" class="toggle-btn" data-highlight="t2">
+              <span class="indicator t2-dot"></span> Highlight Triangle 2
+            </button>
+          </div>
+          <div id="anim-stage-badge" class="stage-badge hidden">
+            <span class="pulse-dot"></span>
+            <span id="anim-stage-text">Aligning Triangles...</span>
+          </div>
+        </div>
+
+        <div class="svg-wrapper">
+          <svg id="geo-svg" viewBox="0 0 600 420" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <pattern id="grid-dots" width="24" height="24" patternUnits="userSpaceOnUse">
+                <circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.08)" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid-dots)" />
+
+            <!-- Static Base Geometry Layer -->
+            <g id="base-layer"></g>
+
+            <!-- Active Problem Colored Overlays Layer -->
+            <g id="color-overlay-layer"></g>
+
+            <!-- Dynamic Transformation Choreography Layer -->
+            <g id="anim-layer" style="display: none;"></g>
+
+            <!-- Labels Layer (Always on Top) -->
+            <g id="labels-layer"></g>
+          </svg>
+        </div>
+
+        <div class="canvas-footer-hints">
+          <div class="hint-item">
+            <span class="key-symbol">&perp;</span> Right angle at vertex <strong class="vertex-name">C</strong> and altitude foot <strong class="vertex-name">X</strong>
+          </div>
+          <div class="hint-item">
+            <span class="key-symbol">&sim;</span> Altitude <span class="overline-text">CX</span> divides &Delta;ABC into two smaller similar triangles
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: The 2 Educational Problems -->
+      <aside class="problems-panel">
+        <!-- Problem 1: Side-to-Side Correspondence with Interactive Leads -->
+        <section class="problem-card" id="card-problem-1">
+          <div class="card-header">
+            <div class="step-num">1</div>
+            <div>
+              <h2>Side-to-Side Correspondence</h2>
+              <p class="card-desc">Connect corresponding sides between Triangle 1 and Triangle 2. Drag a lead or click pairs.</p>
+            </div>
+          </div>
+
+          <div class="wire-board-container">
+            <!-- Row 1: Triangle 1 Sides -->
+            <div class="terminals-row" id="row-t1">
+              <div class="row-label">
+                <span class="triangle-tag tag-t1">Triangle 1</span>
+              </div>
+              <div class="sockets-container" id="sockets-t1"></div>
+            </div>
+
+            <!-- Wire Drawing Canvas for Leads -->
+            <div class="wire-svg-area">
+              <svg id="wire-svg" class="wire-svg"></svg>
+            </div>
+
+            <!-- Row 2: Triangle 2 Sides -->
+            <div class="terminals-row" id="row-t2">
+              <div class="row-label">
+                <span class="triangle-tag tag-t2">Triangle 2</span>
+              </div>
+              <div class="sockets-container" id="sockets-t2"></div>
+            </div>
+          </div>
+
+          <div class="color-legend-bar">
+            <span class="legend-title">Pair Colors:</span>
+            <span class="legend-item legend-red"><span class="swatch red"></span> Lead 1 (Red)</span>
+            <span class="legend-item legend-blue"><span class="swatch blue"></span> Lead 2 (Blue)</span>
+            <span class="legend-item legend-yellow"><span class="swatch yellow"></span> Lead 3 (Yellow)</span>
+            <button id="btn-clear-leads" class="btn-link" title="Clear all wire connections">Clear Leads</button>
+          </div>
+        </section>
+
+        <!-- Problem 2: Similarity Statement -->
+        <section class="problem-card" id="card-problem-2">
+          <div class="card-header">
+            <div class="step-num">2</div>
+            <div>
+              <h2>Similarity Statement</h2>
+              <p class="card-desc">Write the matching triangle correspondence in correct vertex order.</p>
+            </div>
+          </div>
+
+          <div class="similarity-formula-box">
+            <div class="statement-side">
+              <span class="delta-symbol">&Delta;</span>
+              <span id="t1-vertex-statement" class="vertex-seq">A B C</span>
+            </div>
+            <div class="sim-symbol">&sim;</div>
+            <div class="statement-side">
+              <span class="delta-symbol">&Delta;</span>
+              <div class="statement-slots" id="slots-container">
+                <button class="slot-btn active" data-slot="0" id="slot-0">_</button>
+                <button class="slot-btn" data-slot="1" id="slot-1">_</button>
+                <button class="slot-btn" data-slot="2" id="slot-2">_</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="letter-picker-row">
+            <span class="picker-label">Choose Vertex:</span>
+            <div class="letter-buttons">
+              <button class="letter-btn" data-letter="A">A</button>
+              <button class="letter-btn" data-letter="B">B</button>
+              <button class="letter-btn" data-letter="C">C</button>
+              <button class="letter-btn" data-letter="X">X</button>
+            </div>
+            <button id="btn-clear-statement" class="btn-link">Clear</button>
+          </div>
+        </section>
+
+        <!-- Action / Verification Area -->
+        <section class="action-card">
+          <button id="btn-verify" class="btn btn-primary btn-large">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+            Visualize Alignment &amp; Check
+          </button>
+
+          <!-- Feedback Status Banner -->
+          <div id="feedback-banner" class="feedback-banner hidden">
+            <div class="feedback-icon" id="feedback-icon"></div>
+            <div class="feedback-content">
+              <div class="feedback-title" id="feedback-title">Verification Results</div>
+              <div class="feedback-detail" id="feedback-detail"></div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script src="What_It_Does.js"></script>
+</body>
+</html>

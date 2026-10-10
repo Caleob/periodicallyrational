@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redox Reaction Interactive</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-color: #1e293b;
+            --panel-border: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-orange: #f97316;
+            --accent-gold: #fbbf24;
+            --drop-zone-bg: #334155;
+            --drop-zone-hover: #475569;
+            --help-bg: #ea580c;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px 40px;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+
+        body.help-mode {
+            background-color: var(--help-bg);
+        }
+
+        /* --- HEADER --- */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .student-name-display {
+            font-size: 0.9rem;
+            color: var(--accent-purple);
+            font-weight: bold;
+        }
+        
+        body.help-mode h1 { color: white; }
+
+        .top-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .problem-indicator {
+            background: var(--panel-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: var(--accent-green);
+            border: 1px solid var(--panel-border);
+            margin-right: 15px;
+        }
+
+        /* --- LAYOUT GRID --- */
+        .main-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 15px;
+            height: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* --- TOP: EQUATION AREA --- */
+        .equation-area {
+            background: var(--panel-color);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 20px 10px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Align groups at bottom */
+            gap: 2px;
+            flex-wrap: wrap;
+            min-height: 180px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .molecule-group {
+            position: relative;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .molecule-group:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .molecule-group.active {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Chemical Text Styling */
+        .chem-display-row {
+            display: flex;
+            align-items: baseline;
+            font-size: 2.8rem; /* Large Formula Text */
+            font-weight: bold;
+            margin-top: 10px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1;
+            color: white;
+        }
+
+        .coefficient {
+            color: var(--accent-blue);
+            margin-right: 4px;
+        }
+
+        .chem-text {
+            display: inline-block;
+            position: relative;
+        }
+        
+        /* Subscript */
+        sub {
+            font-size: 1.6rem;
+            vertical-align: sub;
+        }
+
+        /* Spacer after subscript to prevent crowding */
+        sub::after {
+            content: "";
+            display: inline-block;
+            width: 2px; 
+        }
+        
+        /* Superscript (Ionic Charge) - True Exponent Position */
+        sup {
+            font-size: 1.6rem;
+            vertical-align: top;
+            position: relative;
+            top: -0.6em; /* Moves it strictly up */
+            color: var(--accent-purple);
+            margin-left: 2px;
+        }
+
+        /* Operators (+ and ->) */
+        .operator {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: white;
+            margin: 0 15px;
+            margin-bottom: 22px; 
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .atom-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 1px;
+        }
+
+        .ox-box {
+            width: 44px; /* Increased size for easier target */
+            height: 44px;
+            background: var(--drop-zone-bg);
+            border: 2px dashed var(--text-secondary);
+            border-radius: 8px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .ox-box.has-value {
+            border: 2px solid transparent;
+            color: black;
+        }
+
+        /* High Visibility Hover Effect */
+        .ox-box.hovered {
+            background: rgba(251, 191, 36, 0.2); /* Gold tint */
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 10px var(--accent-gold);
+            transform: scale(1.1);
+        }
+
+        /* --- MIDDLE SECTION --- */
+        .middle-section {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 15px;
+            min-height: 0;
+        }
+
+        .workspace-panel {
+            background: var(--panel-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .breakdown-area {
+            display: flex;
+            gap: 20px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+
+        .atom-individual-card {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+        }
+        
+        .atom-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .math-check {
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid var(--accent-purple);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: auto;
+            text-align: center;
+        }
+
+        .math-display {
+            font-size: 2.2rem;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .math-part {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .math-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+            font-family: sans-serif;
+            display: block;
+        }
+        
+        .charge-drop-zone {
+            width: 60px;
+            height: 50px;
+            background: var(--drop-zone-bg);
+            border: 2px dashed var(--accent-purple);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: white;
+            transition: all 0.2s;
+        }
+        
+        .charge-drop-zone.filled {
+             background: var(--accent-purple);
+             border-style: solid;
+        }
+
+        .charge-drop-zone.hovered {
+            background: rgba(251, 191, 36, 0.2); 
+            border-color: var(--accent-gold);
+            transform: scale(1.1);
+        }
+
+        .palette-panel {
+            background: var(--panel-color);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .draggable-num {
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: grab;
+            color: #000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .draggable-num:active { cursor: grabbing; }
+
+        .val-pos { background-color: var(--accent-green); }
+        .val-neg { background-color: var(--accent-red); }
+        .val-neu { background-color: #fbbf24; }
+
+        .btn-top {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .btn-rules { background: #475569; }
+        .btn-rules:hover { background: #64748b; }
+
+        .btn-help { background: #ea580c; }
+        .btn-help:hover { background: #c2410c; transform: scale(1.05); }
+        .btn-help.active { background: white; color: #ea580c; }
+
+        /* --- BOTTOM: ASSESSMENT --- */
+        .assessment-panel {
+            background: var(--panel-color);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .sentence {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .word-drop {
+            min-width: 140px;
+            padding: 0 10px;
+            height: 45px;
+            background: var(--drop-zone-bg);
+            border: 2px dashed var(--text-secondary);
+            border-radius: 6px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .word-drop.filled {
+            background: var(--accent-purple);
+            border: solid 1px var(--accent-purple);
+            color: white;
+        }
+
+        .word-drop.hovered {
+            background: rgba(251, 191, 36, 0.2); 
+            border-color: var(--accent-gold);
+            transform: scale(1.05);
+        }
+
+        .word-bank {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            border-top: 1px dashed var(--panel-border);
+            padding-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .draggable-word {
+            background: var(--accent-purple);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: grab;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .submit-btn {
+            float: right;
+            padding: 10px 30px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-content {
+            background: var(--panel-color);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        .rules-slider {
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .pass-input {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--text-secondary);
+            background: var(--bg-color);
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .warning-icon {
+            font-size: 3rem;
+            color: var(--accent-orange);
+            margin-bottom: 10px;
+        }
+        .success-icon {
+            font-size: 3rem;
+            color: var(--accent-green);
+            margin-bottom: 10px;
+        }
+        .error-icon {
+            font-size: 3rem;
+            color: var(--accent-red);
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- INTRO MODAL -->
+    <div class="modal-overlay open" id="introModal">
+        <div class="modal-content">
+            <h2>Welcome!</h2>
+            <p>Click below to begin the activity.</p>
+            <button class="btn-top btn-help" style="width:100%; margin-top:10px; background:var(--accent-green);" onclick="startGame()">Start Activity</button>
+        </div>
+    </div>
+
+    <div class="header-row">
+        <div class="header-left">
+             <h1 id="headerTitle">Redox Interactive</h1>
+        </div>
+        
+        <div style="display:flex; align-items:center;">
+             <div class="problem-indicator" id="probIndicator">Problem 1 / 5</div>
+             <div class="top-controls">
+                <button class="btn-top btn-help" id="helpBtn" onclick="toggleHelp()">✋ Help</button>
+                <button class="btn-top btn-rules" onclick="openRules()">Rules</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- TOP: EQUATION -->
+        <div class="equation-area" id="equationContainer">
+            <!-- Injected by JS -->
+        </div>
+
+        <!-- MIDDLE: WORKSPACE & PALETTE -->
+        <div class="middle-section">
+            <!-- Left: Logic Area -->
+            <div class="workspace-panel">
+                <div style="position:absolute; top:10px; left:15px; font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase;">Active Species Workspace</div>
+                
+                <div class="breakdown-area" id="breakdownContainer">
+                    <div style="color: var(--text-secondary); margin-top: 20px;">Select a molecule above to see details</div>
+                </div>
+
+                <div class="math-check">
+                    <div style="font-size:0.8rem; color:var(--accent-purple); text-transform:uppercase; margin-bottom:10px;">Algebraic Check & Charge Verification</div>
+                    <div class="math-display" id="mathContainer">
+                        ? + ? = ?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Palette -->
+            <div class="palette-panel">
+                <div style="margin-bottom:10px; color:var(--text-secondary); font-size:0.9rem;">DRAG NUMBER</div>
+                <div class="palette-grid">
+                     <div class="draggable-num val-neu" draggable="true" data-val="0">0</div>
+                     <div><!-- spacer --></div>
+                    <div class="draggable-num val-pos" draggable="true" data-val="+1">+1</div>
+                    <div class="draggable-num val-neg" draggable="true" data-val="-1">-1</div>
+                    <div class="draggable-num val-pos" draggable="true" data-val="+2">+2</div>
+                    <div class="draggable-num val-neg" draggable="true" data-val="-2">-2</div>
+                    <div class="draggable-num val-pos" draggable="true" data-val="+3">+3</div>
+                    <div class="draggable-num val-neg" draggable="true" data-val="-3">-3</div>
+                    <div class="draggable-num val-pos" draggable="true" data-val="+4">+4</div>
+                    <div class="draggable-num val-neg" draggable="true" data-val="-4">-4</div>
+                    <div class="draggable-num val-pos" draggable="true" data-val="+5">+5</div>
+                    <div class="draggable-num val-neg" draggable="true" data-val="-5">-5</div>
+                    <div class="draggable-num val-pos" draggable="true" data-val="+6">+6</div>
+                    <div class="draggable-num val-neg" draggable="true" data-val="-6">-6</div>
+                    <div class="draggable-num val-pos" draggable="true" data-val="+7">+7</div>
+                    <div class="draggable-num val-neg" draggable="true" data-val="-7">-7</div>
+                    <div class="draggable-num val-pos" draggable="true" data-val="+8">+8</div>
+                    <div class="draggable-num val-neg" draggable="true" data-val="-8">-8</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM: ASSESSMENT -->
+        <div class="assessment-panel" id="assessmentPanel">
+            
+            <div class="sentence">
+                <div class="word-drop" id="dropOxElement" data-type="element" ondragover="allowDrop(event)" ondrop="handleWordDrop(event)">[Element]</div>
+                <span>is <b>oxidized</b> (it</span>
+                <div class="word-drop" id="dropOxAction" data-type="action" ondragover="allowDrop(event)" ondrop="handleWordDrop(event)">[Loss/Gain]</div>
+                <span>electrons).</span>
+            </div>
+
+            <div class="sentence">
+                <div class="word-drop" id="dropRedElement" data-type="element" ondragover="allowDrop(event)" ondrop="handleWordDrop(event)">[Element]</div>
+                <span>is <b>reduced</b> (it</span>
+                <div class="word-drop" id="dropRedAction" data-type="action" ondragover="allowDrop(event)" ondrop="handleWordDrop(event)">[Loss/Gain]</div>
+                <span>electrons).</span>
+            </div>
+
+            <div class="word-bank" id="wordBank">
+                <!-- Injected dynamically -->
+            </div>
+
+            <button class="submit-btn" onclick="handleNext()">NEXT &#10140;</button>
+        </div>
+    </div>
+
+    <!-- RULES MODAL -->
+    <div class="modal-overlay" id="rulesModal">
+        <div class="modal-content" id="passwordView">
+            <span class="close-modal" onclick="closeModal('rulesModal')">&times;</span>
+            <h2>Enter Password</h2>
+            <p>Please enter the teacher password to view the rules.</p>
+            <input type="password" id="passInput" class="pass-input" placeholder="Password">
+            <button class="btn-top btn-rules" style="width:100%" onclick="checkPass()">Unlock</button>
+            <p id="passError" style="color: var(--accent-red); display:none; margin-top:10px;">Incorrect Password</p>
+        </div>
+
+        <div class="modal-content" id="rulesView" style="display:none;">
+            <span class="close-modal" onclick="closeModal('rulesModal')">&times;</span>
+            <h2>Oxidation Rules</h2>
+            <div class="rules-slider" id="ruleText">
+                Rule 1: The oxidation number of a free element is always 0.
+            </div>
+            <div>
+                <button class="btn-top btn-rules" style="width: auto; padding: 10px 20px;" onclick="prevRule()">Previous</button>
+                <button class="btn-top btn-rules" style="width: auto; padding: 10px 20px;" onclick="nextRule()">Next</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SOFT WARNING MODAL (Incomplete/Incorrect) -->
+    <div class="modal-overlay" id="softWarningModal">
+        <div class="modal-content">
+            <div class="warning-icon">&#9888;</div>
+            <h2>Check Your Work</h2>
+            <p>One or more of the sections on this problem are incomplete or incorrect.</p>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-top btn-rules" style="flex:1;" onclick="closeModal('softWarningModal')">Return</button>
+                <button class="btn-top btn-rules" style="flex:1; background:var(--accent-orange);" onclick="forceNext()">Move On</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SUCCESS MODAL -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <div class="success-icon">&#10004;</div>
+            <h2>Correct!</h2>
+            <p>Great job! You have balanced the reaction correctly.</p>
+            <button class="btn-top btn-help" style="width:100%; background:var(--accent-green);" onclick="loadNextProblem()">Next Problem</button>
+        </div>
+    </div>
+    
+    <!-- COMPLETION MODAL -->
+    <div class="modal-overlay" id="completionModal">
+        <div class="modal-content">
+            <div class="success-icon">&#127942;</div>
+            <h2>Course Completed!</h2>
+            <p>You have successfully finished all 5 practice problems.</p>
+            <button class="btn-top btn-rules" style="width:100%;" onclick="downloadReport()">EXPORT REPORT &#128190;</button>
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL TRACKING ---
+        const studentSession = {
+            startTime: null,
+            problemStartTimes: [],
+            answers: [],
+            rulesAccessed: false
+        };
+
+        // --- PROBLEM DATA ---
+        const problemSet = [
+            // PROBLEM 1
+            {
+                equation: [
+                    { id: 0, formulaParts: [{sym:"N",sub:""},{sym:"H",sub:"4"}], chargeStr:"+", coeff:2, netCharge:"+1", userCharge:null, atoms:[{sym:"N",count:1,val:null,correct:-3},{sym:"H",count:4,val:null,correct:1}] },
+                    { id: 1, type: "plus" },
+                    { id: 2, formulaParts: [{sym:"Cr",sub:"2"},{sym:"O",sub:"7"}], chargeStr:"2-", coeff:1, netCharge:"-2", userCharge:null, atoms:[{sym:"Cr",count:2,val:null,correct:6},{sym:"O",count:7,val:null,correct:-2}] },
+                    { id: 3, type: "arrow" },
+                    { id: 4, formulaParts: [{sym:"N",sub:"2"}], chargeStr:"", coeff:1, netCharge:"0", userCharge:null, atoms:[{sym:"N",count:2,val:null,correct:0}] },
+                    { id: 5, type: "plus" },
+                    { id: 6, formulaParts: [{sym:"H",sub:"2"},{sym:"O",sub:""}], chargeStr:"", coeff:4, netCharge:"0", userCharge:null, atoms:[{sym:"H",count:2,val:null,correct:1},{sym:"O",count:1,val:null,correct:-2}] },
+                    { id: 7, type: "plus" },
+                    { id: 8, formulaParts: [{sym:"Cr",sub:"2"},{sym:"O",sub:"3"}], chargeStr:"", coeff:1, netCharge:"0", userCharge:null, atoms:[{sym:"Cr",count:2,val:null,correct:3},{sym:"O",count:3,val:null,correct:-2}] }
+                ],
+                answer: {
+                    oxEl: ["N", "Nitrogen (N)"],
+                    oxAct: "LOST",
+                    redEl: ["Cr", "Chromium (Cr)"],
+                    redAct: "GAINED"
+                },
+                elements: ["Nitrogen (N)", "Hydrogen (H)", "Chromium (Cr)", "Oxygen (O)"]
+            },
+            // PROBLEM 2: 2Na + Cl2 -> 2NaCl
+            {
+                equation: [
+                    { id: 0, formulaParts: [{sym:"Na",sub:""}], chargeStr:"", coeff:2, netCharge:"0", userCharge:null, atoms:[{sym:"Na",count:1,val:null,correct:0}] },
+                    { id: 1, type: "plus" },
+                    { id: 2, formulaParts: [{sym:"Cl",sub:"2"}], chargeStr:"", coeff:1, netCharge:"0", userCharge:null, atoms:[{sym:"Cl",count:2,val:null,correct:0}] },
+                    { id: 3, type: "arrow" },
+                    { id: 4, formulaParts: [{sym:"Na",sub:""},{sym:"Cl",sub:""}], chargeStr:"", coeff:2, netCharge:"0", userCharge:null, atoms:[{sym:"Na",count:1,val:null,correct:1},{sym:"Cl",count:1,val:null,correct:-1}] }
+                ],
+                answer: {
+                    oxEl: ["Na", "Sodium (Na)"],
+                    oxAct: "LOST",
+                    redEl: ["Cl", "Chlorine (Cl)"],
+                    redAct: "GAINED"
+                },
+                elements: ["Sodium (Na)", "Chlorine (Cl)"]
+            },
+            // PROBLEM 3: CH4 + 2O2 -> CO2 + 2H2O
+            {
+                equation: [
+                    { id: 0, formulaParts: [{sym:"C",sub:""},{sym:"H",sub:"4"}], chargeStr:"", coeff:1, netCharge:"0", userCharge:null, atoms:[{sym:"C",count:1,val:null,correct:-4},{sym:"H",count:4,val:null,correct:1}] },
+                    { id: 1, type: "plus" },
+                    { id: 2, formulaParts: [{sym:"O",sub:"2"}], chargeStr:"", coeff:2, netCharge:"0", userCharge:null, atoms:[{sym:"O",count:2,val:null,correct:0}] },
+                    { id: 3, type: "arrow" },
+                    { id: 4, formulaParts: [{sym:"C",sub:""},{sym:"O",sub:"2"}], chargeStr:"", coeff:1, netCharge:"0", userCharge:null, atoms:[{sym:"C",count:1,val:null,correct:4},{sym:"O",count:2,val:null,correct:-2}] },
+                    { id: 5, type: "plus" },
+                    { id: 6, formulaParts: [{sym:"H",sub:"2"},{sym:"O",sub:""}], chargeStr:"", coeff:2, netCharge:"0", userCharge:null, atoms:[{sym:"H",count:2,val:null,correct:1},{sym:"O",count:1,val:null,correct:-2}] }
+                ],
+                answer: {
+                    oxEl: ["C", "Carbon (C)"],
+                    oxAct: "LOST",
+                    redEl: ["O", "Oxygen (O)"],
+                    redAct: "GAINED"
+                },
+                elements: ["Carbon (C)", "Hydrogen (H)", "Oxygen (O)"]
+            },
+            // PROBLEM 4: 2Al + 3CuCl2 -> 2AlCl3 + 3Cu
+            {
+                equation: [
+                    { id: 0, formulaParts: [{sym:"Al",sub:""}], chargeStr:"", coeff:2, netCharge:"0", userCharge:null, atoms:[{sym:"Al",count:1,val:null,correct:0}] },
+                    { id: 1, type: "plus" },
+                    { id: 2, formulaParts: [{sym:"Cu",sub:""},{sym:"Cl",sub:"2"}], chargeStr:"", coeff:3, netCharge:"0", userCharge:null, atoms:[{sym:"Cu",count:1,val:null,correct:2},{sym:"Cl",count:2,val:null,correct:-1}] },
+                    { id: 3, type: "arrow" },
+                    { id: 4, formulaParts: [{sym:"Al",sub:""},{sym:"Cl",sub:"3"}], chargeStr:"", coeff:2, netCharge:"0", userCharge:null, atoms:[{sym:"Al",count:1,val:null,correct:3},{sym:"Cl",count:3,val:null,correct:-1}] },
+                    { id: 5, type: "plus" },
+                    { id: 6, formulaParts: [{sym:"Cu",sub:""}], chargeStr:"", coeff:3, netCharge:"0", userCharge:null, atoms:[{sym:"Cu",count:1,val:null,correct:0}] }
+                ],
+                answer: {
+                    oxEl: ["Al", "Aluminum (Al)"],
+                    oxAct: "LOST",
+                    redEl: ["Cu", "Copper (Cu)"],
+                    redAct: "GAINED"
+                },
+                elements: ["Aluminum (Al)", "Copper (Cu)", "Chlorine (Cl)"]
+            },
+            // PROBLEM 5: Cu(s) + 2Ag+ + 2NO3- -> Cu2+ + 2NO3- + 2Ag(s) (Corrected, Full Ionic)
+            {
+                equation: [
+                    // Reactants
+                    { id: 0, formulaParts: [{sym:"Cu",sub:""}], chargeStr:"", coeff:1, netCharge:"0", userCharge:null, atoms:[{sym:"Cu",count:1,val:null,correct:0}] },
+                    { id: 1, type: "plus" },
+                    { id: 2, formulaParts: [{sym:"Ag",sub:""}], chargeStr:"+", coeff:2, netCharge:"+1", userCharge:null, atoms:[{sym:"Ag",count:1,val:null,correct:1}] },
+                    { id: 3, type: "plus" },
+                    { id: 4, formulaParts: [{sym:"N",sub:""},{sym:"O",sub:"3"}], chargeStr:"-", coeff:2, netCharge:"-1", userCharge:null, atoms:[{sym:"N",count:1,val:null,correct:5},{sym:"O",count:3,val:null,correct:-2}] },
+                    
+                    { id: 5, type: "arrow" },
+                    
+                    // Products
+                    { id: 6, formulaParts: [{sym:"Cu",sub:""}], chargeStr:"2+", coeff:1, netCharge:"+2", userCharge:null, atoms:[{sym:"Cu",count:1,val:null,correct:2}] },
+                    { id: 7, type: "plus" },
+                    { id: 8, formulaParts: [{sym:"N",sub:""},{sym:"O",sub:"3"}], chargeStr:"-", coeff:2, netCharge:"-1", userCharge:null, atoms:[{sym:"N",count:1,val:null,correct:5},{sym:"O",count:3,val:null,correct:-2}] },
+                    { id: 9, type: "plus" },
+                    { id: 10, formulaParts: [{sym:"Ag",sub:""}], chargeStr:"", coeff:2, netCharge:"0", userCharge:null, atoms:[{sym:"Ag",count:1,val:null,correct:0}] }
+                ],
+                answer: {
+                    oxEl: ["Cu", "Copper (Cu)"],
+                    oxAct: "LOST",
+                    redEl: ["Ag", "Silver (Ag)"],
+                    redAct: "GAINED"
+                },
+                elements: ["Copper (Cu)", "Silver (Ag)", "Nitrogen (N)", "Oxygen (O)"]
+            }
+        ];
+
+        let currentProblemIndex = 0;
+        let reactionData = []; 
+        let activeMolIndex = 0;
+        let currentRuleIndex = 0;
+
+        const rules = [
+            "Rule 1: The oxidation number of a free element is always 0.",
+            "Rule 2: The oxidation number of a monatomic ion equals the charge of the ion.",
+            "Rule 3: The usual oxidation number of Hydrogen is +1.",
+            "Rule 4: The usual oxidation number of Oxygen is -2.",
+            "Rule 5: The sum of oxidation numbers in a polyatomic ion = charge of ion.",
+            "Rule 6: The sum of oxidation numbers in a neutral compound is 0.",
+            "Rule 7: Group I elements (Li, Na, K, Rb, Cs, Fr) always have an oxidation number of +1.",
+            "Rule 8: Group II elements (Be, Mg, Ca, Sr, Ba, Ra) always have an oxidation number of +2.",
+            "Rule 9: Fluorine is always -1. Other halogens (Cl, Br, I) are usually -1, unless combined with Oxygen or Fluorine."
+        ];
+
+        function startGame() {
+            studentSession.startTime = new Date();
+            // Hide intro modal
+            document.getElementById('introModal').classList.remove('open');
+            initProblem(0);
+        }
+
+        function initProblem(index) {
+            currentProblemIndex = index;
+            document.getElementById('probIndicator').innerText = `Problem ${index + 1} / ${problemSet.length}`;
+            
+            // Record start time
+            studentSession.problemStartTimes[index] = new Date();
+
+            reactionData = JSON.parse(JSON.stringify(problemSet[index].equation));
+            
+            activeMolIndex = 0;
+            
+            renderEquation();
+            renderWorkspace();
+            renderWordBank();
+            resetBottomPanel();
+        }
+
+        function resetBottomPanel() {
+            document.getElementById('dropOxElement').innerHTML = "[Element]";
+            document.getElementById('dropOxElement').classList.remove('filled');
+            document.getElementById('dropOxElement').style.backgroundColor = "";
+
+            document.getElementById('dropOxAction').innerHTML = "[Loss/Gain]";
+            document.getElementById('dropOxAction').classList.remove('filled');
+            document.getElementById('dropOxAction').style.backgroundColor = "";
+
+            document.getElementById('dropRedElement').innerHTML = "[Element]";
+            document.getElementById('dropRedElement').classList.remove('filled');
+            document.getElementById('dropRedElement').style.backgroundColor = "";
+
+            document.getElementById('dropRedAction').innerHTML = "[Loss/Gain]";
+            document.getElementById('dropRedAction').classList.remove('filled');
+            document.getElementById('dropRedAction').style.backgroundColor = "";
+        }
+
+        function renderWordBank() {
+            const bank = document.getElementById('wordBank');
+            bank.innerHTML = '';
+            
+            problemSet[currentProblemIndex].elements.forEach(elName => {
+                const div = document.createElement('div');
+                div.className = 'draggable-word';
+                div.draggable = true;
+                div.dataset.word = elName;
+                div.innerText = elName;
+                div.ondragstart = (e) => {
+                     e.dataTransfer.setData("word", e.target.dataset.word);
+                     e.dataTransfer.setData("source", "word");
+                };
+                bank.appendChild(div);
+            });
+
+            ['LOST', 'GAINED'].forEach(act => {
+                const div = document.createElement('div');
+                div.className = 'draggable-word';
+                div.style.background = 'var(--accent-blue)';
+                div.draggable = true;
+                div.dataset.word = act;
+                div.innerText = act;
+                div.ondragstart = (e) => {
+                     e.dataTransfer.setData("word", e.target.dataset.word);
+                     e.dataTransfer.setData("source", "word");
+                };
+                bank.appendChild(div);
+            });
+        }
+
+        function renderEquation() {
+            const container = document.getElementById('equationContainer');
+            container.innerHTML = '';
+
+            reactionData.forEach((mol, mIndex) => {
+                if(mol.type === "arrow") {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'operator';
+                    arrow.innerHTML = '&#8594;'; 
+                    container.appendChild(arrow);
+                    return;
+                }
+                if(mol.type === "plus") {
+                    const plus = document.createElement('div');
+                    plus.className = 'operator';
+                    plus.innerHTML = '+';
+                    container.appendChild(plus);
+                    return;
+                }
+
+                const group = document.createElement('div');
+                group.className = `molecule-group ${activeMolIndex === mIndex ? 'active' : ''}`;
+                group.onclick = () => setActiveMolecule(mIndex);
+
+                const boxRow = document.createElement('div');
+                boxRow.style.display = 'flex';
+                boxRow.style.gap = '2px';
+                boxRow.style.width = '100%';
+                boxRow.style.justifyContent = 'center';
+
+                if(mol.coeff > 1) {
+                    const spacer = document.createElement('div');
+                    spacer.style.width = '20px';
+                    boxRow.appendChild(spacer);
+                }
+
+                mol.atoms.forEach((atom, aIndex) => {
+                    const col = document.createElement('div');
+                    col.className = 'atom-col';
+
+                    const box = document.createElement('div');
+                    box.className = `ox-box ${atom.val ? 'has-value' : ''}`;
+                    box.textContent = atom.val || "?";
+                    if(atom.val) {
+                        box.style.backgroundColor = getValColor(atom.val);
+                    } else {
+                         box.style.backgroundColor = '';
+                    }
+
+                    box.ondragover = (e) => e.preventDefault();
+                    box.ondragenter = (e) => e.target.classList.add('hovered');
+                    box.ondragleave = (e) => e.target.classList.remove('hovered');
+                    box.ondrop = (e) => handleDrop(e, mIndex, aIndex);
+
+                    col.appendChild(box);
+                    boxRow.appendChild(col);
+                });
+
+                group.appendChild(boxRow);
+
+                const displayRow = document.createElement('div');
+                displayRow.className = 'chem-display-row';
+
+                if(mol.coeff > 1) {
+                    displayRow.innerHTML += `<span class="coefficient">${mol.coeff}</span>`;
+                }
+                
+                // Check if any part has a subscript
+                const hasSub = mol.formulaParts.some(p => p.sub && p.sub !== "");
+
+                mol.formulaParts.forEach(part => {
+                    displayRow.innerHTML += `<span class="chem-text">${part.sym}${part.sub ? `<sub>${part.sub}</sub>` : ''}</span>`;
+                });
+                
+                if (!hasSub) {
+                    displayRow.innerHTML += `<span class="chem-text" style="visibility:hidden"><sub>2</sub></span>`;
+                }
+
+                if(mol.chargeStr) {
+                    displayRow.innerHTML += `<sup>${mol.chargeStr}</sup>`;
+                }
+
+                group.appendChild(displayRow);
+                container.appendChild(group);
+            });
+        }
+
+        function renderWorkspace() {
+            const container = document.getElementById('breakdownContainer');
+            const mathContainer = document.getElementById('mathContainer');
+            container.innerHTML = '';
+            
+            const mol = reactionData[activeMolIndex];
+            
+            mol.atoms.forEach((atomType, typeIndex) => {
+                for(let i=0; i<atomType.count; i++) {
+                    const card = document.createElement('div');
+                    card.className = 'atom-individual-card';
+                    
+                    const label = document.createElement('span');
+                    label.className = 'atom-label';
+                    label.textContent = atomType.sym;
+                    
+                    const box = document.createElement('div');
+                    box.className = `ox-box ${atomType.val ? 'has-value' : ''}`;
+                    box.textContent = atomType.val || "?";
+                    if(atomType.val) {
+                         box.style.backgroundColor = getValColor(atomType.val);
+                    } else {
+                         box.style.backgroundColor = '';
+                    }
+
+                    box.ondragover = (e) => e.preventDefault();
+                    box.ondragenter = (e) => e.target.classList.add('hovered');
+                    box.ondragleave = (e) => e.target.classList.remove('hovered');
+                    box.ondrop = (e) => handleDrop(e, activeMolIndex, typeIndex);
+
+                    card.appendChild(label);
+                    card.appendChild(box);
+                    container.appendChild(card);
+                }
+            });
+
+            let mathHTML = '';
+            mol.atoms.forEach((atom, idx) => {
+                if(idx > 0) mathHTML += `<div class="operator" style="font-size:1.5rem; margin-bottom:0;">+</div>`;
+                
+                mathHTML += `
+                <div class="math-part">
+                    <div style="font-size: 2rem;">${atom.count}</div>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <div class="ox-box ${atom.val ? 'has-value' : ''}" 
+                             style="width:40px; height:40px; margin-bottom:0; background-color:${atom.val ? getValColor(atom.val) : 'var(--drop-zone-bg)'};"
+                             ondragover="event.preventDefault()" 
+                             ondrop="handleDrop(event, ${activeMolIndex}, ${idx})">
+                             ${atom.val || "?"}
+                        </div>
+                        <span class="math-label">${atom.sym}</span>
+                    </div>
+                </div>
+                `;
+            });
+
+            mathHTML += `<div class="operator" style="font-size:1.5rem; margin-bottom:0;">=</div>`;
+            
+            const chargeVal = mol.userCharge;
+            let chargeBg = 'var(--drop-zone-bg)';
+            if(chargeVal) chargeBg = getValColor(chargeVal);
+
+            mathHTML += `
+             <div class="math-part">
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <div class="charge-drop-zone ${chargeVal ? 'filled' : ''}" 
+                         style="background-color: ${chargeBg}"
+                         ondragover="event.preventDefault()" 
+                         ondrop="handleChargeDrop(event)">
+                         ${chargeVal || "?"}
+                    </div>
+                    <span class="math-label">Total Charge</span>
+                </div>
+             </div>
+            `;
+
+            mathContainer.innerHTML = mathHTML;
+        }
+
+        function setActiveMolecule(index) {
+            activeMolIndex = index;
+            renderEquation();
+            renderWorkspace();
+        }
+
+        function getValColor(val) {
+            if(val === "0" || val === 0) return "#fbbf24";
+            if(String(val).includes('-')) return "var(--accent-red)";
+            return "var(--accent-green)";
+        }
+
+        function toggleHelp() {
+            document.body.classList.toggle('help-mode');
+            const btn = document.getElementById('helpBtn');
+            btn.classList.toggle('active');
+            btn.innerText = document.body.classList.contains('help-mode') ? "Teacher Called" : "✋ Help";
+        }
+
+        document.querySelectorAll('.draggable-num').forEach(el => {
+            el.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData("text/plain", e.target.dataset.val);
+                e.dataTransfer.setData("source", "number");
+            });
+        });
+
+        function handleDrop(e, molIndex, atomIndex) {
+            e.preventDefault();
+            e.target.classList.remove('hovered');
+            
+            if(e.dataTransfer.getData("source") !== "number") return;
+            const val = e.dataTransfer.getData("text/plain");
+
+            const mol = reactionData[molIndex];
+            mol.atoms[atomIndex].val = val;
+
+            if(activeMolIndex !== molIndex) {
+                activeMolIndex = molIndex;
+            }
+            renderEquation();
+            renderWorkspace();
+        }
+
+        function handleChargeDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('hovered');
+            if(e.dataTransfer.getData("source") !== "number") return;
+            
+            const val = e.dataTransfer.getData("text/plain");
+            reactionData[activeMolIndex].userCharge = val;
+            
+            renderWorkspace();
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+            // Add hover effect
+            e.target.classList.add('hovered');
+        }
+        
+        // Add dragleave handler to remove hover effect
+        document.addEventListener('dragleave', (e) => {
+            if(e.target.classList && (e.target.classList.contains('ox-box') || e.target.classList.contains('charge-drop-zone') || e.target.classList.contains('word-drop'))) {
+                e.target.classList.remove('hovered');
+            }
+        });
+
+        function handleWordDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('hovered');
+            if(e.dataTransfer.getData("source") !== "word") return;
+            const word = e.dataTransfer.getData("word");
+            e.target.innerText = word;
+            e.target.classList.add('filled');
+            
+            if(word === "LOST" || word === "GAINED") {
+                e.target.style.backgroundColor = "var(--accent-blue)";
+                e.target.style.borderColor = "var(--accent-blue)";
+            } else {
+                 e.target.style.backgroundColor = "var(--accent-purple)";
+                 e.target.style.borderColor = "var(--accent-purple)";
+            }
+        }
+
+        function checkIsFilled() {
+            let allFilled = true;
+            reactionData.forEach(mol => {
+                if(mol.type === "arrow" || mol.type === "plus") return;
+                
+                mol.atoms.forEach(atom => {
+                    if(!atom.val) allFilled = false;
+                });
+
+                if(!mol.userCharge) allFilled = false;
+            });
+
+            const oxEl = document.getElementById('dropOxElement').classList.contains('filled');
+            const oxAct = document.getElementById('dropOxAction').classList.contains('filled');
+            const redEl = document.getElementById('dropRedElement').classList.contains('filled');
+            const redAct = document.getElementById('dropRedAction').classList.contains('filled');
+
+            if(!oxEl || !oxAct || !redEl || !redAct) allFilled = false;
+
+            return allFilled;
+        }
+
+        function recordCurrentAnswers() {
+            const endTime = new Date();
+            const duration = (endTime - studentSession.problemStartTimes[currentProblemIndex]) / 1000; // seconds
+
+            const oxEl = document.getElementById('dropOxElement').innerText;
+            const redEl = document.getElementById('dropRedElement').innerText;
+            const oxAct = document.getElementById('dropOxAction').innerText;
+            const redAct = document.getElementById('dropRedAction').innerText;
+
+            const problemRecord = {
+                problemIndex: currentProblemIndex,
+                duration: duration,
+                equations: JSON.parse(JSON.stringify(reactionData)),
+                assessment: {
+                    oxEl, redEl, oxAct, redAct
+                }
+            };
+            
+            studentSession.answers[currentProblemIndex] = problemRecord;
+        }
+
+        function handleNext() {
+            let isFilled = checkIsFilled();
+            recordCurrentAnswers(); // Save state regardless
+            
+            const oxEl = document.getElementById('dropOxElement').innerText;
+            const redEl = document.getElementById('dropRedElement').innerText;
+            const oxAct = document.getElementById('dropOxAction').innerText;
+            const redAct = document.getElementById('dropRedAction').innerText;
+            
+            const correctData = problemSet[currentProblemIndex].answer;
+            
+            let correct = true;
+
+            // Check Top Section
+            reactionData.forEach(mol => {
+                if(mol.type === "arrow" || mol.type === "plus") return;
+                if(mol.userCharge !== null && mol.userCharge !== "" && Number(mol.userCharge) === Number(mol.netCharge)) {
+                    // correct
+                } else {
+                    correct = false;
+                }
+
+                mol.atoms.forEach(atom => {
+                    if(atom.val !== null && atom.val !== "" && Number(atom.val) === Number(atom.correct)) {
+                        // correct
+                    } else {
+                        correct = false;
+                    }
+                });
+            });
+
+            // Check Bottom Section
+            if(!correctData.oxEl.includes(oxEl)) correct = false;
+            if(oxAct !== correctData.oxAct) correct = false;
+            if(!correctData.redEl.includes(redEl)) correct = false;
+            if(redAct !== correctData.redAct) correct = false;
+
+            if(isFilled && correct) {
+                document.getElementById('successModal').classList.add('open');
+            } else {
+                // Show Soft Warning
+                document.getElementById('softWarningModal').classList.add('open');
+            }
+        }
+
+        function forceNext() {
+            document.getElementById('softWarningModal').classList.remove('open');
+            loadNextProblem();
+        }
+
+        function loadNextProblem() {
+            document.getElementById('successModal').classList.remove('open');
+            
+            if(currentProblemIndex < problemSet.length - 1) {
+                initProblem(currentProblemIndex + 1);
+            } else {
+                // Show Completion Modal
+                document.getElementById('completionModal').classList.add('open');
+            }
+        }
+
+        function openRules() {
+            studentSession.rulesAccessed = true; // Track access
+            document.getElementById('rulesModal').classList.add('open');
+            document.getElementById('passwordView').style.display = 'block';
+            document.getElementById('rulesView').style.display = 'none';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+            if(id === 'rulesModal') {
+                document.getElementById('passInput').value = '';
+                document.getElementById('passError').style.display = 'none';
+            }
+        }
+
+        function checkPass() {
+            const input = document.getElementById('passInput').value;
+            if(input.toLowerCase() === 'redox') {
+                document.getElementById('passwordView').style.display = 'none';
+                document.getElementById('rulesView').style.display = 'block';
+                showRule(0);
+            } else {
+                document.getElementById('passError').style.display = 'block';
+            }
+        }
+
+        function showRule(index) {
+            currentRuleIndex = index;
+            document.getElementById('ruleText').innerText = rules[currentRuleIndex];
+        }
+
+        function nextRule() {
+            currentRuleIndex = (currentRuleIndex + 1) % rules.length;
+            showRule(currentRuleIndex);
+        }
+
+        function prevRule() {
+            currentRuleIndex = (currentRuleIndex - 1 + rules.length) % rules.length;
+            showRule(currentRuleIndex);
+        }
+
+        function downloadReport() {
+            const s = studentSession;
+            let totalScore = 0;
+            let problemReports = ""; // Buffer for problem details
+
+            s.answers.forEach((ans, idx) => {
+                if(!ans) return;
+
+                // Calculate Score for this problem
+                let correctBoxes = 0;
+                let totalBoxes = 0;
+                const correctData = problemSet[ans.problemIndex].answer;
+                const userAssessment = ans.assessment;
+
+                // 1. Equation Inputs
+                ans.equations.forEach(mol => {
+                    if(mol.type === "arrow" || mol.type === "plus") return;
+                    
+                    // Net Charge
+                    totalBoxes++;
+                    if(mol.userCharge !== null && mol.userCharge !== "" && Number(mol.userCharge) === Number(mol.netCharge)) correctBoxes++;
+
+                    // Atoms
+                    mol.atoms.forEach(atom => {
+                        totalBoxes++;
+                        if(atom.val !== null && atom.val !== "" && Number(atom.val) === Number(atom.correct)) correctBoxes++;
+                    });
+                });
+
+                // 2. Assessment Inputs
+                totalBoxes += 4; // 4 drop zones
+                let oxElCheck = false;
+                let oxActCheck = false;
+                let redElCheck = false;
+                let redActCheck = false;
+
+                if(correctData.oxEl.includes(userAssessment.oxEl)) { correctBoxes++; oxElCheck = true; }
+                if(userAssessment.oxAct === correctData.oxAct) { correctBoxes++; oxActCheck = true; }
+                if(correctData.redEl.includes(userAssessment.redEl)) { correctBoxes++; redElCheck = true; }
+                if(userAssessment.redAct === correctData.redAct) { correctBoxes++; redActCheck = true; }
+
+                let problemScore = 0;
+                if (totalBoxes > 0) {
+                    problemScore = Math.ceil((correctBoxes / totalBoxes) * 5);
+                }
+                totalScore += problemScore;
+
+                // Build Problem Report Section
+                problemReports += `PROBLEM ${idx + 1}\n`;
+                problemReports += `Time Spent: ${Math.round(ans.duration)} seconds\n`;
+                problemReports += `Score ${problemScore}/5\n`;
+                
+                problemReports += `\n[Equation State]\n`;
+                ans.equations.forEach(mol => {
+                    if(mol.type === "arrow" || mol.type === "plus") return;
+                    let formula = "";
+                    if(mol.coeff > 1) formula += mol.coeff;
+                    mol.formulaParts.forEach(p => formula += p.sym + (p.sub||""));
+                    
+                    problemReports += `Species: ${formula}\n`;
+                    
+                    let chargeMark = (mol.userCharge !== null && mol.userCharge !== "" && Number(mol.userCharge) === Number(mol.netCharge)) ? "( ✓ )" : "( X )";
+                    problemReports += `  ${chargeMark} Net Charge: User Entered: ${mol.userCharge || "Empty"} (Correct: ${mol.netCharge})\n`;
+                    
+                    mol.atoms.forEach(atom => {
+                        let atomMark = (atom.val !== null && atom.val !== "" && Number(atom.val) === Number(atom.correct)) ? "( ✓ )" : "( X )";
+                        problemReports += `  ${atomMark} Atom ${atom.sym}: User Entered: ${atom.val || "Empty"} (Correct: ${atom.correct})\n`;
+                    });
+                });
+
+                problemReports += `\n[Assessment Sentence]\n`;
+                problemReports += `${oxElCheck ? "( ✓ )" : "( X )"} Oxidized Element: ${ans.assessment.oxEl}\n`;
+                problemReports += `${oxActCheck ? "( ✓ )" : "( X )"} Action: ${ans.assessment.oxAct}\n`;
+                problemReports += `${redElCheck ? "( ✓ )" : "( X )"} Reduced Element: ${ans.assessment.redEl}\n`;
+                problemReports += `${redActCheck ? "( ✓ )" : "( X )"} Action: ${ans.assessment.redAct}\n`;
+                problemReports += `--------------------------------------------------\n\n`;
+            });
+
+            // Build Header
+            let header = `REDOX INTERACTIVE PORTFOLIO\n`;
+            header += `Date: ${new Date().toLocaleDateString()}\n`;
+            header += `Rules Accessed: ${s.rulesAccessed ? "YES" : "NO"}\n`;
+            header += `Total Score ${totalScore}/25\n`;
+            header += `--------------------------------------------------\n\n`;
+
+            const finalReport = header + problemReports;
+
+            // Download Logic
+            const element = document.createElement('a');
+            const file = new Blob([finalReport], {type: 'text/plain'});
+            element.href = URL.createObjectURL(file);
+            element.download = `Redox_Report.txt`;
+            document.body.appendChild(element); 
+            element.click();
+            document.body.removeChild(element);
+        }
+
+    </script>
+</body>
+
+</html>

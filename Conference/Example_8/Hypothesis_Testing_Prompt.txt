@@ -1,0 +1,40 @@
+Act as a senior computational statistician and educational front-end software architect. Build a comprehensive, zero-dependency statistical hypothesis testing calculator suite with interactive real-time probability distribution curve visualizations.
+
+### Architectural Dual Implementation Challenge:
+This project demonstrates two architectural paradigms achieving the exact same interactive capability:
+1. `Vanilla/`: Implemented using pure, zero-dependency HTML5, CSS3, and ES6+ JavaScript. Requires zero npm packages, zero external CDNs, and works 100% offline.
+2. `Tailwind Calculator/`: Implemented using utility-first Tailwind CSS classes for rapid UI prototyping and consistent spacing design tokens.
+
+### Supported Statistical Hypothesis Tests:
+The suite must feature a top-level test selector supporting 4 core hypothesis tests:
+1. Chi-Square Test for Variance ($\sigma^2$):
+   - Sample variance ($s^2$) or sample standard deviation ($s$), sample size ($n$), hypothesized variance ($\sigma_0^2$).
+   - Degrees of freedom $df = n - 1$.
+   - Test statistic formula: $\chi^2 = \frac{(n-1)s^2}{\sigma_0^2}$.
+   - Graph: Asymmetric, right-skewed Chi-square distribution curve.
+2. One-Sample Student's T-Test for Mean ($\mu$ with unknown $\sigma$):
+   - Sample mean ($\bar{x}$), sample standard deviation ($s$), sample size ($n$), hypothesized mean ($\mu_0$).
+   - Degrees of freedom $df = n - 1$.
+   - Test statistic formula: $t = \frac{\bar{x} - \mu_0}{s / \sqrt{n}}$.
+   - Graph: Student's t-distribution curve with dynamic degrees-of-freedom kurtosis adjustment.
+3. One-Sample Z-Test for Mean ($\mu$ with known population $\sigma$):
+   - Sample mean ($\bar{x}$), population standard deviation ($\sigma$), sample size ($n$), hypothesized mean ($\mu_0$).
+   - Test statistic formula: $Z = \frac{\bar{x} - \mu_0}{\sigma / \sqrt{n}}$.
+   - Graph: Standard normal distribution curve $\mathcal{N}(0, 1)$.
+4. One-Sample Z-Test for Population Proportion ($p$):
+   - Sample proportion ($\hat{p} = x/n$), hypothesized proportion ($p_0$), sample size ($n$).
+   - Standard error: $SE = \sqrt{\frac{p_0(1-p_0)}{n}}$.
+   - Test statistic formula: $Z = \frac{\hat{p} - p_0}{SE}$.
+   - Graph: Standard normal distribution curve.
+
+### Real-Time Canvas Distribution Visualization:
+- Dynamic HTML5 Canvas rendering (1000x350 resolution):
+  * Accurately plot probability density functions using numerical approximations (polynomial approximation for normal CDF and Wilson-Hilferty transformation for Chi-square).
+  * Shaded Rejection Regions: Interactive inputs for Critical Values (Left CV, Right CV) and significance levels ($\alpha$). Dynamically shade rejection tails in soft red/amber.
+  * Test Statistic Marker: Plot the calculated test statistic as a distinct vertical neon indicator line directly on the curve so students can instantly see whether the statistic falls inside or outside the rejection region.
+  * Real-Time P-Value: Automatically compute and display the one-tailed or two-tailed p-value corresponding to the current test statistic.
+
+### UI & Layout Specifications:
+- High-contrast, dark workstation theme (#0d1117 background, #161b22 panels, crisp borders).
+- Interactive formula preview panel showing LaTeX-style mathematical formula notation populated with current user numbers.
+- Responsive input panels with automatic input sanitization (handling division by zero, invalid degrees of freedom, and sample sizes $n < 2$).

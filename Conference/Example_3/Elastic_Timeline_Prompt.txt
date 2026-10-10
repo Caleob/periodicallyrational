@@ -1,0 +1,41 @@
+Create a complete, single-file HTML web application (HTML, CSS, and JS combined in one file) for a teacher-facing, interactive timeline ordering activity designed for screen sharing.
+
+### 1. Visual & UI Architecture
+- Dark/Modern EdTech Aesthetic: Slate/Navy dark background (#0f172a), high contrast typography, crisp rounded cards with soft shadows, and clean glassmorphism accents.
+- Top Header: Includes the app title ("Elastic Timeline"), a "Pasting / Setup" modal button (gear icon or "Edit List"), a prominent "Check Timeline" button, and a "Reset" button.
+- Setup Modal: 
+  - Opens cleanly as an overlay/modal with a backdrop blur; must NOT take up permanent screen real estate.
+  - Contains a large textarea where the teacher pastes line-separated events in correct chronological order (1 per line).
+  - A "Load Activity" button that parses the text, assigns 1-based original index IDs, clears the timeline, and spawns the cards in the floating dock.
+  - Automatically loads a default sample dataset on first visit (e.g., 5-6 historical or narrative events).
+
+### 2. Floating Bottom Dock (Unplaced Pool)
+- Occupies the bottom 35% of the screen.
+- Unplaced cards float gently with subtle, continuous CSS drifting/hovering physics to feel alive and playful.
+- Dragging a card out of the floating dock pauses its floating animation and makes it draggable.
+
+### 3. Elastic Top Timeline Rail
+- Occupies the top/middle 60% of the screen.
+- Features a central horizontal line (the timeline stem).
+- Elastic Insertion & Dynamic Spacing: When dragging a card over the timeline, adjacent attached cards fluidly slide left and right (using dynamic CSS transforms or FLIP transitions) to clear a space. Dropping the card inserts it at that exact relative position and recalibrates horizontal spacing evenly across the rail.
+- Vertical Staggering / Magnetic Offset (Anti-Collision):
+  - Long event text must never overlap horizontally adjacent cards.
+  - When cards snap to the timeline, alternate their vertical positions (e.g., odd-indexed placed cards sit slightly ABOVE the rail stem, even-indexed placed cards sit slightly BELOW the rail stem) with visible vertical connecting lines attaching them to the main rail stem.
+  - Implement a subtle spring/magnetic snapping effect as cards approach the stem.
+
+### 4. Logic & Grading (Wordle-Style LIS Algorithm)
+- When the teacher/class clicks "Check Timeline":
+  - Read only the cards currently placed on the timeline stem from left to right.
+  - Extract their original 1-based answer indices.
+  - Compute the Longest Increasing Subsequence (LIS) of the placed cards.
+  - Apply Wordle Color Coding:
+    - GREEN (#22c55e background / glowing border): Cards that are part of the LIS (the correct structural backbone).
+    - YELLOW / AMBER (#eab308 background / glowing border): Displaced cards that break the sequence and need to be moved.
+    - GREY / DEFAULT: Cards left in the bottom pool remain neutral.
+- If all placed cards form a perfect monotonically increasing sequence and all cards from the pool are used, trigger a subtle celebration particle/confetti effect.
+
+### 5. Technical Requirements
+- Standard Pointer Events (PointerDown, PointerMove, PointerUp) or HTML5 Drag and Drop for butter-smooth desktop and touch/stylus operation.
+- Fully standalone: Zero external framework dependencies (Vanilla JavaScript, inline CSS inside `<style>`, pure HTML).
+- Responsive: Recalculates canvas/bounds on window resize so cards stay within bounds.
+- Make the code complete, production-ready, and fully contained within a single index.html file.

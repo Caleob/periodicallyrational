@@ -1,0 +1,37 @@
+Act as an expert educational productivity tool developer. Build a flexible, safe, single-file HTML/CSS/JavaScript web application that turns rubric tier selections and quick-insert buttons into a cohesive, professional feedback paragraph for grading virtual student submissions.
+
+Strict Technical Guardrails:
+1. Zero Dependencies: Use vanilla JavaScript and standard browser DOM APIs only. No external CSS frameworks, CDN scripts, fonts, or server calls.
+2. Complete Standalone File: Deliver everything in a single, continuous code block containing all HTML, CSS, and JS.
+3. Zero-PII by Design: Do not store or ask for student names or IDs. The tool operates strictly as an in-memory text synthesizer.
+
+Interface & Workflow Layout:
+- Visual Design: Clean, high-contrast, modern layout optimized for split-screen grading next to an LMS or gradebook.
+- Configuration Panel (Collapsible Drawer):
+  * Dynamic Rubric Builder: Allow the teacher to add, edit, or delete rubric criteria (e.g., "Thesis", "Evidence", "Conventions"). For each criterion, provide editable feedback text fields corresponding to proficiency levels (0, 1, 2, 3, and 4).
+  * Quick-Insert / Hot-Key Button Manager: Allow teachers to add custom one-click phrase buttons (e.g., "Wrong assignment submitted", "Resubmit by Friday", or teacher contact info/office hours). Each item has a button label and the corresponding text snippet it injects.
+  * Template Import / Export: Provide two buttons:
+    - "Export Configuration (.json)": Downloads the active rubric criteria, tier statements, and quick-insert buttons as a local JSON file.
+    - "Import Configuration (.json)": Allows uploading a previously saved JSON file to instantly restore all categories and custom snippets without retyping.
+- Daily Grading Interface (Main View):
+  * Criteria Selectors: Render each configured rubric category with interactive radio buttons or slider steps for levels 0 through 4. Selecting a tier highlights the choice and updates the text generator immediately.
+  * Quick-Insert Action Bar: Display the custom hot-key buttons in a visible toolbar above the feedback box. Clicking a button appends that pre-set phrase directly to the feedback output.
+  * Live Feedback Preview Box: A dynamic <textarea> showing the assembled, polished feedback paragraph in real time. The teacher can directly edit or type in this box if manual personalization is needed.
+  * Copy Actions: A prominent, primary "Copy Feedback to Clipboard" button with temporary visual confirmation (e.g., green checkmark / "Copied!"), plus a "Reset / Clear Form" button to prep for the next submission.
+
+Behavior & Text Assembly Logic:
+- As the teacher clicks tier ratings, the app joins the active tier phrases into a smooth, natural narrative with appropriate spacing and punctuation.
+- If a criterion is left unselected, simply skip it without breaking or displaying "undefined".
+- Quick-insert snippets append to the end of the text as distinct sentences.
+
+**Refinement Prompt**
+0-4 for a score is a good default but I want the flexibility to grade 0-6 on a criterion or give a 0/2/4/6/8 score...
+
+In the  Rubric & Snippet Configuration maybe include a "Score" input field next to the level (initially showing 0,1,2,3, and 4 and then include an option to add level or remove level. I'm not sure how to handle the word descriptor (i.e . emerging, developing, etc) maybe make that editable as well? Add this increased flexibility to the tool.
+Also allow the user to select "Include score in text". Do not add the score inline add a rubric summary at the end that looks like this:
+
+Score 10/12
+------
+Thesis        3/4
+Style           4/4
+Evidence   3/4
