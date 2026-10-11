@@ -57,6 +57,40 @@
       font-size: 1.05em;
     }
 
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .filter-btn {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.84em;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .filter-btn:hover {
+      background: #f0ede6;
+      color: var(--text);
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
     .card {
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -111,6 +145,21 @@
       margin: 8px 0;
     }
 
+    .quote-box {
+      font-style: italic;
+      color: #444;
+      border-left: 3px solid var(--accent);
+      padding: 4px 0 4px 14px;
+      margin: 10px 0;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
     a.button {
       display: inline-block;
       background: #1a1a1a;
@@ -121,7 +170,6 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 0.9em;
       font-weight: 500;
-      margin-top: 12px;
       transition: background 0.2s ease;
     }
 
@@ -140,13 +188,19 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 0.9em;
       font-weight: 500;
-      margin-top: 12px;
       transition: background 0.2s ease, color 0.2s ease;
     }
 
     a.button-outline:hover {
       background: rgba(26, 77, 128, 0.08);
       color: var(--accent-hover);
+    }
+
+    .empty-state {
+      padding: 36px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-style: italic;
     }
 
     footer {
@@ -181,52 +235,17 @@
 <h1>Writing & Ideas</h1>
 <p class="subtitle">Presentations, tool retrospectives, essays on pedagogy, and curated reading.</p>
 
-<!-- 1. The Classroom Genie Presentation -->
-<div class="card">
-  <div class="card-header">
-    <h2>The Classroom Genie: Building Custom Classroom Tools</h2>
-    <span class="badge">Conference Talk</span>
-  </div>
-  <div class="card-meta">Prepared for the 2026 Pearson Virtual Educator Conference</div>
-  <p>How can classroom educators design and deploy custom, interactive browser-based learning tools without needing to be professional programmers? This presentation explores using modern AI workflows to create tailored, lightweight educational software for student devices—complete with full slides, live interactive demonstrations, and practical prompt frameworks.</p>
-  <a class="button" href="../Conference/index.html">Launch Presentation & Demos →</a>
+<!-- Category Filter Pills -->
+<div class="filter-bar" id="filter-bar">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="App Retrospective">App Retrospectives</button>
+  <button class="filter-btn" data-filter="Curated Reading">Curated Reading</button>
+  <button class="filter-btn" data-filter="Conference Talk">Presentations</button>
+  <button class="filter-btn" data-filter="Essay">Essays</button>
 </div>
 
-<!-- 2. Tool Retrospective: Deep Content Knowledge & The Bard's Meter -->
-<div class="card">
-  <div class="card-header">
-    <h2>The Limits of the Code: Why Deep Content Knowledge Still Matters</h2>
-    <span class="badge">App Retrospective</span>
-  </div>
-  <div class="card-meta">By Caleob King • Software Post-Mortem &amp; ELA Scansion Case Study • October 2026</div>
-  <p>Can a STEM educator use AI to build a great English Language Arts tool? To find out, I built <em>The Bard's Meter</em>—an interactive Shakespearean prosody sandbox. In this retrospective essay, I examine what went right mechanically, the subtle pedagogical dangers of treating poetic scansion like binary math, and why deep subject expertise remains irreplaceable even in an era of effortless code generation.</p>
-  <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px;">
-    <a class="button" href="./retrospectives/shakespeare-scansion/index.html">Read Retrospective Essay →</a>
-    <a class="button-outline" href="./retrospectives/shakespeare-scansion/app.html">Launch The Bard's Meter App 🎭 →</a>
-  </div>
-</div>
-
-<!-- 3. Recommended Reading: Wess Trabelsi -->
-<div class="card">
-  <div class="card-header">
-    <h2>Recommended Reading: "Cognitive Superloading"</h2>
-    <span class="badge">Curated Reading</span>
-  </div>
-  <div class="card-meta">By Wess Trabelsi • Substack</div>
-  <p><em>"Thoughtful, analytical, and deeply relevant. This piece explores cognitive load and student agency in the age of AI with rare clarity and nuance."</em></p>
-  <p>An incisive essay that moves beyond surface-level hype to examine what happens to student cognition, mental models, and retention when interacting with AI tools in learning environments.</p>
-  <a class="button" href="https://wesstrabelsi.substack.com/p/cognitive-superloading?utm_campaign=post-expanded-share&utm_medium=web&triedRedirect=true" target="_blank" rel="noopener">Read on Substack →</a>
-</div>
-
-<!-- 4. Notes & Forthcoming Writing -->
-<div class="card">
-  <div class="card-header">
-    <h2>Forthcoming Writing & Essays</h2>
-    <span class="badge">Notes</span>
-  </div>
-  <div class="card-meta">STEM Pedagogy & Classroom Technology</div>
-  <p>Additional essays and tool retrospectives exploring mathematics pedagogy, inquiry-based science activities, and the realities of classroom software design are in preparation and will be shared here.</p>
-</div>
+<!-- Dynamic Ideas Feed -->
+<div id="ideas-feed"></div>
 
 <hr style="border: none; border-top: 1px solid var(--border); margin: 32px 0;">
 
@@ -239,6 +258,80 @@
     <a href="https://github.com/Caleob" target="_blank" rel="noopener">GitHub</a>
   </p>
 </footer>
+
+<!-- Load Data Ledger -->
+<script src="./posts.js"></script>
+
+<script>
+  (function() {
+    const feed = document.getElementById('ideas-feed');
+    const filterBar = document.getElementById('filter-bar');
+    let currentFilter = 'all';
+
+    function renderPosts() {
+      if (typeof IDEAS_POSTS === 'undefined' || !Array.isArray(IDEAS_POSTS)) {
+        feed.innerHTML = '<div class="empty-state">Unable to load writing feed. Please check posts.js.</div>';
+        return;
+      }
+
+      // Sort posts chronologically (newest first)
+      const sorted = [...IDEAS_POSTS].sort((a, b) => new Date(b.date || '1970-01-01') - new Date(a.date || '1970-01-01'));
+
+      // Filter by type if not 'all'
+      const filtered = currentFilter === 'all' 
+        ? sorted 
+        : sorted.filter(p => p.type === currentFilter);
+
+      if (filtered.length === 0) {
+        feed.innerHTML = '<div class="empty-state">No entries found under this topic yet. Check back soon!</div>';
+        return;
+      }
+
+      feed.innerHTML = filtered.map(post => {
+        let buttons = '';
+        if (post.articleUrl) {
+          buttons += `<a class="button" href="${post.articleUrl}">${post.actionLabel || 'Read Essay →'}</a>`;
+        }
+        if (post.appUrl) {
+          buttons += `<a class="button-outline" href="${post.appUrl}">${post.appActionLabel || 'Launch App 🎭 →'}</a>`;
+        }
+        if (post.externalUrl) {
+          buttons += `<a class="button" href="${post.externalUrl}" target="_blank" rel="noopener">${post.actionLabel || 'Read Source ↗'}</a>`;
+        }
+
+        const quoteHtml = post.quote ? `<div class="quote-box">"${post.quote}"</div>` : '';
+        const metaHtml = post.meta ? `<div class="card-meta">${post.meta}</div>` : '';
+        const btnRow = buttons ? `<div class="btn-row">${buttons}</div>` : '';
+
+        return `
+          <div class="card">
+            <div class="card-header">
+              <h2>${post.title}</h2>
+              <span class="badge">${post.badge || post.type}</span>
+            </div>
+            ${metaHtml}
+            ${quoteHtml}
+            <p>${post.summary}</p>
+            ${btnRow}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Set up filter buttons
+    filterBar.addEventListener('click', (e) => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderPosts();
+    });
+
+    // Initial render
+    renderPosts();
+  })();
+</script>
 
 </body>
 </html>
