@@ -1,0 +1,20 @@
+# Lesson 13: Theatrical Immersion & Multimodal Learning
+
+### 1. Set the Stage with Visual Ambience (Mood Matters)
+* Learning poetry meter (scansion) often feels dry and mechanical on a traditional worksheet.
+* By asking the AI to "raise an SVG curtain on a proscenium arch" and use warm stage lighting with vintage typography, the tool transforms a routine grammar drill into an immersive theatrical experience.
+* Setting a thematic visual hook dramatically increases student engagement during remote screen-shares.
+
+### 2. Design for Fluid Keyboard Interaction
+* When designing activities that require repetitive student inputs (like marking 10 syllables per line), mouse clicking creates unnecessary friction.
+* Prompt for intuitive keyboard shortcuts: Up/Down arrow keys for stressed/unstressed, Left/Right to revise, and Enter to check.
+* A guided bouncing target dot provides real-time kinesthetic feedback, helping students "hear" the rhythm as their fingers tap out the meter.
+
+### 3. Move Beyond Mechanical Answers into Deep Reflection
+* Drill-and-practice tools often stop at binary grading (right vs. wrong).
+* In the humanities, however, the real pedagogical value lies in interpretation: Why did Shakespeare introduce an irregular trochaic foot into Hamlet's soliloquy?
+* Prompting for a structured reflection box after the scansion check transforms an automated grader into a genuine inquiry tool.
+
+### 4. Build for Reusability with Data Imports
+* Hardcoding poetry lines inside the code limits the lifespan of your tool.
+* By requesting a simple JSON loader ("allow the user to load custom JSON data in the same format"), the exact same application can be reused year after year across multiple grade levels, poets, and curriculum units.

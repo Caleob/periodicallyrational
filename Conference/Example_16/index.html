@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curriculum Deep Dive Studio - The Classroom Genie</title>
+  <style>
+    :root {
+      --bg: #090a10;
+      --card: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(251, 191, 36, 0.3);
+      --text: #f8fafc;
+      --mute: #94a3b8;
+      --gold: #fbbf24;
+      --gold-light: #fef08a;
+      --amber: #f59e0b;
+      --cyan: #38bdf8;
+      --purple: #c084fc;
+      --green: #22c55e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(ellipse at 80% 0, #312e81 0, transparent 50%),
+                  radial-gradient(ellipse at 20% 100%, #451a03 0, transparent 55%),
+                  #090a10;
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1.5rem 4rem;
+      line-height: 1.6;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    h1 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+      line-height: 1.2;
+    }
+    .lead {
+      color: var(--mute);
+      font-size: 1.1rem;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.8rem;
+      margin-bottom: 1.8rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    h2 {
+      font-size: 1.4rem;
+      color: var(--gold-light);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .quick-templates {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+    .btn-template {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-template:hover {
+      background: rgba(251, 191, 36, 0.2);
+      border-color: var(--gold);
+      color: #fff;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 1.2rem;
+    }
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 0.4rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 85px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border: none;
+      color: #0b0d18;
+      font-weight: 800;
+      padding: 0.85rem 1.8rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+    }
+    .prompt-box {
+      background: #040508;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-top: 1.5rem;
+      position: relative;
+    }
+    pre {
+      font-family: "Fira Code", monospace, Consolas, monospace;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+    .actions-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+    .btn-copy {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .btn-copy:hover {
+      background: var(--gold);
+      color: #000;
+      font-weight: 700;
+      border-color: var(--gold-light);
+    }
+    .info-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .info-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .info-item h4 {
+      color: var(--cyan);
+      font-size: 0.98rem;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .info-item p {
+      font-size: 0.86rem;
+      color: var(--mute);
+    }
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--gold);
+      color: #000;
+      font-weight: 700;
+      padding: 0.75rem 1.4rem;
+      border-radius: 9999px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="badge">🔭 Cave of Wonders · Slot 16</div>
+      <h1>Curriculum Deep Dive Studio</h1>
+      <p class="lead">This slot is reserved for your next advanced subject simulation. What concept do your students struggle with most? Use this blueprint tool to generate an architectural prompt for Gemini.</p>
+    </header>
+
+    <section class="card">
+      <h2>🔭 Interactive Simulation Architect</h2>
+      <p style="color:var(--mute); font-size:0.92rem; margin-bottom:1rem;">Select a challenging secondary concept or blueprint your own interactive model:</p>
+      
+      <div class="quick-templates">
+        <button class="btn-template" onclick="loadTemplate('genetics')">🧬 Genetics Punnett Sandbox</button>
+        <button class="btn-template" onclick="loadTemplate('physics')">🚀 Projectile Motion Lab</button>
+        <button class="btn-template" onclick="loadTemplate('tectonics')">🌍 Plate Tectonics Boundaries</button>
+        <button class="btn-template" onclick="loadTemplate('civics')">⚖️ Electoral College Simulator</button>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label for="sim-subject">Discipline & Course</label>
+          <select id="sim-subject">
+            <option value="High School Biology">High School Biology</option>
+            <option value="High School Physics">High School Physics</option>
+            <option value="High School Chemistry">High School Chemistry</option>
+            <option value="Secondary Mathematics (Algebra / Geometry / Calc)">Secondary Mathematics</option>
+            <option value="High School History / Civics">High School History / Civics</option>
+            <option value="Advanced English / Literature">Advanced English / Literature</option>
+          </select>
+        </div>
+        <div>
+          <label for="sim-archetype">Interactive Archetype</label>
+          <select id="sim-archetype">
+            <option value="Kinematic Interactive Manipulative (Moving SVG/Canvas with real-time sliders)">Kinematic Interactive Manipulative</option>
+            <option value="3-Stage Gated State Machine (Observe -> Classify -> Calculate)">3-Stage Gated State Machine</option>
+            <option value="Procedural Geometric Model with Guess-and-Check Fly-In">Procedural Geometric Area Model</option>
+            <option value="Real-Time Probability / Distribution Curve Plotter">Dynamic Distribution Plotter</option>
+            <option value="Thematic Arcade Defense Simulator with Telemetry">Arcade Telemetry Defense Game</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label for="sim-concept">What challenging standard or mechanism are you modeling?</label>
+        <textarea id="sim-concept">Dihybrid genetic crosses: students assign parental alleles, watch gametes combine visually in a dynamic 4x4 grid, and observe animated phenotypic ratios change in real time.</textarea>
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label for="sim-controls">What interactive controls do students get?</label>
+        <textarea id="sim-controls">Allele trait selectors (dominant vs. recessive), an 'Offspring Reveal' button with animated trait cards, a real-time ratio bar chart, and a 'Challenge Mode' with mysterious offspring traits to deduce.</textarea>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="sim-feedback">What pedagogical feedback and scaffolding should it provide?</label>
+        <input type="text" id="sim-feedback" value="Step-by-step allele distribution hints, gentle error correction, and an end-of-lab performance summary download." />
+      </div>
+
+      <button class="btn-primary" onclick="generatePrompt()">
+        <span>🪄 Generate Architectural Prompt</span>
+      </button>
+
+      <div class="prompt-box" id="prompt-output-box">
+        <label style="color:var(--gold-light); margin-bottom:0.6rem;">Your Ready-to-Copy Architectural Prompt for Gemini:</label>
+        <pre id="prompt-text"></pre>
+        <div class="actions-bar">
+          <button class="btn-copy" onclick="copyPrompt()">📋 Copy Prompt</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>💡 Architectural Keys for Deep Dives</h2>
+      <ul class="info-list">
+        <li class="info-item">
+          <h4>Animate the Mechanism</h4>
+          <p>Don't just verify numerical answers. Ask the AI to visually show <em>why</em> an equation or biological process works using dynamic SVGs or Canvas.</p>
+        </li>
+        <li class="info-item">
+          <h4>Gated Scaffolding</h4>
+          <p>Lock Stage 2 until Stage 1 is verified. This prevents students from guessing algebraic calculations before they understand qualitative relationships.</p>
+        </li>
+        <li class="info-item">
+          <h4>Zero External Dependencies</h4>
+          <p>Require pure native HTML5 Canvas/SVG, CSS3, and ES6 JavaScript. The entire simulation runs offline with zero server calls and zero school firewall issues.</p>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <div id="toast">✓ Copied to clipboard!</div>
+
+  <script>
+    var templates = {
+      genetics: {
+        subject: "High School Biology",
+        archetype: "Kinematic Interactive Manipulative (Moving SVG/Canvas with real-time sliders)",
+        concept: "Dihybrid genetic crosses: students assign parental alleles, watch gametes combine visually in a dynamic 4x4 grid, and observe animated phenotypic ratios change in real time.",
+        controls: "Allele trait selectors (dominant vs. recessive), an 'Offspring Reveal' button with animated trait cards, a real-time ratio bar chart, and a 'Challenge Mode' with mysterious offspring traits to deduce.",
+        feedback: "Step-by-step allele distribution hints, gentle error correction, and an end-of-lab performance summary download."
+      },
+      physics: {
+        subject: "High School Physics",
+        archetype: "Thematic Arcade Defense Simulator with Telemetry",
+        concept: "2D Projectile motion with velocity vectors: students adjust initial velocity (v0) and launch angle (theta) to arc a projectile past obstacles toward target landing zones.",
+        controls: "Angle knob/slider, velocity dial, wind vector toggle, animated slow-motion trajectory trace, and instantaneous vector component readouts (Vx, Vy).",
+        feedback: "Dynamic formula HUD calculating flight time, maximum height, and horizontal range with instant retry and streak scoring."
+      },
+      tectonics: {
+        subject: "Life & Earth Sciences",
+        archetype: "3-Stage Gated State Machine (Observe -> Classify -> Calculate)",
+        concept: "Plate tectonic boundary interactions: convergent, divergent, and transform boundaries and their associated geological features (trenches, rift valleys, mid-ocean ridges).",
+        controls: "Interactive plate sliders that drag oceanic and continental crusts toward or away from each other, triggering simulated subduction and magma plume animations.",
+        feedback: "Feature identification check, real-world case study cards, and an inquiry reflection prompt."
+      },
+      civics: {
+        subject: "High School History / Civics",
+        archetype: "Real-Time Probability / Distribution Curve Plotter",
+        concept: "Electoral College mechanics & state allocation: students simulate various popular vote swing scenarios across battleground states to observe paths to 270 electoral votes.",
+        controls: "Interactive 50-state SVG map with click-to-flip partisan control, demographic slider adjustments, and real-time electoral vote bar totals.",
+        feedback: "Historical election comparison presets (1860, 1912, 1968, 2000) and an exportable state-by-state analytical debrief."
+      }
+    };
+
+    function loadTemplate(key) {
+      var t = templates[key];
+      if (!t) return;
+      document.getElementById('sim-subject').value = t.subject;
+      document.getElementById('sim-archetype').value = t.archetype;
+      document.getElementById('sim-concept').value = t.concept;
+      document.getElementById('sim-controls').value = t.controls;
+      document.getElementById('sim-feedback').value = t.feedback;
+      generatePrompt();
+    }
+
+    function generatePrompt() {
+      var subject = document.getElementById('sim-subject').value;
+      var archetype = document.getElementById('sim-archetype').value;
+      var concept = document.getElementById('sim-concept').value.trim();
+      var controls = document.getElementById('sim-controls').value.trim();
+      var feedback = document.getElementById('sim-feedback').value.trim();
+
+      var prompt = 'Act as a senior educational software architect and secondary ' + subject + ' curriculum specialist.\n\n' +
+        'Build a zero-dependency, single-file HTML/CSS/JavaScript interactive simulation based on the archetype: ' + archetype + '.\n\n' +
+        'Pedagogical Target & Conceptual Standard:\n' +
+        concept + '\n\n' +
+        'Technical & Visual Constraints:\n' +
+        '- Zero Dependencies: Use vanilla JavaScript, modern CSS, and HTML5 Canvas or SVG exclusively. Zero external CDNs, npm packages, or fonts.\n' +
+        '- Complete Standalone File: Deliver everything inside a single index.html file.\n' +
+        '- Visual Design: High-contrast dark workstation aesthetic with rich jewel tones, crisp typography, and fluid CSS/Canvas animations.\n' +
+        '- Client-Side Privacy: Operates 100% in local browser memory without server calls.\n\n' +
+        'Interactive Controls & Mechanics:\n' +
+        '- ' + controls + '\n\n' +
+        'Scaffolding & Assessment Feedback:\n' +
+        '- ' + feedback;
+
+      document.getElementById('prompt-text').textContent = prompt;
+    }
+
+    function copyPrompt() {
+      var text = document.getElementById('prompt-text').textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        var t = document.getElementById('toast');
+        t.style.display = 'block';
+        setTimeout(function() { t.style.display = 'none'; }, 2500);
+      });
+    }
+
+    // Initial generation
+    generatePrompt();
+  </script>
+</body>
+</html>

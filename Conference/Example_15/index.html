@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Everyday Helper Studio - The Classroom Genie</title>
+  <style>
+    :root {
+      --bg: #090a10;
+      --card: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(168, 85, 247, 0.3);
+      --text: #f8fafc;
+      --mute: #94a3b8;
+      --purple: #a855f7;
+      --purple-light: #c084fc;
+      --gold: #fbbf24;
+      --cyan: #38bdf8;
+      --green: #22c55e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(ellipse at 20% 0, #2e1065 0, transparent 50%),
+                  radial-gradient(ellipse at 80% 100%, #1e1b4b 0, transparent 55%),
+                  #090a10;
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1.5rem 4rem;
+      line-height: 1.6;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid var(--purple);
+      color: var(--purple-light);
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    h1 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+      line-height: 1.2;
+    }
+    .lead {
+      color: var(--mute);
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.8rem;
+      margin-bottom: 1.8rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    h2 {
+      font-size: 1.4rem;
+      color: var(--purple-light);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .quick-templates {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+    .btn-template {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-template:hover {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: var(--purple);
+      color: #fff;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 1.2rem;
+    }
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 0.4rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 85px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #a855f7, #7c3aed);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 0.85rem 1.8rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+    }
+    .prompt-box {
+      background: #040508;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-top: 1.5rem;
+      position: relative;
+    }
+    pre {
+      font-family: "Fira Code", monospace, Consolas, monospace;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+    .actions-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+    .btn-copy {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .btn-copy:hover {
+      background: var(--purple);
+      border-color: var(--purple-light);
+    }
+    .info-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .info-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .info-item h4 {
+      color: var(--gold);
+      font-size: 0.98rem;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .info-item p {
+      font-size: 0.86rem;
+      color: var(--mute);
+    }
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #22c55e;
+      color: #000;
+      font-weight: 700;
+      padding: 0.75rem 1.4rem;
+      border-radius: 9999px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="badge">🧰 Cave of Wonders · Slot 15</div>
+      <h1>Everyday Helper Studio</h1>
+      <p class="lead">This slot is reserved for your next weekly classroom time-saver. Use this interactive scratchpad to draft your wish, generate a Golden Prompt, and build a custom helper with Gemini.</p>
+    </header>
+
+    <section class="card">
+      <h2>🪄 Interactive Wish Builder</h2>
+      <p style="color:var(--mute); font-size:0.92rem; margin-bottom:1rem;">Select a quick starter template or customize the fields below to architect your prompt:</p>
+      
+      <div class="quick-templates">
+        <button class="btn-template" onclick="loadTemplate('sub')">📋 Substitute Teacher Brief</button>
+        <button class="btn-template" onclick="loadTemplate('missing')">✉️ Missing Work Notice Formatter</button>
+        <button class="btn-template" onclick="loadTemplate('pairs')">👥 Partner & Group Shuffler</button>
+        <button class="btn-template" onclick="loadTemplate('warmup')">☕ Daily Warm-Up Board</button>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label for="helper-grade">Grade / Setting</label>
+          <select id="helper-grade">
+            <option value="Any Grade (Virtual Classroom)">Any Grade (Virtual Classroom)</option>
+            <option value="Elementary (Grades K-5)">Elementary (Grades K-5)</option>
+            <option value="Middle School (Grades 6-8)">Middle School (Grades 6-8)</option>
+            <option value="High School (Grades 9-12)">High School (Grades 9-12)</option>
+          </select>
+        </div>
+        <div>
+          <label for="helper-name">Tool Name</label>
+          <input type="text" id="helper-name" value="SubPlan Rapid Brief" />
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label for="helper-input">What will you paste or type into it? (The Raw Material)</label>
+        <textarea id="helper-input">Schedule times, classroom link, student roster highlights, and today's lesson objectives.</textarea>
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label for="helper-action">What should the tool do with this information? (The Work)</label>
+        <textarea id="helper-action">Format the raw notes into a crisp, one-page substitute briefing card with quick-copy announcement links and emergency contact buttons.</textarea>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="helper-output">What do you want to copy or export at the end? (The Result)</label>
+        <input type="text" id="helper-output" value="A polished, clean summary card with a one-click 'Copy for Email' button." />
+      </div>
+
+      <button class="btn-primary" onclick="generatePrompt()">
+        <span>🪄 Generate Golden Prompt</span>
+      </button>
+
+      <div class="prompt-box" id="prompt-output-box">
+        <label style="color:var(--purple-light); margin-bottom:0.6rem;">Your Ready-to-Copy Prompt for Gemini:</label>
+        <pre id="prompt-text"></pre>
+        <div class="actions-bar">
+          <button class="btn-copy" onclick="copyPrompt()">📋 Copy Prompt</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>🚀 How to Turn This Wish into a Working App</h2>
+      <ul class="info-list">
+        <li class="info-item">
+          <h4>1. Paste into Gemini</h4>
+          <p>Open your school-approved AI chat (like Gemini), paste the generated prompt, and press Enter.</p>
+        </li>
+        <li class="info-item">
+          <h4>2. Save as HTML</h4>
+          <p>Click "Copy code", open Notepad (Windows) or TextEdit (Mac), paste the code, and save as <code>index.html</code>.</p>
+        </li>
+        <li class="info-item">
+          <h4>3. Drop into Example_15</h4>
+          <p>Drop your file into the <code>Example_15/</code> folder to permanently make this slot your own custom tool!</p>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <div id="toast">✓ Copied to clipboard!</div>
+
+  <script>
+    var templates = {
+      sub: {
+        name: "SubPlan Rapid Brief",
+        grade: "Any Grade (Virtual Classroom)",
+        input: "Schedule times, meeting links, attendance directions, and emergency procedures.",
+        action: "Clean up and organize the notes into a distraction-free, one-page briefing dashboard for a visiting substitute teacher.",
+        output: "A clean dashboard with live links, formatted timetable, and a 'Copy Plain Text Summary' button."
+      },
+      missing: {
+        name: "Missing Work Notice Builder",
+        grade: "Middle School (Grades 6-8)",
+        input: "Student first name, missing assignment titles, and submission deadline.",
+        action: "Assemble a warm, encouraging, student-friendly email reminder paragraph without requiring student IDs or PII.",
+        output: "A live preview box and a 'Copy Email Text' button for fast parent/student messaging."
+      },
+      pairs: {
+        name: "Quick Partner & Group Maker",
+        grade: "Elementary (Grades K-5)",
+        input: "Class roster pasted in as a raw list of names.",
+        action: "Randomize names into pairs or trios with a fun visual animation, ensuring no repeat pairings from prior rounds.",
+        output: "Colorful group cards and a 'Copy Group List' button formatted for meeting chat."
+      },
+      warmup: {
+        name: "Daily Bell-Ringer Board",
+        grade: "High School (Grades 9-12)",
+        input: "Daily quote, 3-question warm-up check, and 5-minute countdown timer setting.",
+        action: "Render a clean, high-contrast screen-share card with an integrated timer chime and toggleable answer reveal buttons.",
+        output: "A sleek fullscreen display optimized for Zoom or Teams screen sharing."
+      }
+    };
+
+    function loadTemplate(key) {
+      var t = templates[key];
+      if (!t) return;
+      document.getElementById('helper-name').value = t.name;
+      document.getElementById('helper-grade').value = t.grade;
+      document.getElementById('helper-input').value = t.input;
+      document.getElementById('helper-action').value = t.action;
+      document.getElementById('helper-output').value = t.output;
+      generatePrompt();
+    }
+
+    function generatePrompt() {
+      var name = document.getElementById('helper-name').value.trim() || 'Everyday Helper';
+      var grade = document.getElementById('helper-grade').value;
+      var input = document.getElementById('helper-input').value.trim();
+      var action = document.getElementById('helper-action').value.trim();
+      var output = document.getElementById('helper-output').value.trim();
+
+      var prompt = 'Act as an expert educational productivity tool developer and front-end engineer.\n\n' +
+        'Build a lightweight, safe, single-file HTML/CSS/JavaScript web utility called "' + name + '" for ' + grade + ' teachers.\n\n' +
+        'Technical & Privacy Guardrails:\n' +
+        '1. Single Standalone File: Deliver all HTML, CSS, and vanilla JavaScript combined in one single file. No external frameworks, CDNs, or server dependencies.\n' +
+        '2. Client-Side Privacy: Operates 100% in local browser memory. Zero student PII storage or network transmission.\n' +
+        '3. Screen-Share Optimized: High-contrast, modern slate theme with crisp typography and clean card layouts.\n\n' +
+        'Workflow & Layout:\n' +
+        '- Input Section: Allow the teacher to paste or input: ' + input + '\n' +
+        '- Processing & Logic: ' + action + '\n' +
+        '- Output Display: ' + output + '\n' +
+        '- Action Controls: Prominent "Copy to Clipboard" button with temporary visual confirmation feedback, plus a "Reset / Clear Form" button.';
+
+      document.getElementById('prompt-text').textContent = prompt;
+    }
+
+    function copyPrompt() {
+      var text = document.getElementById('prompt-text').textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        var t = document.getElementById('toast');
+        t.style.display = 'block';
+        setTimeout(function() { t.style.display = 'none'; }, 2500);
+      });
+    }
+
+    // Initial generation
+    generatePrompt();
+  </script>
+</body>
+</html>

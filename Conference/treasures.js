@@ -15,7 +15,7 @@ window.TREASURE_GROUPS = [
    sub:"Save time on the jobs you do every single week.", hue:0},
   {id:"games", icon:"🎲", title:"Games for Any Grade",
    sub:"Quick, fun review you can run on a shared screen.", hue:150},
-  {id:"deep", icon:"🔭", title:"Deep Dives: High School Math & Science",
+  {id:"deep", icon:"🔭", title:"Deep Dives: High School Subjects",
    sub:"Curious how far a conversation with AI can go? These are fascinating, and totally optional.", hue:250}
 ];
 
@@ -111,6 +111,33 @@ window.TREASURES = [
       ]]
     ]}
   },
+  {
+    group:"helpers",
+    name:"Everyday Helper Studio",
+    short:"Build your next custom weekly time-saver",
+    grades:"Any grade",
+    file:"Example_15/index.html",
+    downloadFile:"Example_15/Placeholder_Helper.zip", downloadName:"Placeholder_Helper.zip",
+    wish:"A dedicated studio to imagine and generate your next weekly classroom helper—draft sub plans, format announcements, or streamline repetitive grading chores.",
+    prompt:"Act as an expert educational productivity tool developer. Build a flexible, safe, zero-dependency single-file HTML/CSS/JavaScript web utility designed to streamline a routine weekly teacher task.\n\n[Placeholder: Example 15 slot ready for your custom Everyday Helper prompt. Describe your weekly task, input format, and output layout.]",
+    what:"A placeholder workshop reserved for your next everyday teacher helper. What routine chore steals 15 minutes of your time every single week? Use the built-in wish generator to create custom prompts for sub plans, grading snippets, student grouping, or family announcements.",
+    uses:[
+      ["Target weekly chores","Eliminate repetitive administrative paperwork and classroom routines."],
+      ["Interactive prompt builder","Select your grade and chore to draft an instant, custom Golden Prompt."],
+      ["Runs 100% offline","No login, no subscriptions, completely private on your desktop."],
+      ["Ready for your files","Drop your finished HTML file into Example_15 to replace this placeholder."]
+    ],
+    lesson:{title:"Your Turn to Make a Wish", points:[
+      ["Target the paper-cut tasks",[
+        "The most valuable tools aren't complicated. They solve one small, annoying routine you repeat every week.",
+        "Eliminating a 15-minute weekly friction point saves over 9 hours across a school year."
+      ]],
+      ["Start with three plain sentences",[
+        "Describe what you paste in, what the tool does, and what you want to copy out.",
+        "You don't need code words—just explain what you want to see on your screen."
+      ]]
+    ]}
+  },
 
   /* ---------------------------- GAMES FOR ANY GRADE ---------------------------- */
   {
@@ -197,6 +224,37 @@ window.TREASURES = [
       ]],
       ["Emojis are free pictures",[
         "You don’t need to find graphics. Ask for emojis like 🔴, 🔵, and 💀 to make buttons and cards instantly clear and colorful."
+      ]]
+    ]}
+  },
+  {
+    group:"games",
+    name:"The Cursed Exam",
+    short:"Spooky review game with built-in whiteboard for any subject",
+    grades:"Any grade (Review Game Pattern)",
+    file:"Example_14/cursed_exam_of_unearthly_statistics.html",
+    downloadFile:"Example_14/Cursed_Exam_Statistics_Review.zip", downloadName:"Cursed_Exam_Statistics_Review.zip",
+    wish:"Create a Halloween-themed review game with hilarious, spooky versions of our test questions. Include next/back buttons, hints, a dramatic skull-and-crossbones answer reveal, and a live whiteboard on the side so students can show their work.",
+    prompt:"Create a review test with alternate versions of these test questions. Make the problems memorable and specific and be halloween or spooky themed. Be funny!\n\n[Model Response]\n\nGenerate a single file html page for me to show students on screen presenting each of these problems. Use prominent arrow buttons for navigation.  Have a \"Hint\" button that will provide key definitions and formulas for each problem. Have a \"Reveal Answer\" button that comes up with a skull and crossbones warning asking if they are sure... keeping the halloween theme. \n\nHave a section on the right side of the screen that is a simple html whiteboard. The pencil should be switchable to red or black, varied from 2 px to 10 px size and there should be an \"Undo\" and  \"Clear\" button. Going to the next problem clears the whiteboard.",
+    what:"A high-energy, spooky themed review exam. Although this example reviews statistics, the pattern works for any subject or grade level: turn standard test questions into memorable story problems (like vampires, haunted crypts, and cursed potions). It features arrow navigation, formula hints, a dramatic skull-and-crossbones confirmation before revealing answers, and a built-in drawing whiteboard on the right so you or your students can sketch out diagrams and math right on your shared screen.",
+    uses:[
+      ["Holiday & themed review","Swap boring review sheets for Halloween, space, or pirate themes that get students laughing and engaged."],
+      ["Built-in live whiteboard","No need to juggle outside drawing tools. Sketch diagrams, underline clues, and do scratch work right beside the problem."],
+      ["Suspenseful answer reveal","Build anticipation before showing solutions with a dramatic skull-and-crossbones confirmation warning."],
+      ["Reusable for any subject","Ask the AI to swap in questions from your own unit (history, biology, Spanish, literature)."]
+    ],
+    lesson:{title:"Just-In-Time Software & Built-In Whiteboards", points:[
+      ["Build review games on the fly with voice",[
+        "You don't even have to type: use voice-to-text dictation to read out your test topics or past quiz questions.",
+        "The AI generates fresh, alternative problem variations in seconds."
+      ]],
+      ["Don't choose between a web app and a whiteboard",[
+        "Teachers often toggle back and forth between slides and Zoom's whiteboard.",
+        "Instead, ask the AI to build a drawing canvas right into your tool with pen colors, sizes, undo, and clear."
+      ]],
+      ["'Just-in-Time Software' for timely themes",[
+        "When software takes 5 minutes to build, you can make throwaway games for Halloween, spirit week, or tomorrow's pep rally.",
+        "Timely themes turn stressful test prep into an event students look forward to."
       ]]
     ]}
   },
@@ -364,6 +422,67 @@ window.TREASURES = [
       ]],
       ["Gentle help instead of pop-ups",[
         "Pop-up windows cover the problem. I asked for a Help button that tints the screen and shows hints right next to the work."
+      ]]
+    ]}
+  },
+  {
+    group:"deep",
+    name:"The Bard's Meter",
+    short:"Shakespeare poetry scansion with a rising stage curtain",
+    grades:"High School English",
+    file:"Example_13/shakespeare_scansion_practice.html",
+    downloadFile:"Example_13/Shakespeare_Scansion_Practice.zip", downloadName:"Shakespeare_Scansion_Practice.zip",
+    wish:"A theatrical Shakespeare scansion tool with an opening stage curtain, a bouncing dot above each syllable where students press up/down arrows to mark meter, meter type identification, and a downloadable progress report.",
+    prompt:"OK produce a standalone HTML activity. Start with a \"Prologue\" screen showing the details.  Start with 3 famous lines of increasing complexity but allow the user to load other JSON data in the form ablove to make this reusable, When we begin a svg curtain rises on a proscenium. The line appears with a bouncing dot above the first syllable. the user uses the keyboard to indicate up and down stresses which gently highlights the text to indicate this. The right and left arrow keys CAN be used to go back and change answers or the bouncing ball can move naturally to the right as the stress is entered. At the end the ball lands on  a \"Check?\" area and pressing any key except back goes through and indicates right and wrong stresses. Pause. Show the correct highlighting.\n\nAsk about the basic meter (pentameter tetrameter or other options using the same bouncing ball interface. After the check is selected display the correct answer.\n\nFinally enable a reflection box. Ask if the meter is strict or if there are variations and (if there are) why those variations may have been included.\n\nAfter 3 problems display a thematic END screen (including some rhyming metered verse thanking the student for their time and attention)  and offer to download a report of activity. Keep track of time spent on each section. percentage write and wrong in each section and of course the reflections and download as a txt file.",
+    what:"An interactive Elizabethan stage where students learn poetic scansion. When students begin, velvet SVG curtains rise to reveal a proscenium arch. A golden dot bounces from syllable to syllable as students use arrow keys (or 1 and 0) to mark stressed and unstressed beats. After checking their scansion, students identify the overall meter (like Iambic Pentameter), reflect on rhythm variations, and download a timestamped performance report.",
+    uses:[
+      ["Kinesthetic rhythm practice","The bouncing ball and keyboard controls turn abstract poetic feet into an active, musical rhythm game."],
+      ["Immediate corrective feedback","Students see right away which syllables they stressed correctly and which need another listen."],
+      ["Beyond mechanical rules","A guided reflection prompt asks students why Shakespeare broke the meter in specific lines to convey emotional tension."],
+      ["Downloadable student report","Students download a clean summary showing time spent, accuracy, and their written reflections."]
+    ],
+    lesson:{title:"Pair Kinesthetic Controls with Reflection", points:[
+      ["Theatrical animation sets the stage",[
+        "Asking for an SVG curtain that rises on click creates instant atmosphere and signals to students that this is an experience, not a quiz."
+      ]],
+      ["Use familiar keyboard shortcuts",[
+        "Prompt for arrow keys (up for stressed, down for unstressed) or numbers (1 and 0). Keyboard controls feel faster and more natural than clicking tiny buttons on screen."
+      ]],
+      ["Ask for student reflection, not just right or wrong",[
+        "In literature and humanities, great learning happens in the gray areas. Prompt for a reflection box asking why the author broke the rules."
+      ]],
+      ["Make tools extensible with JSON",[
+        "Ask the AI to let you upload custom JSON data so you or your department can load new poetry sets without rebuilding the app."
+      ]]
+    ]}
+  },
+  {
+    group:"deep",
+    name:"Curriculum Deep Dive Studio",
+    short:"Architect your next interactive subject simulation",
+    grades:"Secondary / High School",
+    file:"Example_16/index.html",
+    downloadFile:"Example_16/Placeholder_Deep_Dive.zip", downloadName:"Placeholder_Deep_Dive.zip",
+    wish:"A dedicated studio to blueprint and generate advanced interactive simulations for tough secondary STEM and humanities concepts—like genetics, wave physics, or historical treaties.",
+    prompt:"Act as a secondary curriculum specialist and educational front-end software architect. Build a highly visual, zero-dependency interactive simulation designed to demonstrate a challenging conceptual standard.\n\n[Placeholder: Example 16 slot ready for your custom curriculum simulation prompt. Describe your subject, target standard, interactive manipulative elements, and student reflection controls.]",
+    what:"A placeholder workshop reserved for your next advanced subject simulation. What concept in your curriculum do students struggle with most? Whether it's tracing genetics in biology, graphing wave interference in physics, or exploring trade routes in history, an AI conversation can build an interactive manipulative tailored to your exact lesson.",
+    uses:[
+      ["Tackle tough standards","Turn abstract textbook formulas and static diagrams into kinetic, moving models."],
+      ["Interactive sandbox","Give students levers, sliders, and buttons to explore cause and effect in real time."],
+      ["Interactive prompt builder","Select your discipline and manipulative archetype to generate a detailed Golden Prompt."],
+      ["Ready for your files","Drop your finished HTML file into Example_16 to replace this placeholder."]
+    ],
+    lesson:{title:"Architecting Secondary Curriculum Deep Dives", points:[
+      ["Target the hardest conceptual standard",[
+        "Look at your unit assessment data: what standard do students stumble over year after year?",
+        "Focus your AI build on that exact pain point with moving models and visual cause-and-effect."
+      ]],
+      ["Animate the mechanism, not just the answer",[
+        "Show triangles rotating into alignment, show electrons jumping across oxidation states, or draw curves shifting in real time.",
+        "Watching the mechanism unfold turns abstract rules into intuitive mental pictures."
+      ]],
+      ["Build gated scaffolding",[
+        "In multi-variable simulations, lock complex equations until students master qualitative observation first."
       ]]
     ]}
   }

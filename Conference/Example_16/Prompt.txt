@@ -1,0 +1,3 @@
+Act as a secondary curriculum specialist and educational front-end software architect. Build a highly visual, zero-dependency interactive simulation designed to demonstrate a challenging conceptual standard.
+
+[Placeholder: Example 16 slot ready for your custom curriculum simulation prompt. Describe your subject, target standard, interactive manipulative elements, and student reflection controls.]

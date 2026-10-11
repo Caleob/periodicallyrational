@@ -1,0 +1,3 @@
+Act as an expert educational productivity tool developer. Build a flexible, safe, zero-dependency single-file HTML/CSS/JavaScript web utility designed to streamline a routine weekly teacher task.
+
+[Placeholder: Example 15 slot ready for your custom Everyday Helper prompt. Describe your weekly task, input format, and output layout.]

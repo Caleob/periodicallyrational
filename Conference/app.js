@@ -256,7 +256,7 @@ var SLIDES=[
   +'<a class="btn" href="Example_1/WheelPicker.html" target="_blank" rel="noopener">🎡 Try a finished wheel</a></div>'}},
 
 {t:'The Cave of Wonders',h:function(){return '<h2>The Cave of Wonders</h2>'
-  +'<div class="lead">Twelve real tools, each one made by describing it to AI. Click any gem to explore:</div>'
+  +'<div class="lead">Sixteen real tools and ideas, each one made by describing it to AI. Click any gem to explore:</div>'
   +'<div class="cave-wrap static">'+caveHTML()+'</div>'}},
 
 {t:'Two Rules—and When to Break Them',h:function(){return '<h2>Two Golden Rules — And When to Break Them</h2>'
@@ -800,9 +800,12 @@ document.addEventListener('click',function(e){
   if(clsn){
     var idx=+clsn.dataset.copylesson;
     var tr=TREASURES[idx];
-    if(tr&&tr.lessonMd){
-      copy(tr.lessonMd);
-      toast('✓ Lesson copied to clipboard!');
+    if(tr){
+      var txt=tr.lessonMd || lessonText(tr);
+      if(txt){
+        copy(txt);
+        toast('✓ Lesson copied to clipboard!');
+      }
     }
     return;
   }
@@ -810,8 +813,11 @@ document.addEventListener('click',function(e){
   if(slsn){
     var idx=+slsn.dataset.savelesson;
     var tr=TREASURES[idx];
-    if(tr&&tr.lessonMd){
-      saveTextFile(tr.lessonMd, tr.name.replace(/[^a-zA-Z0-9_-]/g,'_')+'_Lesson.md');
+    if(tr){
+      var txt=tr.lessonMd || lessonText(tr);
+      if(txt){
+        saveTextFile(txt, tr.name.replace(/[^a-zA-Z0-9_-]/g,'_')+'_Lesson.md');
+      }
     }
     return;
   }

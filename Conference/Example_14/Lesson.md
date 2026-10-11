@@ -1,0 +1,18 @@
+# Lesson 14: Just-In-Time Software & Themed Review Games
+
+### 1. Build Custom Review Games on the Fly (Voice Dictation)
+* Teachers often spend hours hunting through third-party quiz websites or manually retyping test questions into generic quiz templates.
+* Instead, use your voice: open your voice-to-text dictation tool and simply read your test topics or past exam questions out loud directly into the AI prompt.
+* Prompt: *"Turn these five test topics into a funny, high-energy review game with a Halloween theme and alternate numbers."*
+* In seconds, the AI drafts completely original, context-rich problems that mirror your upcoming assessment.
+
+### 2. Don't Choose Between an Interactive App and a Whiteboard
+* In virtual classrooms, teachers often struggle juggling windows—flipping between presentation slides, an online quiz, and a separate drawing app to work through math problems.
+* You don't have to choose between an interactive web game and a whiteboard.
+* Ask the AI to build a drawing canvas directly into your web app: *"Include a whiteboard on the right side with red and black pens, adjustable line sizes (2px to 10px), undo, and clear."*
+* Now you can present questions on the left and work out calculations, draw distribution curves, or annotate diagrams on the right without ever leaving your browser.
+
+### 3. "Just-In-Time Software" for Timely Themes
+* Before generative AI, spending weeks coding a game just for Halloween or spirit week made no sense.
+* Now, custom classroom software can be disposable and timely: create a haunted crypt for October, a winter wonderland for December, or a March tournament bracket in five minutes.
+* Framing rigorous, intimidating concepts (like confidence intervals and sampling distributions) within a playful, humorous narrative disarms test anxiety and keeps students actively participating.

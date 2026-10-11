@@ -1,0 +1,7 @@
+Create a review test with alternate versions of these test questions. Make the problems memorable and specific and be halloween or spooky themed. Be funny!
+
+[Model Response]
+
+Generate a single file html page for me to show students on screen presenting each of these problems. Use prominent arrow buttons for navigation.  Have a "Hint" button that will provide key definitions and formulas for each problem. Have a "Reveal Answer" button that comes up with a skull and crossbones warning asking if they are sure... keeping the halloween theme. 
+
+Have a section on the right side of the screen that is a simple html whiteboard. The pencil should be switchable to red or black, varied from 2 px to 10 px size and there should be an "Undo" and  "Clear" button. Going to the next problem clears the whiteboard.

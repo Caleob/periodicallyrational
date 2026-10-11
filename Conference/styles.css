@@ -81,7 +81,7 @@ li::before{content:"\2726";position:absolute;left:0;color:var(--gold);text-shado
 #lamp.rub svg{animation:rub .5s ease-in-out 3;filter:drop-shadow(0 0 28px rgba(251,191,36,.95))}
 @keyframes rub{25%{transform:rotate(-4deg) scale(1.05)}75%{transform:rotate(4deg) scale(1.05)}}
 
-/* ===== Cave of Wonders (3 Columns, 3 Gems High) ===== */
+/* ===== Cave of Wonders (3 Columns, 4 Gems High) ===== */
 .cave-wrap {
   width: 100%;
   max-width: 1380px;

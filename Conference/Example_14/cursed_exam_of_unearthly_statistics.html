@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursed Exam of Unearthly Statistics - Halloween Review</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        spooky: {
+                            bg: '#0a0a0f',
+                            card: '#141420',
+                            border: '#2a2a3f',
+                            orange: '#ff6b00',
+                            orangeGlow: '#ff8800',
+                            purple: '#9d4edd',
+                            green: '#39ff14',
+                            red: '#ff2a2a',
+                            darkRed: '#8b0000',
+                            bone: '#e0e0e0'
+                        }
+                    },
+                    fontFamily: {
+                        spooky: ['Creepster', 'cursive'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0a0f;
+            color: #e0e0e0;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(255, 107, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(157, 78, 221, 0.05) 0%, transparent 40%);
+            user-select: none;
+        }
+
+        .spooky-title {
+            text-shadow: 0 0 10px rgba(255, 107, 0, 0.7), 0 0 20px rgba(255, 107, 0, 0.4);
+        }
+
+        .spooky-card {
+            background: linear-gradient(145deg, rgba(20, 20, 32, 0.95), rgba(15, 15, 24, 0.98));
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 107, 0, 0.15);
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+
+        .glow-button-orange {
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
+            transition: all 0.2s ease-in-out;
+        }
+        .glow-button-orange:hover {
+            box-shadow: 0 0 25px rgba(255, 107, 0, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .glow-button-red {
+            box-shadow: 0 0 15px rgba(255, 42, 42, 0.4);
+            transition: all 0.2s ease-in-out;
+        }
+        .glow-button-red:hover {
+            box-shadow: 0 0 25px rgba(255, 42, 42, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .glow-button-green {
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+            transition: all 0.2s ease-in-out;
+        }
+        .glow-button-green:hover {
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.7);
+            transform: translateY(-2px);
+        }
+
+        /* Custom scrollbar for hint and solution text */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101018;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2a3f;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff6b00;
+        }
+
+        /* Canvas Whiteboard Cursor */
+        #whiteboard {
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        /* Spooky pulsing skull animation */
+        @keyframes pulse-skull {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,42,42,0.8)); }
+            50% { transform: scale(1.08); filter: drop-shadow(0 0 25px rgba(255,42,42,1)); }
+        }
+        .pulse-skull {
+            animation: pulse-skull 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col font-sans">
+
+    <header class="h-16 bg-spooky-card border-b border-spooky-border px-6 flex items-center justify-between shrink-0 z-10">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-ghost text-spooky-orange text-2xl animate-bounce"></i>
+            <h1 class="font-spooky text-2xl md:text-3xl tracking-wider text-spooky-orange spooky-title">
+                Cursed Exam of Unearthly Statistics
+            </h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span id="curse-counter" class="font-mono text-sm md:text-base bg-black/60 px-4 py-1.5 rounded-full border border-spooky-orange/40 text-spooky-green font-bold">
+                Curse <span id="current-num">1</span> of 14
+            </span>
+            <button onclick="toggleFullscreen()" class="text-gray-400 hover:text-spooky-orange transition-colors p-2" title="Toggle Fullscreen">
+                <i class="fa-solid fa-expand text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden p-4 gap-4">
+
+        <!-- LEFT PANEL: Problem Display & Controls (55% or responsive) -->
+        <section class="w-full md:w-[55%] flex flex-col h-full gap-4">
+            
+            <!-- Problem Card Container -->
+            <div class="spooky-card rounded-2xl p-6 flex-1 flex flex-col justify-between overflow-y-auto relative">
+                
+                <!-- Card Header -->
+                <div>
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-spooky-border/60">
+                        <span id="problem-category" class="text-xs font-mono uppercase tracking-widest text-spooky-purple font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-skull"></i> Descriptive Statistics
+                        </span>
+                        <span class="text-xs text-gray-400 font-mono">Shortcuts: [←] Prev | [→] Next</span>
+                    </div>
+
+                    <!-- Problem Title -->
+                    <h2 id="problem-title" class="text-2xl lg:text-3xl font-bold text-spooky-orange mb-4 flex items-center gap-3">
+                        <!-- Dynamic Title -->
+                    </h2>
+
+                    <!-- Problem Content -->
+                    <div id="problem-body" class="text-lg lg:text-xl text-spooky-bone leading-relaxed font-sans mb-6">
+                        <!-- Dynamic Problem Statement -->
+                    </div>
+
+                    <!-- High-contrast Data Highlight Box -->
+                    <div id="problem-data" class="bg-black/60 border border-spooky-purple/40 rounded-xl p-4 font-mono text-spooky-green text-lg md:text-xl mb-6 shadow-inner break-words">
+                        <!-- Dynamic Data -->
+                    </div>
+                </div>
+
+                <!-- Interactive Action Buttons -->
+                <div class="space-y-4 pt-4 border-t border-spooky-border/60">
+                    <div class="flex flex-wrap gap-3">
+                        <!-- Hint Button -->
+                        <button onclick="toggleHint()" class="flex-1 min-w-[140px] py-3 px-4 rounded-xl bg-spooky-purple/20 hover:bg-spooky-purple/40 border border-spooky-purple/60 text-spooky-purple hover:text-white font-bold flex items-center justify-center gap-2 transition-all">
+                            <i class="fa-solid fa-lightbulb text-yellow-400"></i>
+                            <span>Cursed Hint</span>
+                        </button>
+
+                        <!-- Reveal Answer Button -->
+                        <button onclick="promptRevealAnswer()" class="flex-1 min-w-[180px] py-3 px-4 rounded-xl bg-spooky-red/20 hover:bg-spooky-red/40 border border-spooky-red/60 text-spooky-red hover:text-white font-bold flex items-center justify-center gap-2 glow-button-red">
+                            <i class="fa-solid fa-skull-crossbones"></i>
+                            <span>Reveal Answer</span>
+                        </button>
+                    </div>
+
+                    <!-- Hint Drawer (Hidden by default) -->
+                    <div id="hint-box" class="hidden bg-purple-950/40 border border-spooky-purple/50 rounded-xl p-4 text-sm text-purple-200 animate-fadeIn">
+                        <div class="font-bold text-spooky-purple mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-book-skull"></i> Necronomicon Hint & Formulas:
+                        </div>
+                        <div id="hint-content" class="leading-relaxed font-mono text-xs md:text-sm">
+                            <!-- Dynamic Hint Text -->
+                        </div>
+                    </div>
+
+                    <!-- Revealed Solution Box (Hidden by default) -->
+                    <div id="solution-box" class="hidden bg-emerald-950/30 border border-spooky-green/50 rounded-xl p-4 text-sm text-green-100 animate-fadeIn">
+                        <div class="font-bold text-spooky-green mb-2 flex items-center gap-2 text-base">
+                            <i class="fa-solid fa-check-circle"></i> Worked Solution & Answer:
+                        </div>
+                        <div id="solution-content" class="leading-relaxed font-mono text-sm space-y-2">
+                            <!-- Dynamic Solution Text -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prominent Navigation Controls -->
+            <div class="flex justify-between items-center gap-4 h-16 shrink-0">
+                <button id="btn-prev" onclick="navigateProblem(-1)" class="flex-1 h-full rounded-2xl bg-spooky-card border border-spooky-orange/40 text-spooky-orange hover:bg-spooky-orange hover:text-black font-extrabold text-lg md:text-xl flex items-center justify-center gap-3 glow-button-orange transition-all disabled:opacity-30 disabled:pointer-events-none">
+                    <i class="fa-solid fa-arrow-left text-2xl"></i>
+                    <span>PREVIOUS</span>
+                </button>
+
+                <button id="btn-next" onclick="navigateProblem(1)" class="flex-1 h-full rounded-2xl bg-spooky-orange text-black border border-spooky-orange font-extrabold text-lg md:text-xl flex items-center justify-center gap-3 glow-button-orange transition-all disabled:opacity-30 disabled:pointer-events-none">
+                    <span>NEXT CURSE</span>
+                    <i class="fa-solid fa-arrow-right text-2xl"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- RIGHT PANEL: Interactive Whiteboard / Scratchpad (45%) -->
+        <section class="w-full md:w-[45%] flex flex-col h-full spooky-card rounded-2xl p-4 relative overflow-hidden">
+            
+            <!-- Whiteboard Toolbar Header -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-spooky-border shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-pen-skeletons text-spooky-orange text-lg"></i>
+                    <span class="font-bold text-spooky-orange text-base font-spooky tracking-wide">Spell Scratchpad</span>
+                </div>
+
+                <!-- Drawing Tools -->
+                <div class="flex items-center flex-wrap gap-2">
+                    <!-- Pen Color Buttons -->
+                    <div class="flex items-center bg-black/60 rounded-lg p-1 border border-spooky-border">
+                        <button onclick="setPenColor('#000000')" id="color-black" class="w-7 h-7 rounded-md bg-black border-2 border-white/40 hover:scale-110 transition-transform m-0.5" title="Onyx Black"></button>
+                        <button onclick="setPenColor('#ff2a2a')" id="color-red" class="w-7 h-7 rounded-md bg-red-600 border-2 border-transparent hover:scale-110 transition-transform m-0.5" title="Blood Crimson"></button>
+                        <button onclick="setPenColor('#39ff14')" id="color-green" class="w-7 h-7 rounded-md bg-lime-400 border-2 border-transparent hover:scale-110 transition-transform m-0.5" title="Slime Green"></button>
+                        <button onclick="setPenColor('#ffffff')" id="color-white" class="w-7 h-7 rounded-md bg-white border-2 border-transparent hover:scale-110 transition-transform m-0.5" title="Ghost White"></button>
+                        <button onclick="setPenColor('eraser')" id="color-eraser" class="w-7 h-7 rounded-md bg-gray-700 text-xs text-white flex items-center justify-center border-2 border-transparent hover:scale-110 transition-transform m-0.5" title="Eraser">
+                            <i class="fa-solid fa-eraser"></i>
+                        </button>
+                    </div>
+
+                    <!-- Brush Thickness Picker -->
+                    <div class="flex items-center gap-2 bg-black/60 px-3 py-1 rounded-lg border border-spooky-border">
+                        <i class="fa-solid fa-circle text-xs text-gray-400"></i>
+                        <input type="range" id="pen-size" min="2" max="12" value="4" oninput="setPenSize(this.value)" class="w-16 accent-spooky-orange cursor-pointer">
+                        <span id="size-indicator" class="text-xs font-mono w-6 text-gray-300">4px</span>
+                    </div>
+
+                    <!-- Undo & Clear Controls -->
+                    <button onclick="undoStroke()" class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-bold flex items-center gap-1 border border-gray-600 transition-colors" title="Undo Last Stroke">
+                        <i class="fa-solid fa-rotate-left"></i> Undo
+                    </button>
+                    <button onclick="clearWhiteboard()" class="px-3 py-1.5 rounded-lg bg-spooky-darkRed hover:bg-red-800 text-white text-xs font-bold flex items-center gap-1 border border-red-500/50 transition-colors" title="Clear Scratchpad">
+                        <i class="fa-solid fa-trash-can"></i> Clear
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas Container -->
+            <div id="canvas-container" class="flex-1 w-full h-full bg-slate-950/80 rounded-xl relative overflow-hidden border border-spooky-border">
+                <canvas id="whiteboard" class="absolute inset-0 w-full h-full"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SPOOKY REVEAL WARNING MODAL -->
+    <div id="warning-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-fadeIn">
+        <div class="spooky-card border-2 border-spooky-red max-w-md w-full rounded-2xl p-6 text-center space-y-5 shadow-2xl relative">
+            <div class="pulse-skull text-6xl text-spooky-red">
+                <i class="fa-solid fa-skull-crossbones"></i>
+            </div>
+            
+            <h3 class="font-spooky text-3xl text-spooky-red tracking-wide">
+                BEWARE, MORTAL!
+            </h3>
+            
+            <p class="text-spooky-bone text-base leading-relaxed">
+                Are you truly ready to reveal the ancient, cursed answer to this problem? Doing so prematurely may banish your statistical intuition forever!
+            </p>
+
+            <div class="flex gap-4 pt-2">
+                <button onclick="closeWarningModal()" class="flex-1 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold border border-gray-600 transition-all">
+                    Flee! (Cancel)
+                </button>
+                <button onclick="confirmRevealAnswer()" class="flex-1 py-3 rounded-xl bg-spooky-red hover:bg-red-700 text-white font-extrabold border border-red-400 glow-button-red transition-all">
+                    I DARE!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const problems = [
+            {
+                id: 1,
+                title: "1. The Vampire Blood Supply",
+                category: "Descriptive Statistics • Mode",
+                body: "Count Dracula is organizing his cellar after a chaotic full-moon party. He counts the pint capacities of 7 newly harvested blood bags. Find the <strong>mode</strong> of this terrifying tally.",
+                data: "[3, 5, 2, 5, 8, 5, 4]",
+                hint: "<strong>Mode Definition:</strong> The value that appears most frequently in a dataset.<br>Count the frequency of each distinct number.",
+                solution: "• Frequency count:<br>  - 2: 1 time<br>  - 3: 1 time<br>  - 4: 1 time<br>  - 5: 3 times<br>  - 8: 1 time<br><br><strong>Answer: Mode = 5 pints</strong> (it appears most often)."
+            },
+            {
+                id: 2,
+                title: "2. Zombie Payroll",
+                category: "Descriptive Statistics • Mean",
+                body: "The local Corpse-O-Rama theme park employs 15 zombies to work the haunted maze. Calculate the <strong>mean</strong> annual salary (in dollars) of these overworked ghouls.",
+                data: "[$12000, $14000, $11500, $15000, $13000, $12500, $16000, $14500, $11000, $13500, $15500, $12000, $14000, $13000, $11500]",
+                hint: "<strong>Mean Formula:</strong> μ or x̄ = (Sum of all values) / (Total count n)<br>Formula: x̄ = Σx / n",
+                solution: "• Step 1: Sum all 15 salaries:<br>  12000 + 14000 + 11500 + 15000 + 13000 + 12500 + 16000 + 14500 + 11000 + 13500 + 15500 + 12000 + 14000 + 13000 + 11500 = $197,000<br>• Step 2: Divide by n = 15:<br>  Mean = $197,000 / 15<br><br><strong>Answer: Mean Salary = $13,133.33</strong>"
+            },
+            {
+                id: 3,
+                title: "3. The Viper Vault",
+                category: "Descriptive Statistics • No Mode",
+                body: "A mad scientist measures the length (in feet) of all the mutated giant vipers in his subterranean reptile dungeon. Determine the <strong>modal length</strong> of these slithering beasts.",
+                data: "[4, 7, 9, 12, 15, 18, 22]",
+                hint: "<strong>Modal Definition:</strong> Check if any value repeats. If every value occurs with the exact same frequency (e.g. once), there is no mode.",
+                solution: "• Each value (4, 7, 9, 12, 15, 18, 22) occurs exactly once.<br><br><strong>Answer: No Mode</strong> (A dataset has no mode if no number repeats)."
+            },
+            {
+                id: 4,
+                title: "4. Poison Apple Harvest",
+                category: "Descriptive Statistics • Multimodal",
+                body: "Wicked Witch Hilda weighs 14 poisoned apples (in grams) for her local farmers' market booth. Find the <strong>modes</strong> of this cursed crop.",
+                data: "[102, 115, 108, 115, 120, 108, 130, 115, 140, 108, 125, 110, 118, 135]",
+                hint: "<strong>Bimodal / Multimodal:</strong> A dataset can have more than one mode if multiple values tie for the highest frequency.",
+                solution: "• Frequency tally:<br>  - 108: appears 3 times<br>  - 115: appears 3 times<br>  - All other numbers appear 1 time each.<br><br><strong>Answer: Bimodal with modes = 108 grams and 115 grams</strong>."
+            },
+            {
+                id: 5,
+                title: "5. Midnight Cram Session",
+                category: "Descriptive Statistics • Mean",
+                body: "Five teenage occultists spent the night studying the <em>Necronomicon</em> before their summoning ritual. Find the <strong>mean study time</strong> (in hours) for these weary cultists.",
+                data: "[2, 4, 3, 7, 9] hours",
+                hint: "<strong>Mean Formula:</strong> x̄ = (x₁ + x₂ + ... + xₙ) / n",
+                solution: "• Sum of study times = 2 + 4 + 3 + 7 + 9 = 25 hours<br>• Count n = 5<br>• Mean = 25 / 5<br><br><strong>Answer: Mean Study Time = 5 hours</strong>."
+            },
+            {
+                id: 6,
+                title: "6. Quiz of the Damned",
+                category: "Measures of Variation • Range",
+                body: "Professor Frankenstein gave a surprise quiz on Monster Anatomy. The 9 monster students earned scores as shown. Calculate the <strong>range</strong> of these sinister test scores.",
+                data: "[42, 55, 68, 73, 81, 88, 90, 94, 99]",
+                hint: "<strong>Range Formula:</strong> Range = Maximum Value - Minimum Value",
+                solution: "• Maximum score = 99<br>• Minimum score = 42<br>• Range = 99 - 42<br><br><strong>Answer: Range = 57 points</strong>."
+            },
+            {
+                id: 7,
+                title: "7. The Witch’s Cauldron Calamity",
+                category: "Measures of Variation • Standard Deviation",
+                body: "A potion-brewing bio-reactor is bubbling ominously. The witch records the temperature (°C) at 7 hourly checkpoints. Find the <strong>sample standard deviation (s)</strong> of these reactor temperatures.",
+                data: "[98, 102, 95, 105, 100, 97, 103] °C",
+                hint: "<strong>Sample Standard Deviation Formula:</strong><br>s = √[ Σ(x - x̄)² / (n - 1) ]<br>1. Find mean (x̄).<br>2. Subtract mean from each x and square the result.<br>3. Sum squared deviations, divide by (n - 1), take square root.",
+                solution: "• Mean x̄ = (98+102+95+105+100+97+103) / 7 = 700 / 7 = 100 °C<br>• Squared deviations (x - 100)²:<br>  (-2)²=4, (+2)²=4, (-5)²=25, (+5)²=25, (0)²=0, (-3)²=9, (+3)²=9<br>• Sum of squared deviations Σ(x - x̄)² = 4 + 4 + 25 + 25 + 0 + 9 + 9 = 70<br>• Divide by (n - 1) = 6: Variance s² = 70 / 6 ≈ 11.667<br>• s = √(11.667) ≈ 3.416<br><br><strong>Answer: Sample Standard Deviation s ≈ 3.42 °C</strong> (or 3.416 °C)."
+            },
+            {
+                id: 8,
+                title: "8. Werewolf Fur Density",
+                category: "Normal Distribution • Empirical Rule",
+                body: "The fur density of a healthy werewolf pack follows a bell-shaped distribution with a <strong>mean of 500 hairs/cm²</strong> and a <strong>standard deviation of 45 hairs/cm²</strong>. Using the <strong>Empirical Rule (68-95-99.7 Rule)</strong>, what percentage of werewolves have a fur density between 410 and 590 hairs/cm²?",
+                data: "Mean μ = 500 | Std Dev σ = 45 | Target Range: [410, 590]",
+                hint: "<strong>Empirical Rule (68-95-99.7):</strong><br>• ~68% fall within μ ± 1σ<br>• ~95% fall within μ ± 2σ<br>• ~99.7% fall within μ ± 3σ",
+                solution: "• Lower bound: 500 - 2(45) = 500 - 90 = 410<br>• Upper bound: 500 + 2(45) = 500 + 90 = 590<br>• The interval [410, 590] corresponds exactly to <strong>μ ± 2σ</strong> (within 2 standard deviations).<br><br><strong>Answer: 95% of werewolves</strong>."
+            },
+            {
+                id: 9,
+                title: "9. Mummy Wrap Estimation",
+                category: "Estimation • Range Rule of Thumb",
+                body: "An ancient tomb holds mummy wrapping rolls whose lengths span from a minimum of 12 feet to a maximum of 76 feet. Use the <strong>range rule of thumb</strong> to estimate the standard deviation.",
+                data: "Minimum = 12 ft | Maximum = 76 ft",
+                hint: "<strong>Range Rule of Thumb:</strong><br>Standard Deviation s ≈ Range / 4<br>where Range = Max - Min.",
+                solution: "• Step 1: Find Range = Max - Min = 76 - 12 = 64 feet.<br>• Step 2: Estimate s ≈ Range / 4 = 64 / 4 = 16 feet.<br><br><strong>Answer: Estimated Standard Deviation ≈ 16 feet</strong>."
+            },
+            {
+                id: 10,
+                title: "10. Igor’s Slime Viscosity",
+                category: "Standard Scores • Z-Score",
+                body: "Igor's laboratory slime has a mean viscosity of 50 cPoise with a standard deviation of 8 cPoise. Find the <strong>z-score</strong> for a particularly gooey sample with a viscosity of 66 cPoise.",
+                data: "Mean μ = 50 | Std Dev σ = 8 | Sample Value x = 66",
+                hint: "<strong>Z-Score Formula:</strong> z = (x - μ) / σ",
+                solution: "• z = (66 - 50) / 8<br>• z = 16 / 8<br><br><strong>Answer: z = 2.00</strong> (2 standard deviations above the mean)."
+            },
+            {
+                id: 11,
+                title: "11. Banshee Shriek Volume",
+                category: "Standard Scores • Z-Score",
+                body: "The average shrieking volume of a Banshee is 110 dB with a standard deviation of 12 dB. Find the <strong>z-score</strong> for a banshee whose scream registered at a modest 92 dB.",
+                data: "Mean μ = 110 | Std Dev σ = 12 | Sample Value x = 92",
+                hint: "<strong>Z-Score Formula:</strong> z = (x - μ) / σ",
+                solution: "• z = (92 - 110) / 12<br>• z = -18 / 12<br><br><strong>Answer: z = -1.50</strong> (1.5 standard deviations below the mean)."
+            },
+            {
+                id: 12,
+                title: "12. Ghost Haunting Duration",
+                category: "Standard Scores • Z-Score",
+                body: "A haunted house’s ghost haunting duration averages 45 minutes per night with a standard deviation of 6 minutes. Find the <strong>z-score</strong> for a night where the ghosts haunted for exactly 45 minutes.",
+                data: "Mean μ = 45 | Std Dev σ = 6 | Sample Value x = 45",
+                hint: "<strong>Z-Score Formula:</strong> z = (x - μ) / σ",
+                solution: "• z = (45 - 45) / 6<br>• z = 0 / 6<br><br><strong>Answer: z = 0.00</strong> (exactly on the mean)."
+            },
+            {
+                id: 13,
+                title: "13. Skeleton Dance Percentile",
+                category: "Relative Standing • Percentiles",
+                body: "In a terrifying graveyard experiment, 200 skeletons were measured for bone density. Exactly 138 skeletons had a bone density score <strong>less than 89.2</strong>. What is the <strong>percentile rank</strong> corresponding to a score of 89.2?",
+                data: "Total count n = 200 | Count of values < 89.2 = 138",
+                hint: "<strong>Percentile Formula:</strong><br>Percentile = ( (Number of values less than x) / (Total number of values n) ) × 100",
+                solution: "• Percentile = (138 / 200) × 100<br>• Percentile = 0.69 × 100 = 69<br><br><strong>Answer: 69th Percentile (P₆₉)</strong>."
+            },
+            {
+                id: 14,
+                title: "14. Battle of the Spooky Exams",
+                category: "Relative Standing • Comparing Z-Scores",
+                body: "Wednesday Addams wants to know which course she crushed harder relative to her peers:<br>• <strong>Potionology Exam:</strong> Score = 92 (Mean = 71, Std Dev = 15)<br>• <strong>Dark Arts Defense Exam:</strong> Score = 688 (Mean = 493, Std Dev = 150)<br><br>Calculate both z-scores to determine which exam score is relatively higher!",
+                data: "Potionology: x=92, μ=71, σ=15 | Dark Arts: x=688, μ=493, σ=150",
+                hint: "<strong>Relative Position:</strong> Compare the z-scores for both tests. Higher z-score = relatively better performance.",
+                solution: "• <strong>Potionology Z-score:</strong><br>  z = (92 - 71) / 15 = 21 / 15 = <strong>1.40</strong><br><br>• <strong>Dark Arts Z-score:</strong><br>  z = (688 - 493) / 150 = 195 / 150 = <strong>1.30</strong><br><br><strong>Answer: Wednesday performed relatively higher on the Potionology Exam</strong> (z = 1.40 vs z = 1.30)."
+            }
+        ];
+
+        let currentIndex = 0;
+
+        function renderProblem() {
+            const problem = problems[currentIndex];
+            
+            document.getElementById('current-num').innerText = currentIndex + 1;
+            document.getElementById('problem-category').innerHTML = `<i class="fa-solid fa-skull"></i> ${problem.category}`;
+            document.getElementById('problem-title').innerText = problem.title;
+            document.getElementById('problem-body').innerHTML = problem.body;
+            document.getElementById('problem-data').innerText = problem.data;
+            document.getElementById('hint-content').innerHTML = problem.hint;
+            document.getElementById('solution-content').innerHTML = problem.solution;
+
+            // Hide drawers on new question
+            document.getElementById('hint-box').classList.add('hidden');
+            document.getElementById('solution-box').classList.add('hidden');
+
+            // Button state check
+            document.getElementById('btn-prev').disabled = (currentIndex === 0);
+            document.getElementById('btn-next').disabled = (currentIndex === problems.length - 1);
+
+            // Automatically clear whiteboard on question transition
+            clearWhiteboard();
+        }
+
+        function navigateProblem(direction) {
+            const newIndex = currentIndex + direction;
+            if (newIndex >= 0 && newIndex < problems.length) {
+                currentIndex = newIndex;
+                renderProblem();
+            }
+        }
+
+        function toggleHint() {
+            const hintBox = document.getElementById('hint-box');
+            hintBox.classList.toggle('hidden');
+        }
+
+        function promptRevealAnswer() {
+            document.getElementById('warning-modal').classList.remove('hidden');
+        }
+
+        function closeWarningModal() {
+            document.getElementById('warning-modal').classList.add('hidden');
+        }
+
+        function confirmRevealAnswer() {
+            closeWarningModal();
+            document.getElementById('solution-box').classList.remove('hidden');
+            // Scroll solution into view if needed
+            document.getElementById('solution-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Keyboard navigation
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                navigateProblem(-1);
+            } else if (e.key === 'ArrowRight') {
+                navigateProblem(1);
+            }
+        });
+
+        const canvas = document.getElementById('whiteboard');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvas-container');
+
+        let isDrawing = false;
+        let currentColor = '#000000';
+        let currentLineWidth = 4;
+        let isEraser = false;
+
+        // Undo history stack
+        let strokeHistory = [];
+
+        function resizeCanvas() {
+            // Preserve current drawing when resizing window
+            const tempImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            // Fill white background for dark drawing surface or standard transparent board
+            ctx.putImageData(tempImageData, 0, 0);
+        }
+
+        window.addEventListener('load', () => {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            saveState(); // initial empty state
+            renderProblem();
+        });
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function saveState() {
+            if (strokeHistory.length >= 15) strokeHistory.shift(); // keep max 15 steps
+            strokeHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        }
+
+        function undoStroke() {
+            if (strokeHistory.length > 1) {
+                strokeHistory.pop(); // Remove current state
+                const previousState = strokeHistory[strokeHistory.length - 1];
+                ctx.putImageData(previousState, 0, 0);
+            } else if (strokeHistory.length === 1) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function clearWhiteboard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            strokeHistory = [];
+            saveState();
+        }
+
+        function setPenColor(color) {
+            if (color === 'eraser') {
+                isEraser = true;
+            } else {
+                isEraser = false;
+                currentColor = color;
+            }
+            // Update active state visual indicators on color buttons
+            const colorButtons = ['black', 'red', 'green', 'white', 'eraser'];
+            colorButtons.forEach(btn => {
+                const el = document.getElementById(`color-${btn}`);
+                if (el) el.classList.remove('ring-2', 'ring-spooky-orange', 'scale-110');
+            });
+
+            if (color === '#000000') document.getElementById('color-black')?.classList.add('ring-2', 'ring-spooky-orange', 'scale-110');
+            else if (color === '#ff2a2a') document.getElementById('color-red')?.classList.add('ring-2', 'ring-spooky-orange', 'scale-110');
+            else if (color === '#39ff14') document.getElementById('color-green')?.classList.add('ring-2', 'ring-spooky-orange', 'scale-110');
+            else if (color === '#ffffff') document.getElementById('color-white')?.classList.add('ring-2', 'ring-spooky-orange', 'scale-110');
+            else if (color === 'eraser') document.getElementById('color-eraser')?.classList.add('ring-2', 'ring-spooky-orange', 'scale-110');
+        }
+
+        function setPenSize(size) {
+            currentLineWidth = size;
+            document.getElementById('size-indicator').innerText = `${size}px`;
+        }
+
+        // Mouse & Touch Coordinates helper
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            e.preventDefault();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+
+            ctx.lineWidth = currentLineWidth;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            if (isEraser) {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.lineWidth = currentLineWidth * 3; // make eraser slightly larger
+            } else {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.strokeStyle = currentColor;
+            }
+
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            e.preventDefault();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                ctx.closePath();
+                saveState();
+            }
+        }
+
+        // Canvas Event Listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        // Default tool selection
+        setPenColor('#ff2a2a');
+    </script>
+</body>
+</html>
