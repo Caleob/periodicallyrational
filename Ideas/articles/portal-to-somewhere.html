@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal to Somewhere — Periodically Rational</title>
+  <meta name="description" content="Reflections on OpenAI's 722 math papers, machine-assisted discovery, scrap rates, and why we still teach students to prove.">
+  <style>
+    :root {
+      --bg: #fbfbf9;
+      --card-bg: #ffffff;
+      --text: #222222;
+      --muted: #5f6368;
+      --border: #e0ded9;
+      --accent: #1a4d80;
+      --accent-hover: #123356;
+      --badge-bg: #eef2f6;
+      --badge-text: #204060;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: Georgia, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif;
+      max-width: 780px;
+      margin: 40px auto;
+      padding: 0 24px;
+      line-height: 1.8;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .top-bar {
+      margin-bottom: 28px;
+    }
+
+    .back-link {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 0.95em;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    article header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .badge-category {
+      display: inline-block;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.75em;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      border-radius: 4px;
+      padding: 3px 8px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 2.25em;
+      line-height: 1.25;
+      margin: 0 0 12px 0;
+      letter-spacing: -0.02em;
+      color: #111;
+    }
+
+    .subtitle {
+      font-size: 1.15em;
+      line-height: 1.5;
+      color: var(--muted);
+      font-style: italic;
+      margin: 0 0 16px 0;
+    }
+
+    .meta {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.88em;
+      color: var(--muted);
+    }
+
+    h2 {
+      font-size: 1.45em;
+      margin: 36px 0 14px 0;
+      color: #111;
+      border-bottom: 1px solid #edece8;
+      padding-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-size: 1.2em;
+      margin: 24px 0 10px 0;
+      color: #1c1c1c;
+    }
+
+    p {
+      margin: 16px 0;
+      font-size: 1.05em;
+    }
+
+    blockquote {
+      margin: 24px 0;
+      padding: 14px 20px;
+      background: #f4f6f8;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: #2c3e50;
+    }
+
+    blockquote p {
+      margin: 0;
+    }
+
+    figure.article-figure {
+      margin: 32px 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    figure.article-figure img {
+      max-width: 100%;
+      width: 440px;
+      height: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      display: block;
+      margin: 0 auto;
+    }
+
+    figure.article-figure figcaption {
+      margin-top: 12px;
+      font-size: 0.88em;
+      color: var(--muted);
+      font-style: italic;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+    }
+
+    .takeaway-box {
+      border-left: 4px solid var(--accent);
+      background: #f4f7fa;
+      padding: 18px 22px;
+      border-radius: 0 8px 8px 0;
+      margin: 30px 0;
+    }
+
+    .takeaway-box h4 {
+      margin: 0 0 8px 0;
+      color: var(--accent);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 1em;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .takeaway-box p {
+      margin: 0;
+      font-size: 1.05em;
+    }
+
+    footer {
+      margin-top: 50px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.88em;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    footer p {
+      margin: 6px 0;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-link" href="../index.html">← Return to Writing &amp; Ideas</a>
+</div>
+
+<article>
+  <header>
+    <span class="badge-category">Essay &amp; STEM Pedagogy</span>
+    <h1>Portal to Somewhere</h1>
+    <p class="subtitle">On 722 machine-generated math proofs, the grief of a settled frontier, and why we still teach students to prove.</p>
+    <div class="meta">
+      By <strong>Caleob King</strong> • Published October 2026 • 3 min read
+    </div>
+  </header>
+
+  <p>Last week OpenAI dropped 722 math papers on GitHub. They say an unreleased model spent about three hours on each of roughly 4,000 open problems. Only 162 came with a computer-checked proof. Within a day, three papers were pulled after one sign error took out two others that depended on it. Mathematicians are... conflicted.</p>
+
+  <figure class="article-figure">
+    <img src="portal-to-somewhere_1.png" alt="Plush David Hilbert with an OpenAI hat band: Did I stutter? We must know. We will know!" class="article-image">
+    <figcaption>David Hilbert’s 1930 Königsberg address—<em>"Wir müssen wissen. Wir werden wissen"</em> ("We must know. We will know")—revisited in the era of automated theorem proving.</figcaption>
+  </figure>
+
+  <p>Here’s where I land:</p>
+
+  <h2>Math Isn’t Medicine</h2>
+
+  <p>Is this reckless? If someone dumped 719 unreviewed medical studies on us, yes. But math isn’t medicine. If an AI handed me 719 new antibiotic candidates, I wouldn’t inject any of them tomorrow, but I’d be thrilled to have 719 shots on goal instead of searching an endless pile of molecules. People are skeptical of work from an unreleased model, but a proof doesn’t need a trusted author. If the logic holds, it holds. Checking it is real work, and the human checkers are about to be buried. But “too much to verify” is a better problem than “nothing to verify.”</p>
+
+  <h2>The Factory Floor and Scrap Rates</h2>
+
+  <p>The engineer in me looks at the scrap rate. Even if 20% of these fall apart, hundreds of previously unsolved problems is a win. Every factory on earth would take that deal for a valuable enough product. Lower scrap is better, but throwing out half might still be worth it.</p>
+
+  <h2>A Stargate to the Map</h2>
+
+  <p>The honest part: I’m a little sad. One frontier I loved exploring may get settled in a weekend. It’s the same flavor as the end of the age of exploration, or never having another first kiss, or my kids being grown. It’s fine to be sad about that. Math won’t run out—it’s bigger than that. We just got a stargate to a part of the map we couldn’t reach, and now we get to build the road back to understanding.</p>
+
+  <h2>Why Make Kids Prove Anything Now?</h2>
+
+  <p>The teacher in me keeps asking myself one question: why make kids prove anything now? The same reason we do any hard thing. It builds the confidence that the next hard thing can be beaten. I teach calculus on top of real analysis that I can barely hold on a good day. Nobody climbs that whole ladder every time. Today’s frontier is tomorrow’s floor.</p>
+
+  <p>I’ll keep teaching proofs. I’ll also lean harder on spotting errors in them, because reading large amounts of possibly error-filled content with a skeptical eye is about to be basic literacy.</p>
+
+  <p>I'm not sure math education was ever about getting students jobs (at least for me), but at this point my career advice has shrunk to: learn deeply, follow what you’re curious about, and maybe look at biotech.</p>
+
+  <div class="takeaway-box">
+    <h4>Closing Thought</h4>
+    <p><strong>Be a little sad. Then go build something.</strong></p>
+  </div>
+
+  <hr style="border: none; border-top: 1px solid var(--border); margin: 36px 0;">
+
+  <footer>
+    <p><strong>Periodically Rational</strong> • Science, mathematics, and classroom inquiry by Caleob King.</p>
+    <p>
+      <a href="../index.html">← Back to Writing &amp; Ideas</a> •
+      <a href="../../Apps/index.html">Classroom Tools Hub</a> •
+      <a href="../../AboutMe/index.html">About &amp; Contact</a> •
+      <a href="../../index.html">Home</a>
+    </p>
+  </footer>
+</article>
+
+</body>
+</html>

@@ -14,6 +14,19 @@
 
 const IDEAS_POSTS = [
   {
+    id: "portal-to-somewhere",
+    type: "Essay",
+    badge: "Essay",
+    title: "Portal to Somewhere",
+    date: "2026-10-11",
+    author: "Caleob King",
+    meta: "By Caleob King • Mathematics & Pedagogy • October 2026",
+    summary: "OpenAI recently published 722 machine-generated proofs for open mathematical problems. As an educator and engineer, here are my reflections on scrap rates in automated discovery, the bittersweet grief of a settled frontier, and why teaching students to prove matters more than ever.",
+    articleUrl: "./articles/portal-to-somewhere.html",
+    actionLabel: "Read Essay →",
+    tags: ["Mathematics", "AI in Education", "Pedagogy"]
+  },
+  {
     id: "bards-meter-retrospective",
     type: "App Retrospective",
     badge: "App Retrospective",
