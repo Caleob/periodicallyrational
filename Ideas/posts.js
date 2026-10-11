@@ -21,7 +21,7 @@ const IDEAS_POSTS = [
     date: "2026-10-11",
     author: "Caleob King",
     meta: "By Caleob King • Mathematics & Pedagogy • October 2026",
-    summary: "OpenAI recently published 722 machine-generated proofs for open mathematical problems. As an educator and engineer, here are my reflections on scrap rates in automated discovery, the bittersweet grief of a settled frontier, and why teaching students to prove matters more than ever.",
+    summary: "OpenAI recently published 722 machine-generated proofs for open mathematical problems. Here are my reflections on what this means, the bittersweet grief of a settled frontier, and why teaching students to prove things still matters.",
     articleUrl: "./articles/portal-to-somewhere.html",
     actionLabel: "Read Essay →",
     tags: ["Mathematics", "AI in Education", "Pedagogy"]
