@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Bard's Meter - Shakespeare Scansion Interactive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=IM+Fell+English:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-fell { font-family: 'IM Fell English', serif; }
+        .font-sans { font-family: 'Inter', sans-serif; }
+
+        /* Theatrical Glows & Gradients */
+        .stage-bg {
+            background: radial-gradient(ellipse at center bottom, #2b1d14 0%, #120b08 70%, #080504 100%);
+        }
+        .proscenium-arch {
+            border: 12px solid #5c4018;
+            border-image: linear-gradient(to bottom, #8a6227, #422d0f, #281a08) 1;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.9), 0 0 30px rgba(0,0,0,0.8);
+        }
+        .spotlight {
+            background: radial-gradient(ellipse at top, rgba(253, 230, 138, 0.18) 0%, rgba(253, 230, 138, 0.03) 50%, transparent 80%);
+            pointer-events: none;
+        }
+
+        /* SVG Curtains CSS Animation */
+        .curtain-left {
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+            transform-origin: left top;
+        }
+        .curtain-right {
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+            transform-origin: right top;
+        }
+        .curtains-open .curtain-left {
+            transform: scaleX(0.08) translateX(-50%);
+        }
+        .curtains-open .curtain-right {
+            transform: scaleX(0.08) translateX(50%);
+        }
+
+        /* Bouncing Syllable Dot */
+        .bouncing-dot {
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .dot-pulse {
+            animation: pulse-glow 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.8)); }
+            50% { transform: scale(1.25); filter: drop-shadow(0 0 12px rgba(250, 204, 21, 1)); }
+        }
+
+        /* Custom scrollbar for dark medieval theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #120b08;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #422d0f;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #78521a;
+        }
+    </style>
+</head>
+<body class="bg-stone-950 text-amber-50 font-sans min-h-screen flex flex-col justify-between overflow-x-hidden select-none">
+
+    <!-- Top Navigation / Header -->
+    <header class="border-b border-amber-900/40 bg-stone-900/80 backdrop-blur px-6 py-3 flex justify-between items-center z-40">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">🎭</span>
+            <div>
+                <h1 class="font-cinzel text-xl font-bold tracking-wider text-amber-400">The Bard's Scansion</h1>
+                <p class="text-[10px] text-amber-200/60 font-mono tracking-wider uppercase hidden sm:block">Periodically Rational • Case Study App</p>
+            </div>
+        </div>
+        <div id="progress-pills" class="hidden flex gap-2">
+            <!-- Progress indicators rendered dynamically -->
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="./index.html" class="text-xs font-mono uppercase tracking-wider text-amber-300/80 hover:text-amber-100 flex items-center gap-1 border border-amber-800/50 hover:border-amber-600 px-3 py-1.5 rounded transition">
+                ← Read Essay
+            </a>
+            <button id="reset-app-btn" class="text-xs font-mono uppercase tracking-wider text-amber-300/70 hover:text-amber-200 border border-amber-800/50 hover:border-amber-600 px-3 py-1.5 rounded transition">
+                Reset All
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 flex flex-col items-center justify-center p-4 md:p-8 relative">
+
+        <!-- PROLOGUE SCREEN -->
+        <section id="prologue-screen" class="w-full max-w-4xl bg-stone-900/90 border border-amber-800/50 rounded-xl p-6 md:p-10 shadow-2xl space-y-8 backdrop-blur z-20">
+            <div class="text-center space-y-3">
+                <p class="text-amber-500 font-cinzel text-sm tracking-widest uppercase">An Interactive Workshop in Prosody</p>
+                <h2 class="font-cinzel text-3xl md:text-5xl font-bold text-amber-300">Mastering Shakespearean Verse</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-transparent via-amber-600 to-transparent mx-auto mt-2"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 text-stone-300 text-sm leading-relaxed">
+                <div class="bg-stone-950/60 p-5 rounded-lg border border-amber-900/30 space-y-3">
+                    <h3 class="font-cinzel text-amber-400 text-base font-semibold flex items-center gap-2">
+                        <span>📜</span> What is Scansion?
+                    </h3>
+                    <p>Scansion is the art of marking the stresses in a poetic line to reveal its rhythmic heartbeat. Shakespeare primarily wrote in <strong>Iambic Pentameter</strong> (5 feet of unstressed / stressed pairs, <em>u /</em>).</p>
+                    <p>However, he often varied the rhythm with <strong>Trochees</strong> (<em>/ u</em>), <strong>Pyrrhics</strong> (<em>u u</em>), or <strong>Feminine Endings</strong> (extra unstressed syllables) to highlight emotion or character shift.</p>
+                </div>
+
+                <div class="bg-stone-950/60 p-5 rounded-lg border border-amber-900/30 space-y-3">
+                    <h3 class="font-cinzel text-amber-400 text-base font-semibold flex items-center gap-2">
+                        <span>⌨️</span> How to Control the Stage
+                    </h3>
+                    <ul class="space-y-1.5 list-disc list-inside text-stone-300">
+                        <li><strong class="text-amber-200">UP Arrow / 1 / /:</strong> Mark Syllable Stressed ( <strong>/</strong> )</li>
+                        <li><strong class="text-amber-200">DOWN Arrow / 0 / u:</strong> Mark Syllable Unstressed ( <strong>u</strong> )</li>
+                        <li><strong class="text-amber-200">LEFT / RIGHT Arrows:</strong> Move bouncing target dot</li>
+                        <li><strong class="text-amber-200">ENTER / Space on Check:</strong> Verify Scansion</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Preloaded lines preview & JSON Loader -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-cinzel text-amber-400 font-semibold text-lg">Curated Starter Lines (3 Levels)</h3>
+                    <label class="cursor-pointer text-xs font-sans bg-stone-800 hover:bg-stone-700 text-amber-300 px-3 py-1.5 rounded border border-amber-700/50 transition flex items-center gap-2">
+                        <span>📂</span> Load Custom JSON Data
+                        <input type="file" id="json-file-input" accept=".json" class="hidden" />
+                    </label>
+                </div>
+
+                <div id="lines-preview-list" class="grid gap-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <div class="pt-4 text-center">
+                <button id="start-btn" class="font-cinzel bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-500 text-stone-950 font-bold text-lg px-10 py-4 rounded-lg shadow-lg hover:shadow-amber-500/20 transform hover:-translate-y-0.5 transition duration-200">
+                    Raise the Curtain & Begin 🎭
+                </button>
+            </div>
+        </section>
+
+        <!-- STAGE & SCANSION WORKSPACE SCREEN -->
+        <section id="stage-screen" class="hidden w-full max-w-5xl flex flex-col items-center justify-center space-y-6 z-20 relative">
+            
+            <!-- Proscenium Arch & Stage -->
+            <div class="w-full stage-bg proscenium-arch rounded-2xl p-6 md:p-10 relative overflow-hidden min-h-[420px] flex flex-col justify-between shadow-2xl">
+                <!-- Spotlight overlay -->
+                <div class="absolute inset-0 spotlight"></div>
+
+                <!-- Stage SVG Curtains overlay -->
+                <div id="curtains-wrapper" class="absolute inset-0 z-30 pointer-events-none flex">
+                    <!-- Left Curtain -->
+                    <svg class="curtain-left w-1/2 h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+                        <path d="M0,0 L100,0 L100,100 L0,100 Z" fill="#7f1d1d"/>
+                        <path d="M10,0 C30,40 10,70 30,100 C50,100 40,0 10,0 Z" fill="#991b1b" opacity="0.6"/>
+                        <path d="M50,0 C70,40 50,70 70,100 C90,100 80,0 50,0 Z" fill="#991b1b" opacity="0.6"/>
+                        <rect x="0" y="0" width="100" height="6" fill="#ca8a04"/>
+                    </svg>
+                    <!-- Right Curtain -->
+                    <svg class="curtain-right w-1/2 h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+                        <path d="M0,0 L100,0 L100,100 L0,100 Z" fill="#7f1d1d"/>
+                        <path d="M0,0 C20,40 0,70 20,100 C40,100 30,0 0,0 Z" fill="#991b1b" opacity="0.6"/>
+                        <path d="M40,0 C60,40 40,70 60,100 C80,100 70,0 40,0 Z" fill="#991b1b" opacity="0.6"/>
+                        <rect x="0" y="0" width="100" height="6" fill="#ca8a04"/>
+                    </svg>
+                </div>
+
+                <!-- Line Metadata Info Bar -->
+                <div class="flex justify-between items-start z-10 text-xs md:text-sm text-amber-300/80 font-cinzel">
+                    <div>
+                        <span id="line-play-title" class="text-amber-400 font-bold">Play</span>
+                        <span id="line-citation" class="text-stone-400 ml-2">(Act 0, Scene 0)</span>
+                    </div>
+                    <div>
+                        Speaker: <span id="line-speaker" class="text-amber-200 italic font-fell text-base">Speaker</span>
+                    </div>
+                </div>
+
+                <!-- Interactive Stage Text Scansion Area -->
+                <div class="my-auto py-12 relative z-10 flex flex-col items-center justify-center">
+                    
+                    <!-- Bouncing Ball Container SVG/Canvas relative layer -->
+                    <div id="scansion-stage-container" class="relative w-full max-w-4xl flex flex-wrap justify-center items-center gap-x-2 gap-y-12 px-4 py-8">
+                        <!-- Dynamic bouncing ball SVG -->
+                        <div id="bouncing-ball" class="absolute bouncing-dot z-20 pointer-events-none -top-6 left-0 flex flex-col items-center -translate-x-1/2">
+                            <div class="w-6 h-6 rounded-full bg-amber-400 border-2 border-amber-100 shadow-lg dot-pulse flex items-center justify-center text-[10px] font-bold text-stone-900">
+                                ▼
+                            </div>
+                        </div>
+
+                        <!-- Syllables inserted dynamically here -->
+                    </div>
+
+                    <!-- Stage instruction prompt -->
+                    <p id="stage-prompt" class="text-stone-400 font-fell text-lg text-center mt-6 animate-pulse">
+                        Use UP Arrow for Stressed (/) and DOWN Arrow for Unstressed (u)
+                    </p>
+                </div>
+
+                <!-- Stage Footer Controls -->
+                <div class="flex flex-wrap justify-between items-center z-10 gap-2 border-t border-amber-900/30 pt-3 text-xs text-stone-400">
+                    <div class="flex items-center gap-4">
+                        <span>Timer: <strong id="stage-timer" class="text-amber-400 font-mono text-sm">00:00</strong></span>
+                        <span>Syllables: <strong id="syllables-count-badge" class="text-amber-400 font-mono">0</strong></span>
+                    </div>
+                    <!-- Touch / Mobile Friendly On-Screen Keys -->
+                    <div class="flex items-center gap-2">
+                        <button id="btn-stress-up" class="bg-amber-900/60 hover:bg-amber-800 text-amber-200 border border-amber-700/50 px-3 py-1.5 rounded font-mono text-xs flex items-center gap-1 active:scale-95 transition">
+                            ▲ Stressed (/)
+                        </button>
+                        <button id="btn-stress-down" class="bg-stone-800 hover:bg-stone-700 text-stone-300 border border-stone-600/50 px-3 py-1.5 rounded font-mono text-xs flex items-center gap-1 active:scale-95 transition">
+                            ▼ Unstressed (u)
+                        </button>
+                        <button id="btn-nav-prev" class="bg-stone-900 hover:bg-stone-800 text-stone-400 border border-stone-800 px-2.5 py-1.5 rounded">
+                            ◄
+                        </button>
+                        <button id="btn-nav-next" class="bg-stone-900 hover:bg-stone-800 text-stone-400 border border-stone-800 px-2.5 py-1.5 rounded">
+                            ►
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAGE 2: METER IDENTIFICATION CARD -->
+            <div id="meter-stage-card" class="hidden w-full bg-stone-900/90 border border-amber-800/60 rounded-xl p-6 shadow-xl space-y-4 backdrop-blur animate-fade-in">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-cinzel text-amber-300 text-lg font-bold flex items-center gap-2">
+                        <span>📐</span> Identify the Base Meter
+                    </h3>
+                    <span class="text-xs font-mono bg-amber-950 text-amber-400 border border-amber-800/60 px-2.5 py-1 rounded-full">
+                        Stage 2 of 3
+                    </span>
+                </div>
+                <p class="text-stone-300 text-sm">Based on syllable count and foot structure, which meter best describes this line?</p>
+
+                <div id="meter-options-grid" class="grid sm:grid-cols-2 gap-3 pt-2">
+                    <!-- Meter option buttons rendered dynamically -->
+                </div>
+
+                <div id="meter-feedback-box" class="hidden p-4 rounded-lg border text-sm space-y-1">
+                    <!-- Dynamic feedback on meter selection -->
+                </div>
+            </div>
+
+            <!-- STAGE 3: REFLECTION & METRICAL DEPARTURES CARD -->
+            <div id="reflection-stage-card" class="hidden w-full bg-stone-900/90 border border-amber-800/60 rounded-xl p-6 shadow-xl space-y-4 backdrop-blur">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-cinzel text-amber-300 text-lg font-bold flex items-center gap-2">
+                        <span>🕯️</span> Metrical Variations & Dramatic Reflection
+                    </h3>
+                    <span class="text-xs font-mono bg-amber-950 text-amber-400 border border-amber-800/60 px-2.5 py-1 rounded-full">
+                        Stage 3 of 3
+                    </span>
+                </div>
+
+                <!-- Metrical Departures Display -->
+                <div id="departures-container" class="space-y-2">
+                    <!-- Departures loaded dynamically -->
+                </div>
+
+                <!-- Student Reflection Prompt -->
+                <div class="space-y-2 pt-2">
+                    <label for="reflection-input" class="block text-sm font-semibold text-amber-200">
+                        Why do you think Shakespeare departed from strict rhythm here? (Dramatic purpose, character emotion, or pace):
+                    </label>
+                    <textarea id="reflection-input" rows="3" placeholder="Write your brief analysis or notes here..." class="w-full bg-stone-950 border border-amber-900/50 rounded-lg p-3 text-stone-200 text-sm focus:outline-none focus:border-amber-500 transition"></textarea>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button id="next-line-btn" class="font-cinzel bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold px-6 py-2.5 rounded-lg shadow transition flex items-center gap-2">
+                        Proceed to Next Line ➔
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- END / SUMMARY SCREEN -->
+        <section id="end-screen" class="hidden w-full max-w-4xl bg-stone-900/95 border border-amber-800/60 rounded-xl p-6 md:p-10 shadow-2xl space-y-8 backdrop-blur z-20 text-center">
+            <div class="space-y-3">
+                <span class="text-4xl">👑</span>
+                <h2 class="font-cinzel text-3xl md:text-4xl font-bold text-amber-300">The Curtain Falls</h2>
+                <p class="text-amber-500 font-cinzel text-sm tracking-widest uppercase">Performance Summary & Scansion Report</p>
+                <div class="w-32 h-1 bg-gradient-to-r from-transparent via-amber-600 to-transparent mx-auto"></div>
+            </div>
+
+            <!-- Custom Verse in Iambic Pentameter -->
+            <div class="bg-stone-950/80 border border-amber-900/40 p-6 rounded-lg font-fell text-lg text-amber-100 italic leading-relaxed shadow-inner">
+                <p>"Thy studious ear hath tracked the poet's measure,</p>
+                <p>And gleaned from metric bounds a noble pleasure.</p>
+                <p>Where stress and rhythm blend in dramatic grace,</p>
+                <p>Thou hast unveiled the heart behind the phrase."</p>
+            </div>
+
+            <!-- Performance Analytics Summary Dashboard -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="bg-stone-950/60 p-4 rounded-lg border border-amber-900/30">
+                    <p class="text-xs text-stone-400 font-mono uppercase">Lines Scanned</p>
+                    <p id="summary-total-lines" class="text-2xl font-bold text-amber-300 font-cinzel mt-1">0</p>
+                </div>
+                <div class="bg-stone-950/60 p-4 rounded-lg border border-amber-900/30">
+                    <p class="text-xs text-stone-400 font-mono uppercase">Stress Accuracy</p>
+                    <p id="summary-stress-acc" class="text-2xl font-bold text-amber-400 font-cinzel mt-1">0%</p>
+                </div>
+                <div class="bg-stone-950/60 p-4 rounded-lg border border-amber-900/30">
+                    <p class="text-xs text-stone-400 font-mono uppercase">Meter Identification</p>
+                    <p id="summary-meter-acc" class="text-2xl font-bold text-amber-400 font-cinzel mt-1">0%</p>
+                </div>
+                <div class="bg-stone-950/60 p-4 rounded-lg border border-amber-900/30">
+                    <p class="text-xs text-stone-400 font-mono uppercase">Total Time</p>
+                    <p id="summary-total-time" class="text-2xl font-bold text-amber-300 font-cinzel mt-1">0s</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4 pt-4">
+                <button id="download-report-btn" class="font-cinzel bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-stone-950 font-bold px-8 py-3.5 rounded-lg shadow-lg transition flex items-center gap-2">
+                    <span>📥</span> Download Full Activity Report (.txt)
+                </button>
+                <button id="restart-activity-btn" class="font-cinzel bg-stone-800 hover:bg-stone-700 text-amber-300 border border-amber-700/50 font-bold px-6 py-3.5 rounded-lg shadow transition">
+                    🔄 Return to Prologue
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-xs text-stone-500 font-mono border-t border-stone-900 flex flex-wrap justify-center items-center gap-3">
+        <span>Shakespeare Scansion &amp; Prosody Tool</span>
+        <span class="text-stone-700">•</span>
+        <a href="./index.html" class="text-amber-400/80 hover:text-amber-300 hover:underline">Read Design Retrospective</a>
+        <span class="text-stone-700">•</span>
+        <a href="../../index.html" class="text-stone-400 hover:text-stone-300 hover:underline">Writing &amp; Ideas Hub</a>
+    </footer>
+
+    <script>
+        /* Default Pre-loaded Lines Data */
+        const DEFAULT_LINES_DATA = [
+            {
+                "id": "twelfth_night_1_1_1",
+                "play": "Twelfth Night",
+                "act_scene_line": "1.1.1",
+                "speaker": "Orsino",
+                "text": "If music be the food of love, play on;",
+                "syllable_count": 10,
+                "meter": "Iambic Pentameter",
+                "scansion": [
+                    {"syllable": "If", "stress": 0, "foot": 1},
+                    {"syllable": "mu-", "stress": 1, "foot": 1},
+                    {"syllable": "-sic", "stress": 0, "foot": 2},
+                    {"syllable": "be", "stress": 1, "foot": 2},
+                    {"syllable": "the", "stress": 0, "foot": 3},
+                    {"syllable": "food", "stress": 1, "foot": 3},
+                    {"syllable": "of", "stress": 0, "foot": 4},
+                    {"syllable": "love,", "stress": 1, "foot": 4},
+                    {"syllable": "play", "stress": 0, "foot": 5},
+                    {"syllable": "on;", "stress": 1, "foot": 5}
+                ],
+                "pattern_string": "u / | u / | u / | u / | u /",
+                "departures": []
+            },
+            {
+                "id": "richard3_1_1_1",
+                "play": "Richard III",
+                "act_scene_line": "1.1.1",
+                "speaker": "Richard III",
+                "text": "Now is the winter of our discontent",
+                "syllable_count": 10,
+                "meter": "Iambic Pentameter",
+                "scansion": [
+                    {"syllable": "Now", "stress": 1, "foot": 1},
+                    {"syllable": "is", "stress": 0, "foot": 1},
+                    {"syllable": "the", "stress": 0, "foot": 2},
+                    {"syllable": "win-", "stress": 1, "foot": 2},
+                    {"syllable": "-ter", "stress": 0, "foot": 3},
+                    {"syllable": "of", "stress": 0, "foot": 3},
+                    {"syllable": "our", "stress": 1, "foot": 4},
+                    {"syllable": "dis-", "stress": 0, "foot": 4},
+                    {"syllable": "-con-", "stress": 0, "foot": 5},
+                    {"syllable": "-tent", "stress": 1, "foot": 5}
+                ],
+                "pattern_string": "/ u | u / | u u | / u | u /",
+                "departures": [
+                    {
+                        "type": "Initial Trochee",
+                        "description": "Opens with a strong stress on 'Now' rather than an iamb, commanding immediate audience attention.",
+                        "foot_index": 1
+                    },
+                    {
+                        "type": "Pyrrhic Foot",
+                        "description": "Foot 3 ('-ter of') consists of two light unstressed syllables, accelerating the line towards 'our discontent'.",
+                        "foot_index": 3
+                    }
+                ]
+            },
+            {
+                "id": "hamlet_3_1_56",
+                "play": "Hamlet",
+                "act_scene_line": "3.1.56",
+                "speaker": "Hamlet",
+                "text": "To be, or not to be, that is the question:",
+                "syllable_count": 11,
+                "meter": "Iambic Pentameter (Hypermetrical)",
+                "scansion": [
+                    {"syllable": "To", "stress": 0, "foot": 1},
+                    {"syllable": "be,", "stress": 1, "foot": 1},
+                    {"syllable": "or", "stress": 0, "foot": 2},
+                    {"syllable": "not", "stress": 1, "foot": 2},
+                    {"syllable": "to", "stress": 0, "foot": 3},
+                    {"syllable": "be,", "stress": 1, "foot": 3},
+                    {"syllable": "that", "stress": 1, "foot": 4},
+                    {"syllable": "is", "stress": 0, "foot": 4},
+                    {"syllable": "the", "stress": 0, "foot": 5},
+                    {"syllable": "ques-", "stress": 1, "foot": 5},
+                    {"syllable": "-tion", "stress": 0, "foot": 6}
+                ],
+                "pattern_string": "u / | u / | u / | / u | u / u",
+                "departures": [
+                    {
+                        "type": "Feminine Ending",
+                        "description": "An unaccented 11th syllable at the end of the line, echoing Hamlet's hesitation and unresolved conflict.",
+                        "foot_index": 6
+                    },
+                    {
+                        "type": "Trochaic Inversion",
+                        "description": "Foot 4 flips to stressed-unstressed ('THAT is') emphasizing the philosophical crisis.",
+                        "foot_index": 4
+                    }
+                ]
+            }
+        ];
+
+        /* Application Global State */
+        let activeDataset = [...DEFAULT_LINES_DATA];
+        let currentLineIndex = 0;
+        let activeSyllableIndex = 0;
+        let userStresses = []; // Array storing user selections (0, 1, or null)
+        let isScansionChecked = false;
+        let selectedMeterOption = null;
+        let isMeterChecked = false;
+        
+        // Timer tracking state
+        let lineStartTime = 0;
+        let timerInterval = null;
+        let totalElapsedSeconds = 0;
+
+        // Cumulative activity results for final report
+        let lineResults = [];
+
+        const METER_OPTIONS = [
+            "Iambic Pentameter",
+            "Trochaic Tetrameter",
+            "Iambic Tetrameter",
+            "Alexandrine (Hexameter)",
+            "Short / Broken Line"
+        ];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderProloguePreview();
+
+            // Event Bindings
+            document.getElementById("start-btn").addEventListener("click", startExercise);
+            document.getElementById("json-file-input").addEventListener("change", handleCustomJsonUpload);
+            document.getElementById("btn-stress-up").addEventListener("click", () => enterStress(1));
+            document.getElementById("btn-stress-down").addEventListener("click", () => enterStress(0));
+            document.getElementById("btn-nav-prev").addEventListener("click", () => moveSyllablePointer(-1));
+            document.getElementById("btn-nav-next").addEventListener("click", () => moveSyllablePointer(1));
+            document.getElementById("next-line-btn").addEventListener("click", advanceToNextLine);
+            document.getElementById("download-report-btn").addEventListener("click", generateAndDownloadReport);
+            document.getElementById("restart-activity-btn").addEventListener("click", resetToPrologue);
+            document.getElementById("reset-app-btn").addEventListener("click", resetToPrologue);
+
+            // Global Keyboard Navigation
+            document.addEventListener("keydown", handleGlobalKeydown);
+        });
+
+        function renderProloguePreview() {
+            const container = document.getElementById("lines-preview-list");
+            container.innerHTML = "";
+
+            activeDataset.forEach((item, index) => {
+                const card = document.createElement("div");
+                card.className = "bg-stone-950/70 border border-amber-900/40 p-3.5 rounded-lg flex flex-col sm:flex-row justify-between sm:items-center gap-2";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-cinzel text-amber-400">
+                            <span class="bg-amber-950 text-amber-300 px-2 py-0.5 rounded border border-amber-800/50">Level ${index + 1}</span>
+                            <span>${item.play} (${item.act_scene_line})</span>
+                        </div>
+                        <p class="font-fell text-base text-stone-200 mt-1">"${item.text}"</p>
+                    </div>
+                    <div class="text-xs text-stone-400 font-mono flex items-center gap-3">
+                        <span>${item.syllable_count} Syllables</span>
+                        <span>${item.departures.length} Variations</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function handleCustomJsonUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].text && parsed[0].scansion) {
+                        activeDataset = parsed;
+                        currentLineIndex = 0;
+                        lineResults = [];
+                        renderProloguePreview();
+                        alert(`Successfully loaded ${parsed.length} custom line(s) into the activity!`);
+                    } else {
+                        alert("Invalid JSON structure. Ensure it includes text, syllable_count, meter, and scansion properties.");
+                    }
+                } catch (err) {
+                    alert("Error parsing JSON file. Please check file format.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function startExercise() {
+            document.getElementById("prologue-screen").classList.add("hidden");
+            document.getElementById("stage-screen").classList.remove("hidden");
+            document.getElementById("end-screen").classList.add("hidden");
+
+            // Trigger Curtain Open Animation
+            setTimeout(() => {
+                document.getElementById("stage-screen").classList.add("curtains-open");
+            }, 100);
+
+            renderProgressPills();
+            loadLine(currentLineIndex);
+        }
+
+        function renderProgressPills() {
+            const container = document.getElementById("progress-pills");
+            container.classList.remove("hidden");
+            container.innerHTML = "";
+
+            activeDataset.forEach((_, idx) => {
+                const pill = document.createElement("div");
+                pill.className = `w-3 h-3 rounded-full border ${
+                    idx === currentLineIndex 
+                        ? 'bg-amber-400 border-amber-200 shadow-sm' 
+                        : idx < currentLineIndex 
+                            ? 'bg-emerald-600 border-emerald-400' 
+                            : 'bg-stone-800 border-stone-700'
+                }`;
+                container.appendChild(pill);
+            });
+        }
+
+        function loadLine(index) {
+            const line = activeDataset[index];
+            activeSyllableIndex = 0;
+            userStresses = new Array(line.scansion.length).fill(null);
+            isScansionChecked = false;
+            selectedMeterOption = null;
+            isMeterChecked = false;
+
+            // Update Metadata Header
+            document.getElementById("line-play-title").innerText = line.play;
+            document.getElementById("line-citation").innerText = `(${line.act_scene_line})`;
+            document.getElementById("line-speaker").innerText = line.speaker || "Speaker";
+            document.getElementById("syllables-count-badge").innerText = line.syllable_count;
+
+            // Reset Card Visibility
+            document.getElementById("meter-stage-card").classList.add("hidden");
+            document.getElementById("reflection-stage-card").classList.add("hidden");
+            document.getElementById("stage-prompt").classList.remove("hidden");
+            document.getElementById("stage-prompt").innerText = "Use UP Arrow for Stressed (/) and DOWN Arrow for Unstressed (u)";
+
+            // Render Syllable Cards
+            renderSyllables(line);
+            updateBouncingBallPosition();
+
+            // Start Line Timer
+            startTimer();
+        }
+
+        function renderSyllables(line) {
+            const container = document.getElementById("scansion-stage-container");
+            // Remove previous syllable elements except bouncing ball
+            const ball = document.getElementById("bouncing-ball");
+            container.innerHTML = "";
+            container.appendChild(ball);
+
+            line.scansion.forEach((sData, idx) => {
+                const sylBox = document.createElement("div");
+                sylBox.id = `syllable-box-${idx}`;
+                sylBox.className = `cursor-pointer flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 min-w-[56px] ${
+                    idx === activeSyllableIndex 
+                        ? 'bg-amber-950/80 border-amber-400 shadow-md scale-105' 
+                        : 'bg-stone-900/60 border-amber-900/30 hover:border-amber-700'
+                }`;
+                sylBox.onclick = () => {
+                    if (!isScansionChecked) {
+                        activeSyllableIndex = idx;
+                        updateSyllableSelectionUI();
+                        updateBouncingBallPosition();
+                    }
+                };
+
+                sylBox.innerHTML = `
+                    <span id="stress-mark-${idx}" class="font-mono text-xl font-bold h-7 flex items-center justify-center text-amber-300">
+                        ${userStresses[idx] === 1 ? '/' : userStresses[idx] === 0 ? 'u' : '•'}
+                    </span>
+                    <span class="font-fell text-xl text-stone-100 mt-1 tracking-wide">${sData.syllable}</span>
+                `;
+                container.appendChild(sylBox);
+            });
+
+            // Append "Check?" target box at the end
+            const checkTarget = document.createElement("div");
+            checkTarget.id = "check-target-box";
+            checkTarget.className = `cursor-pointer flex flex-col items-center justify-center p-3 rounded-lg border-2 border-dashed transition-all duration-200 min-w-[70px] ${
+                activeSyllableIndex === line.scansion.length
+                    ? 'bg-emerald-950/80 border-emerald-400 shadow-lg scale-105 animate-pulse'
+                    : 'bg-stone-900/40 border-stone-700 text-stone-500'
+            }`;
+            checkTarget.onclick = () => {
+                activeSyllableIndex = line.scansion.length;
+                updateSyllableSelectionUI();
+                updateBouncingBallPosition();
+                if (!isScansionChecked) checkScansionAnswers();
+            };
+            checkTarget.innerHTML = `
+                <span class="font-cinzel text-xs font-bold uppercase text-emerald-400">Check?</span>
+                <span class="text-lg">✓</span>
+            `;
+            container.appendChild(checkTarget);
+        }
+
+        function updateBouncingBallPosition() {
+            const line = activeDataset[currentLineIndex];
+            const ball = document.getElementById("bouncing-ball");
+            let targetElem = null;
+
+            if (activeSyllableIndex < line.scansion.length) {
+                targetElem = document.getElementById(`syllable-box-${activeSyllableIndex}`);
+            } else {
+                targetElem = document.getElementById("check-target-box");
+            }
+
+            if (targetElem) {
+                const container = document.getElementById("scansion-stage-container");
+                const containerRect = container.getBoundingClientRect();
+                const targetRect = targetElem.getBoundingClientRect();
+
+                const leftOffset = (targetRect.left + targetRect.width / 2) - containerRect.left;
+                const topOffset = targetRect.top - containerRect.top - 24; // position ball above box
+
+                ball.style.left = `${leftOffset}px`;
+                ball.style.top = `${topOffset}px`;
+            }
+        }
+
+        function updateSyllableSelectionUI() {
+            const line = activeDataset[currentLineIndex];
+            for (let i = 0; i < line.scansion.length; i++) {
+                const box = document.getElementById(`syllable-box-${i}`);
+                if (box) {
+                    if (i === activeSyllableIndex) {
+                        box.className = "cursor-pointer flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 min-w-[56px] bg-amber-950/80 border-amber-400 shadow-md scale-105";
+                    } else {
+                        box.className = "cursor-pointer flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 min-w-[56px] bg-stone-900/60 border-amber-900/30 hover:border-amber-700";
+                    }
+                }
+            }
+
+            const checkTarget = document.getElementById("check-target-box");
+            if (checkTarget) {
+                if (activeSyllableIndex === line.scansion.length) {
+                    checkTarget.className = "cursor-pointer flex flex-col items-center justify-center p-3 rounded-lg border-2 border-dashed transition-all duration-200 min-w-[70px] bg-emerald-950/80 border-emerald-400 shadow-lg scale-105 animate-pulse";
+                } else {
+                    checkTarget.className = "cursor-pointer flex flex-col items-center justify-center p-3 rounded-lg border-2 border-dashed transition-all duration-200 min-w-[70px] bg-stone-900/40 border-stone-700 text-stone-500";
+                }
+            }
+        }
+
+        function moveSyllablePointer(delta) {
+            const line = activeDataset[currentLineIndex];
+            const maxIdx = line.scansion.length; // including Check button
+            activeSyllableIndex = Math.max(0, Math.min(maxIdx, activeSyllableIndex + delta));
+            updateSyllableSelectionUI();
+            updateBouncingBallPosition();
+        }
+
+        function enterStress(stressValue) {
+            if (isScansionChecked) return;
+            const line = activeDataset[currentLineIndex];
+
+            if (activeSyllableIndex < line.scansion.length) {
+                userStresses[activeSyllableIndex] = stressValue;
+                const markElem = document.getElementById(`stress-mark-${activeSyllableIndex}`);
+                if (markElem) {
+                    markElem.innerText = stressValue === 1 ? '/' : 'u';
+                }
+
+                // Advance naturally to right
+                moveSyllablePointer(1);
+            } else if (activeSyllableIndex === line.scansion.length) {
+                checkScansionAnswers();
+            }
+        }
+
+        function checkScansionAnswers() {
+            if (isScansionChecked) return;
+            isScansionChecked = true;
+
+            const line = activeDataset[currentLineIndex];
+            let correctCount = 0;
+
+            // Highlight right/wrong stresses
+            line.scansion.forEach((sData, idx) => {
+                const userVal = userStresses[idx];
+                const expectedVal = sData.stress;
+                const isCorrect = userVal === expectedVal;
+                if (isCorrect) correctCount++;
+
+                const box = document.getElementById(`syllable-box-${idx}`);
+                const markElem = document.getElementById(`stress-mark-${idx}`);
+
+                if (box && markElem) {
+                    if (isCorrect) {
+                        box.className = "flex flex-col items-center justify-center p-3 rounded-lg border-2 bg-emerald-950/60 border-emerald-500 min-w-[56px]";
+                        markElem.innerHTML = `<span class="text-emerald-400 font-bold">${expectedVal === 1 ? '/' : 'u'}</span>`;
+                    } else {
+                        box.className = "flex flex-col items-center justify-center p-3 rounded-lg border-2 bg-rose-950/60 border-rose-500 min-w-[56px]";
+                        markElem.innerHTML = `
+                            <span class="text-rose-400 line-through text-xs mr-1">${userVal === 1 ? '/' : userVal === 0 ? 'u' : '-'}</span>
+                            <span class="text-emerald-400 font-bold">${expectedVal === 1 ? '/' : 'u'}</span>
+                        `;
+                    }
+                }
+            });
+
+            document.getElementById("stage-prompt").innerText = `Scansion Verified: ${correctCount} / ${line.scansion.length} Syllables Correct!`;
+
+            // Reveal Stage 2: Meter Identification Card
+            setupMeterStage();
+        }
+
+        function setupMeterStage() {
+            const card = document.getElementById("meter-stage-card");
+            const grid = document.getElementById("meter-options-grid");
+            const feedbackBox = document.getElementById("meter-feedback-box");
+
+            card.classList.remove("hidden");
+            feedbackBox.classList.add("hidden");
+            grid.innerHTML = "";
+
+            METER_OPTIONS.forEach(option => {
+                const btn = document.createElement("button");
+                btn.className = "bg-stone-950 hover:bg-amber-950/60 text-stone-200 border border-amber-900/40 hover:border-amber-600 p-3 rounded-lg text-left font-cinzel text-sm font-semibold transition flex justify-between items-center";
+                btn.innerText = option;
+                btn.onclick = () => selectMeterOption(option, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function selectMeterOption(option, btnElement) {
+            if (isMeterChecked) return;
+            isMeterChecked = true;
+            selectedMeterOption = option;
+
+            const line = activeDataset[currentLineIndex];
+            const isCorrect = option.toLowerCase() === line.meter.toLowerCase() || 
+                             (line.meter.includes("Iambic Pentameter") && option === "Iambic Pentameter");
+
+            const feedbackBox = document.getElementById("meter-feedback-box");
+            feedbackBox.classList.remove("hidden");
+
+            if (isCorrect) {
+                feedbackBox.className = "p-4 rounded-lg border text-sm space-y-1 bg-emerald-950/60 border-emerald-500 text-emerald-200";
+                feedbackBox.innerHTML = `
+                    <p class="font-bold flex items-center gap-1"><span>✓</span> Correct Meter Identification!</p>
+                    <p class="text-xs text-emerald-300/90">This line follows <strong>${line.meter}</strong> (${line.syllable_count} syllables).</p>
+                `;
+                btnElement.classList.add("bg-emerald-900/80", "border-emerald-400");
+            } else {
+                feedbackBox.className = "p-4 rounded-lg border text-sm space-y-1 bg-amber-950/60 border-amber-600 text-amber-200";
+                feedbackBox.innerHTML = `
+                    <p class="font-bold flex items-center gap-1"><span>ℹ️</span> Authoritative Classification:</p>
+                    <p class="text-xs text-amber-300">The line is classified as <strong>${line.meter}</strong> (Pattern: ${line.pattern_string}).</p>
+                `;
+                btnElement.classList.add("bg-rose-950/80", "border-rose-500");
+            }
+
+            // Reveal Stage 3: Reflection Card
+            setupReflectionStage();
+        }
+
+        function setupReflectionStage() {
+            const card = document.getElementById("reflection-stage-card");
+            const departuresContainer = document.getElementById("departures-container");
+            const line = activeDataset[currentLineIndex];
+
+            card.classList.remove("hidden");
+            departuresContainer.innerHTML = "";
+
+            if (line.departures && line.departures.length > 0) {
+                const title = document.createElement("p");
+                title.className = "text-sm font-semibold text-amber-300 flex items-center gap-1";
+                title.innerHTML = `<span>⚠️</span> Detected Metrical Variations (${line.departures.length}):`;
+                departuresContainer.appendChild(title);
+
+                line.departures.forEach(dep => {
+                    const box = document.createElement("div");
+                    box.className = "bg-stone-950/80 border border-amber-900/40 p-3 rounded-lg text-xs space-y-1";
+                    box.innerHTML = `
+                        <p class="font-bold text-amber-400 font-cinzel">${dep.type} ${dep.foot_index ? `(Foot ${dep.foot_index})` : ''}</p>
+                        <p class="text-stone-300">${dep.description}</p>
+                    `;
+                    departuresContainer.appendChild(box);
+                });
+            } else {
+                departuresContainer.innerHTML = `
+                    <div class="bg-stone-950/60 border border-amber-900/30 p-3 rounded-lg text-xs text-stone-300 italic">
+                        ✨ Strict Iambic Regularity: This line follows an unvaried iambic rhythm without major foot substitutions.
+                    </div>
+                `;
+            }
+
+            // Reset reflection input box
+            document.getElementById("reflection-input").value = "";
+            
+            // Scroll smoothly down to reflection stage
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function advanceToNextLine() {
+            // Save current line result
+            saveCurrentLineResult();
+
+            stopTimer();
+
+            currentLineIndex++;
+            if (currentLineIndex < activeDataset.length) {
+                renderProgressPills();
+                loadLine(currentLineIndex);
+            } else {
+                showEndScreen();
+            }
+        }
+
+        function saveCurrentLineResult() {
+            const line = activeDataset[currentLineIndex];
+            let stressCorrectCount = 0;
+            line.scansion.forEach((sData, idx) => {
+                if (userStresses[idx] === sData.stress) stressCorrectCount++;
+            });
+
+            const reflectionText = document.getElementById("reflection-input").value.trim();
+
+            lineResults.push({
+                lineId: line.id,
+                play: line.play,
+                citation: line.act_scene_line,
+                lineText: line.text,
+                totalSyllables: line.scansion.length,
+                correctStresses: stressCorrectCount,
+                stressAccuracyPct: Math.round((stressCorrectCount / line.scansion.length) * 100),
+                selectedMeter: selectedMeterOption,
+                expectedMeter: line.meter,
+                meterCorrect: selectedMeterOption && (selectedMeterOption.toLowerCase() === line.meter.toLowerCase() || line.meter.includes("Iambic Pentameter") && selectedMeterOption === "Iambic Pentameter"),
+                reflection: reflectionText || "No reflection entered.",
+                timeSpentSeconds: Math.max(1, Math.floor((Date.now() - lineStartTime) / 1000))
+            });
+        }
+
+        function showEndScreen() {
+            document.getElementById("stage-screen").classList.add("hidden");
+            document.getElementById("end-screen").classList.remove("hidden");
+
+            // Calculate Overall Totals
+            const totalLines = lineResults.length;
+            let totalSyllables = 0;
+            let totalCorrectStresses = 0;
+            let correctMetersCount = 0;
+            let totalTime = 0;
+
+            lineResults.forEach(res => {
+                totalSyllables += res.totalSyllables;
+                totalCorrectStresses += res.correctStresses;
+                if (res.meterCorrect) correctMetersCount++;
+                totalTime += res.timeSpentSeconds;
+            });
+
+            const overallStressAcc = totalSyllables > 0 ? Math.round((totalCorrectStresses / totalSyllables) * 100) : 0;
+            const overallMeterAcc = totalLines > 0 ? Math.round((correctMetersCount / totalLines) * 100) : 0;
+
+            document.getElementById("summary-total-lines").innerText = totalLines;
+            document.getElementById("summary-stress-acc").innerText = `${overallStressAcc}%`;
+            document.getElementById("summary-meter-acc").innerText = `${overallMeterAcc}%`;
+            document.getElementById("summary-total-time").innerText = formatSeconds(totalTime);
+        }
+
+        function handleGlobalKeydown(e) {
+            // Do not capture keyboard shortcuts when typing in reflection textarea
+            if (document.activeElement.tagName === "TEXTAREA" || document.activeElement.tagName === "INPUT") {
+                return;
+            }
+
+            const stageScreenVisible = !document.getElementById("stage-screen").classList.contains("hidden");
+            if (!stageScreenVisible) return;
+
+            if (e.key === "ArrowUp" || e.key === "1" || e.key === "/") {
+                e.preventDefault();
+                enterStress(1);
+            } else if (e.key === "ArrowDown" || e.key === "0" || e.key.toLowerCase() === "u") {
+                e.preventDefault();
+                enterStress(0);
+            } else if (e.key === "ArrowLeft") {
+                e.preventDefault();
+                moveSyllablePointer(-1);
+            } else if (e.key === "ArrowRight") {
+                e.preventDefault();
+                moveSyllablePointer(1);
+            } else if (e.key === "Enter" || e.key === " ") {
+                const line = activeDataset[currentLineIndex];
+                if (activeSyllableIndex === line.scansion.length && !isScansionChecked) {
+                    e.preventDefault();
+                    checkScansionAnswers();
+                }
+            }
+        }
+
+        function startTimer() {
+            stopTimer();
+            lineStartTime = Date.now();
+            updateTimerDisplay();
+            timerInterval = setInterval(updateTimerDisplay, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        function updateTimerDisplay() {
+            const elapsed = Math.floor((Date.now() - lineStartTime) / 1000);
+            document.getElementById("stage-timer").innerText = formatSeconds(elapsed);
+        }
+
+        function formatSeconds(sec) {
+            const mins = Math.floor(sec / 60);
+            const secs = sec % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function generateAndDownloadReport() {
+            let report = "===================================================\n";
+            report += "      SHAKESPEARE SCANSION & PROSODY REPORT         \n";
+            report += "===================================================\n";
+            report += `Generated On: ${new Date().toLocaleString()}\n`;
+            report += `Total Lines Scanned: ${lineResults.length}\n\n`;
+
+            let grandSyllables = 0;
+            let grandCorrectStresses = 0;
+            let grandCorrectMeters = 0;
+            let grandTime = 0;
+
+            lineResults.forEach((res, i) => {
+                grandSyllables += res.totalSyllables;
+                grandCorrectStresses += res.correctStresses;
+                if (res.meterCorrect) grandCorrectMeters++;
+                grandTime += res.timeSpentSeconds;
+
+                report += `---------------------------------------------------\n`;
+                report += `LINE ${i + 1}: "${res.lineText}"\n`;
+                report += `Play / Source: ${res.play} (${res.citation})\n`;
+                report += `Time Spent: ${formatSeconds(res.timeSpentSeconds)}\n`;
+                report += `Stress Scansion Accuracy: ${res.correctStresses}/${res.totalSyllables} syllables (${res.stressAccuracyPct}%)\n`;
+                report += `Identified Meter: ${res.selectedMeter || 'None'} [Target: ${res.expectedMeter}] -> ${res.meterCorrect ? 'CORRECT' : 'INCORRECT'}\n`;
+                report += `Student Reflection Note:\n  "${res.reflection}"\n\n`;
+            });
+
+            report += "===================================================\n";
+            report += "SUMMARY METRICS\n";
+            report += "===================================================\n";
+            report += `Overall Scansion Accuracy: ${grandCorrectStresses}/${grandSyllables} (${grandSyllables > 0 ? Math.round((grandCorrectStresses/grandSyllables)*100) : 0}%)\n`;
+            report += `Overall Meter Accuracy: ${grandCorrectMeters}/${lineResults.length} (${lineResults.length > 0 ? Math.round((grandCorrectMeters/lineResults.length)*100) : 0}%)\n`;
+            report += `Total Activity Duration: ${formatSeconds(grandTime)}\n`;
+            report += "===================================================\n";
+
+            // Download file via Blob
+            const blob = new Blob([report], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Shakespeare_Scansion_Report_${Date.now()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function resetToPrologue() {
+            stopTimer();
+            currentLineIndex = 0;
+            lineResults = [];
+            document.getElementById("stage-screen").classList.remove("curtains-open");
+            document.getElementById("stage-screen").classList.add("hidden");
+            document.getElementById("end-screen").classList.add("hidden");
+            document.getElementById("prologue-screen").classList.remove("hidden");
+            document.getElementById("progress-pills").classList.add("hidden");
+        }
+    </script>
+</body>
+</html>

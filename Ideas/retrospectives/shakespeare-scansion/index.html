@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Limits of the Code: Deep Content Knowledge Still Matters — Periodically Rational</title>
+  <meta name="description" content="Reflections on building an poetry scansion tool—and what happens when technical execution outpaces pedagogical domain expertise.">
+  <style>
+    :root {
+      --bg: #fbfbf9;
+      --card-bg: #ffffff;
+      --text: #222222;
+      --muted: #5f6368;
+      --border: #e0ded9;
+      --accent: #1a4d80;
+      --accent-hover: #123356;
+      --badge-bg: #eef2f6;
+      --badge-text: #204060;
+      --amber-bg: #fef9ee;
+      --amber-border: #f0d59e;
+      --amber-text: #78350f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: Georgia, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif;
+      max-width: 780px;
+      margin: 40px auto;
+      padding: 0 24px;
+      line-height: 1.8;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .top-bar {
+      margin-bottom: 28px;
+    }
+
+    .back-link {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 0.95em;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    article header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .badge-category {
+      display: inline-block;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.75em;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      border-radius: 4px;
+      padding: 3px 9px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 2.25em;
+      line-height: 1.25;
+      margin: 0 0 12px 0;
+      letter-spacing: -0.02em;
+      color: #111;
+    }
+
+    .subtitle {
+      font-size: 1.15em;
+      line-height: 1.5;
+      color: var(--muted);
+      font-style: italic;
+      margin: 0 0 16px 0;
+    }
+
+    .meta {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.88em;
+      color: var(--muted);
+    }
+
+    h2 {
+      font-size: 1.5em;
+      margin: 36px 0 14px 0;
+      color: #111;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-size: 1.2em;
+      margin: 24px 0 10px 0;
+      color: #1c1c1c;
+    }
+
+    p {
+      margin: 16px 0;
+    }
+
+    blockquote {
+      margin: 24px 0;
+      padding: 14px 20px;
+      background: #f4f6f8;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: #2c3e50;
+    }
+
+    blockquote p {
+      margin: 0;
+    }
+
+    .app-callout {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin: 32px 0;
+      box-shadow: 0 2px 8px rgba(120, 53, 15, 0.05);
+    }
+
+    .app-callout-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .app-callout h3 {
+      margin: 0;
+      font-size: 1.25em;
+      color: var(--amber-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .app-callout p {
+      margin: 8px 0 16px 0;
+      font-size: 0.96em;
+      color: #5c3d1e;
+    }
+
+    .button-primary {
+      display: inline-block;
+      background: #78350f;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.92em;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+
+    .button-primary:hover {
+      background: #572507;
+      color: #fff;
+    }
+
+    .button-secondary {
+      display: inline-block;
+      background: #1a1a1a;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.92em;
+      font-weight: 500;
+      margin-top: 10px;
+      transition: background 0.2s ease;
+    }
+
+    .button-secondary:hover {
+      background: #333333;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin: 28px 0;
+    }
+
+    @media (min-width: 640px) {
+      .comparison-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .comparison-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      background: var(--card-bg);
+    }
+
+    .comparison-card.positive {
+      border-top: 4px solid #2e7d32;
+    }
+
+    .comparison-card.critique {
+      border-top: 4px solid #c62828;
+    }
+
+    .comparison-card h4 {
+      margin: 0 0 10px 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 1.05em;
+    }
+
+    .comparison-card ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 0.92em;
+      line-height: 1.65;
+    }
+
+    .comparison-card li {
+      margin-bottom: 8px;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.88em;
+      background: rgba(0, 0, 0, 0.05);
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    .verse-sample {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      background: #1f1b18;
+      color: #fef3c7;
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin: 18px 0;
+      font-size: 0.9em;
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+
+    .takeaway-box {
+      border-left: 4px solid #1a4d80;
+      background: #f4f7fa;
+      padding: 18px 22px;
+      border-radius: 0 8px 8px 0;
+      margin: 30px 0;
+    }
+
+    .takeaway-box h4 {
+      margin: 0 0 8px 0;
+      color: #1a4d80;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 1em;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    footer {
+      margin-top: 50px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.88em;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    footer p {
+      margin: 6px 0;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-link" href="../../index.html">← Return to Writing &amp; Ideas</a>
+</div>
+
+<article>
+  <header>
+    <span class="badge-category">App Retrospective &amp; Pedagogy</span>
+    <h1>The Limits of the Code: Why Deep Content Knowledge Still Matters</h1>
+    <p class="subtitle">Reflections on building an interactive Shakespeare scansion tool—and what happens when technical execution outpaces domain expertise.</p>
+    <div class="meta">
+      By <strong>Caleob King</strong> • Published October 2026 • 6 min read
+    </div>
+  </header>
+
+  <p>With modern generative AI and browser-native web tools, the friction between imagining a  tool and holding a working prototype has collapsed to near zero. It's what I love about AI as an enabler of educators! In an afternoon, I can prompt into existence something that would have required a dedicated software engineering team a decade ago.</p>
+
+  <p>As a STEM educator whose days revolve around Math and hard sciences, this technical empowerment is intoxicating. Building interactive tools felt natural because mathematics and physics operate on clear, deterministic axiomatic systems. The domain's logic matches the code's logic. It made abstract ideas visual and I love the power of that transformation</p>
+
+  <p>Recently, however, I decided to test those software-building powers completely outside my comfort zone: in the realm of high school English Language Arts. Specifically, I set out to build an interactive poetic meter workshop called <strong>The Bard's Meter</strong>.</p>
+
+  <p>The result is a working piece of software that looks polished, runs smoothly, and engages students. But it also proved to be a humbling case study in why <strong>deep subject-matter expertise remains the irreplaceable bedrock of instructional design</strong>—and why software without domain depth can inadvertently bake in pedagogical misunderstandings.</p>
+
+  <h2>What Went Right: The Mechanical Triumph</h2>
+
+  <p>From a purely software and usability standpoint, the application succeeded beyond my expectations - especially from a simple prompt. Using AI to scaffold the architecture allowed me to implement several features that make for a satisfying interactive tool:</p>
+
+  <div class="comparison-grid">
+    <div class="comparison-card positive">
+      <h4>What Succeeded</h4>
+      <ul>
+        <li><strong>Immersive Theatrical Aesthetic:</strong> The parchment styling, proscenium arch, spotlight effects, and curtain transitions evoke the stage, making poetic study feel alive rather than clinical.</li>
+        <li><strong>Pacing Cognitive Load:</strong> Breaking lines into individual syllables allows students to tap through the cadence one beat at a time, demystifying the abstract concept of iambic meter.</li>
+        <li><strong>Teacher Utility:</strong> The app accepts custom JSON files, allowing an educator to paste their own curriculum excerpts and generate printable mastery reports.</li>
+        <li><strong>Zero Friction:</strong> Like all tools on <em>Periodically Rational</em>, it runs 100% in the browser—no student logins, no tracking, and no external server requirements.</li>
+      </ul>
+    </div>
+
+    <div class="comparison-card critique">
+      <h4>Where It Stumbled</h4>
+      <ul>
+        <li><strong>Binary Reductionism:</strong> Storing syllable stress as a strict <code>0</code> or <code>1</code> forces an artificial binary onto the fluid, relative pitch and intonation of spoken English.</li>
+        <li><strong>The "Single Right Answer" Illusion:</strong> In real dramatic performance, scansion is interpretive. The app treats subjective scansion like an immutable math formula.</li>
+        <li><strong>Missing Pedagogical Intuition:</strong> Because ELA is not my specialty, I could not anticipate the subtle misconceptions novice readers carry into poetic scansion. Am I teaching what needs to be taught? Am I giving away too much or providing the right context for learners? I just don't know. </li>
+        <li><strong>Is automated grading at all appropriate for this topic:</strong> By isolating lines for automated grading, the tool risks severing meter from dramatic intention and character emotion.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>What Went Wrong: The Pedagogical Blindspot</h2>
+
+  <p>The app's mechanical polish masks a deeper issue: <strong>poetry is spoken drama, not discrete mathematics.</strong> In reducing Shakespeare's verse to an algorithmic validator, the tool reveals the exact limitations of building software without deep pedagogical content knowledge. Could a tool like this be built with expert guidance? I think so. Do I have that knowledge? No!</p>
+
+
+  <h3>You Cannot Scaffold What You Do Not Deeply Know</h3>
+  <p>When I design tools for mathematics—like guiding students through similar right triangles - every hint, visual alignment, and error message is informed by years of watching real students make real mistakes. I know precisely when a student will confuse an altitude for a leg, and I build the interface to prevent that exact cognitive trap.</p>
+
+  <p>In English Language Arts, I lack that  history. I didn't know what common misconceptions novice readers bring to Elizabethan poetry. The AI coding assistant happily built whatever data structure I asked for, but it could not whisper: <em>"Careful—you're flattening the interpretive core of the discipline into an automated quiz."</em></p>
+
+  <div class="takeaway-box">
+    <h4>Core Takeaway</h4>
+    <p><strong>AI commoditizes coding, which makes Pedagogical Content Knowledge (PCK) the ultimate bottleneck.</strong> Anyone with a prompt can generate software. But only someone with deep domain mastery knows whether that software deepens understanding or merely automates a misconception.</p>
+  </div>
+
+  <h2>Why Deep Content Knowledge Matters More Than Ever</h2>
+
+  <p>A prevailing narrative surrounding artificial intelligence in education suggests that subject boundaries are dissolving. If an AI can write code, analyze texts, solve chemistry equations, and draft history outlines, then anyone can theoretically build curriculum for anything.</p>
+
+  <p>Our experiment with <em>The Bard's Meter</em> demonstrates the opposite. The ease of software development has stripped away the technical excuse. When code is free and fast, the true measure of an educational tool's quality is its <strong>pedagogical architecture</strong>—a quality that springs directly from deep, nuanced content knowledge.</p>
+
+  <p>If you are an English Language Arts educator, I warmly invite you to test the app, critique its flaws, and tell me how it could be reshaped to serve real students. Or better yet remix the code using your years of hard-won intuition of a lovely bit of human achievement.</p>
+
+  <div style="text-align: center; margin: 36px 0;">
+    <a class="button-primary" href="./app.html" style="font-size: 1em; padding: 12px 24px;">Explore The Bard's Meter App 🎭 →</a>
+  </div>
+
+  <hr style="border: none; border-top: 1px solid var(--border); margin: 36px 0;">
+
+  <footer>
+    <p><strong>Periodically Rational</strong> • Science, mathematics, and classroom inquiry by Caleob King.</p>
+    <p>
+      <a href="../../index.html">← Back to Writing &amp; Ideas</a> •
+      <a href="../../../Apps/index.html">Classroom Tools Hub</a> •
+      <a href="../../../AboutMe/index.html">About &amp; Contact</a> •
+      <a href="../../../index.html">Home</a>
+    </p>
+  </footer>
+</article>
+
+</body>
+</html>
