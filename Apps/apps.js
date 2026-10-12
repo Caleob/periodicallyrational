@@ -1,5 +1,5 @@
 /**
- * Periodically Rational — Student Classroom Apps Catalog
+ * Periodically Rational - Student Classroom Apps Catalog
  * ========================================================
  * Each interactive app has its own dedicated directory inside /Apps/
  * (e.g., /Apps/AngleDetective/, /Apps/PolarDefender/, /Apps/BardsMeter/).
@@ -103,6 +103,16 @@ const APPS_CATALOG = [
     launchUrl: "VocabularyCodenames/index.html",
     zipUrl: null, // Set to "VocabularyCodenames/VocabularyCodenames.zip" when zip is added
     tags: ["Review Game", "Classroom"]
+  },
+  {
+    id: "rational-function-explorer",
+    title: "Rational Function Explorer: Zeros, Asymptotes & Holes",
+    shortTitle: "Rational Function Explorer",
+    badge: "Algebra II & Pre-Calculus",
+    summary: "An interactive rational functions tool for analyzing polynomial factor behavior. Students identify zeros, vertical asymptotes, and removable discontinuities (holes), observing them plotted live on an auto-scaled coordinate graph with detailed scoring feedback.",
+    launchUrl: "RationalFunctionExplorer/index.html",
+    zipUrl: "RationalFunctionExplorer/RationalFunctionExplorer.zip",
+    tags: ["Algebra II", "Pre-Calculus", "Graphing"]
   },
   {
     id: "classroom-genie-suite",

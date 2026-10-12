@@ -458,31 +458,35 @@ window.TREASURES = [
   },
   {
     group:"deep",
-    name:"Curriculum Deep Dive Studio",
-    short:"Architect your next interactive subject simulation",
-    grades:"Secondary / High School",
+    name:"Rational Function Explorer",
+    short:"Find zeros, asymptotes, and holes on a dynamic graph",
+    grades:"Algebra II / Pre-Calculus",
     file:"Example_16/index.html",
-    downloadFile:"Example_16/Placeholder_Deep_Dive.zip", downloadName:"Placeholder_Deep_Dive.zip",
-    wish:"A dedicated studio to blueprint and generate advanced interactive simulations for tough secondary STEM and humanities concepts—like genetics, wave physics, or historical treaties.",
-    prompt:"Act as a secondary curriculum specialist and educational front-end software architect. Build a highly visual, zero-dependency interactive simulation designed to demonstrate a challenging conceptual standard.\n\n[Placeholder: Example 16 slot ready for your custom curriculum simulation prompt. Describe your subject, target standard, interactive manipulative elements, and student reflection controls.]",
-    what:"A placeholder workshop reserved for your next advanced subject simulation. What concept in your curriculum do students struggle with most? Whether it's tracing genetics in biology, graphing wave interference in physics, or exploring trade routes in history, an AI conversation can build an interactive manipulative tailored to your exact lesson.",
+    downloadFile:"Example_16/Rational_Function_Explorer.zip", downloadName:"Rational_Function_Explorer.zip",
+    wish:"A clean, modern graphing tool where students practice finding zeros, vertical asymptotes, and holes for rational functions, with live visual plotting and a scoring breakdown.",
+    prompt:"Create a clean, modern web app UI for K-12 teachers and students to practice rational functions. Using the layout image as reference\n\nThe app generates rational functions with 1, 2, or 3 linear factors in both the numerator and denominator, using integer constants between -8 and 8. The layout must fit completely on a single screen without vertical scrolling on desktop, while automatically adjusting to a square graph with vertical scrolling on mobile/narrow screens.\n\n**Functionality & Mechanics:**\n\n* **Interactive Features:** Students need to identify **Zeros** (plotted as large filled dots at x-intercepts), **Vertical Asymptotes** (plotted as dashed vertical lines), and **Holes** (plotted as large empty circles). Multiple identical roots only need to be identified once.\n* **Graph Controls:** Automatically scale the Y-axis to display key turning points, but include `y × 2` and `y × 1/2` control buttons next to the \"Scaled Graph\" title so users can manually double or halve the vertical scale. Place the \"Submit\" button as an overlay in the bottom-right corner of the graph.\n* **Modal Feedback:** When students hit \"Submit\", display a clean pop-up modal showing their score, a detailed breakdown of correct/incorrect items, and a button to load the next problem.\n\n**Header & Layout Adaptability:**\n\n* **Desktop:** Display a green top bar with the function equation and a purple \"Next equation\" button on the right.\n* **Mobile/Narrow Screens:** Hide the decorative introductory text (like \"Rational Function Equation\" and subtitle) to save vertical space, and place the \"Next equation\" button underneath the equation. The graph should lock to a 1:1 square aspect ratio.\n\n**UI Style & Controls:**\n\n* **Card Titles:** Keep control section titles concise: **Zeros**, **Vertical Asymptotes**, and **Holes**.\n* **Aesthetics:** Simple, teacher-friendly, warm classroom vibe (#fdfaf6 background), high contrast, rounded corners (12px), soft shadows, and large readable text (18px+).\n\nDeliver everything as a single, self-contained HTML file.",
+    what:"An interactive practice tool for rational functions. Students analyze dynamic equations, enter candidate values for zeros, vertical asymptotes, and removable discontinuities (holes), and see them plotted live on an auto-scaled coordinate graph before submitting for detailed score feedback.",
     uses:[
-      ["Tackle tough standards","Turn abstract textbook formulas and static diagrams into kinetic, moving models."],
-      ["Interactive sandbox","Give students levers, sliders, and buttons to explore cause and effect in real time."],
-      ["Interactive prompt builder","Select your discipline and manipulative archetype to generate a detailed Golden Prompt."],
-      ["Ready for your files","Drop your finished HTML file into Example_16 to replace this placeholder."]
+      ["Connect factors to graphs","Students see how numerator roots create x-intercepts while denominator roots create vertical asymptotes or holes."],
+      ["Live visual plotting","Entered values immediately show up on the graph as solid purple dots, dashed orange lines, or hollow emerald circles."],
+      ["Automatic & manual scaling","The graph automatically scales to display key turning points, keeping curves cleanly in view."],
+      ["Detailed feedback modal","Submitting reveals an exact breakdown of correct, missed, and extra values with essential math reminders."]
     ],
-    lesson:{title:"Architecting Secondary Curriculum Deep Dives", points:[
-      ["Target the hardest conceptual standard",[
-        "Look at your unit assessment data: what standard do students stumble over year after year?",
-        "Focus your AI build on that exact pain point with moving models and visual cause-and-effect."
+    lesson:{title:"Visual Anchors & Responsive Math Edge Cases", points:[
+      ["Start with a visual anchor",[
+        "Using an image, wireframe, or mock layout gives your build an immediate target. It prevents feature creep and keeps the visual hierarchy clear from step one."
       ]],
-      ["Animate the mechanism, not just the answer",[
-        "Show triangles rotating into alignment, show electrons jumping across oxidation states, or draw curves shifting in real time.",
-        "Watching the mechanism unfold turns abstract rules into intuitive mental pictures."
+      ["Design for responsive edge cases early",[
+        "What fits cleanly on a widescreen desktop monitor will overflow on a laptop or stack awkwardly on a phone. Decide early whether your app should lock to 100vh (no-scroll dashboard style) or allow vertical scrolling on smaller screens."
       ]],
-      ["Build gated scaffolding",[
-        "In multi-variable simulations, lock complex equations until students master qualitative observation first."
+      ["Anticipate math & data edge cases",[
+        "Building dynamic tools requires thinking through the math. For rational functions, that meant handling factor cancellation (holes vs. asymptotes), zero-division spikes, dynamic auto-scaling, and deduplicating repeated factors so students aren't penalized."
+      ]],
+      ["Give users manual overrides",[
+        "Algorithmic automation (like auto-scaling graph bounds) is great, but algorithms fail on edge cases. Adding simple manual controls gives the user control when the auto-scale isn't quite right."
+      ]],
+      ["Iterate and refine tone",[
+        "Shifting from rigid labels (\"Manage Vertical Asymptotes\") to clean labels (\"Vertical Asymptotes\"), replacing bulky inline cards with sleek overlay buttons or pop-up modals, and picking warm palette colors (#fdfaf6) turn a functional script into an approachable classroom product."
       ]]
     ]}
   }

@@ -1,3 +1,21 @@
-Act as a secondary curriculum specialist and educational front-end software architect. Build a highly visual, zero-dependency interactive simulation designed to demonstrate a challenging conceptual standard.
+Create a clean, modern web app UI for K-12 teachers and students to practice rational functions. Using the layout image as reference
 
-[Placeholder: Example 16 slot ready for your custom curriculum simulation prompt. Describe your subject, target standard, interactive manipulative elements, and student reflection controls.]
+The app generates rational functions with 1, 2, or 3 linear factors in both the numerator and denominator, using integer constants between -8 and 8. The layout must fit completely on a single screen without vertical scrolling on desktop, while automatically adjusting to a square graph with vertical scrolling on mobile/narrow screens.
+
+**Functionality & Mechanics:**
+
+* **Interactive Features:** Students need to identify **Zeros** (plotted as large filled dots at x-intercepts), **Vertical Asymptotes** (plotted as dashed vertical lines), and **Holes** (plotted as large empty circles). Multiple identical roots only need to be identified once.
+* **Graph Controls:** Automatically scale the Y-axis to display key turning points, but include `y × 2` and `y × 1/2` control buttons next to the "Scaled Graph" title so users can manually double or halve the vertical scale. Place the "Submit" button as an overlay in the bottom-right corner of the graph.
+* **Modal Feedback:** When students hit "Submit", display a clean pop-up modal showing their score, a detailed breakdown of correct/incorrect items, and a button to load the next problem.
+
+**Header & Layout Adaptability:**
+
+* **Desktop:** Display a green top bar with the function equation and a purple "Next equation" button on the right.
+* **Mobile/Narrow Screens:** Hide the decorative introductory text (like "Rational Function Equation" and subtitle) to save vertical space, and place the "Next equation" button underneath the equation. The graph should lock to a 1:1 square aspect ratio.
+
+**UI Style & Controls:**
+
+* **Card Titles:** Keep control section titles concise: **Zeros**, **Vertical Asymptotes**, and **Holes**.
+* **Aesthetics:** Simple, teacher-friendly, warm classroom vibe (#fdfaf6 background), high contrast, rounded corners (12px), soft shadows, and large readable text (18px+).
+
+Deliver everything as a single, self-contained HTML file.

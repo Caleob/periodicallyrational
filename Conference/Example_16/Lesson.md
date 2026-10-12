@@ -1,16 +1,21 @@
-# Lesson 16: Architecting Secondary Curriculum Deep Dives
+# Lesson 16: Visual Anchors & Responsive Math Interfaces
 
-### 1. Target the Hardest Conceptual Standard
-* Every secondary course has two or three "brick-wall standards"—concepts where static textbook diagrams and lecture explanations consistently fail to click for students.
-* Look at your unit assessment data: where do students stumble year after year?
-* Focus your AI build on that exact pain point: whether it's visualizing 3D molecular chirality, understanding non-linear projectile vectors, or grasping Shakespearean prosody.
+### 1. Start with a Visual Anchor
+* Using an image, wireframe, or mock layout gives your build an immediate target.
+* It prevents feature creep and keeps the visual hierarchy clear from step one.
 
-### 2. Animate the Mechanism, Not Just the Answer
-* The difference between a simple quiz and a deep dive manipulative is *kinematic visualization*.
-* Prompt the AI to animate the hidden mechanisms: show triangles rotating and reflecting into alignment, show electrons jumping across oxidation states, or draw dynamic distribution curves that shift as sample sizes change.
-* Watching the cause-and-effect relationship unfold on screen turns abstract formulas into intuitive mental models.
+### 2. Design for Responsive Edge Cases Early
+* What fits cleanly on a widescreen desktop monitor will overflow on a laptop or stack awkwardly on a phone.
+* Decide early whether your app should lock to `100vh` (no-scroll dashboard style) or allow vertical scrolling on smaller screens.
 
-### 3. Build Gated Scaffolding into Complex Simulations
-* In advanced STEM and humanities topics, novices are easily overwhelmed by multi-variable controls.
-* Use a gated progression: lock advanced variables or formula calculations until the foundational qualitative observation is mastered.
-* Scaffolded progression ensures students build genuine conceptual understanding rather than guessing through trial and error.
+### 3. Anticipate Math & Data Edge Cases
+* Building dynamic tools requires thinking through the math.
+* For rational functions, that meant handling factor cancellation (holes vs. asymptotes), zero-division spikes, dynamic auto-scaling, and deduplicating repeated factors so students aren't penalized.
+
+### 4. Give Users Manual Overrides
+* Algorithmic automation (like auto-scaling graph bounds) is great, but algorithms fail on edge cases.
+* Adding simple manual controls (like `y × 2` and `y × 1/2`) gives the user control when the auto-scale isn't quite right.
+
+### 5. Iterate and Refine Tone
+* Great tools feel right.
+* Shifting from rigid labels ("Manage Vertical Asymptotes") to clean labels ("Vertical Asymptotes"), replacing bulky inline cards with sleek overlay buttons or pop-up modals, and picking warm palette colors (#fdfaf6) turn a functional script into an approachable classroom product.

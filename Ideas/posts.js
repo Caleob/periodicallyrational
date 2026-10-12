@@ -1,5 +1,5 @@
 /**
- * Periodically Rational — Writing & Ideas Data Ledger
+ * Periodically Rational - Writing & Ideas Data Ledger
  * ====================================================
  * To publish a new post, essay, or reading recommendation, simply add a new
  * object to the TOP of the IDEAS_POSTS array below.
@@ -34,7 +34,7 @@ const IDEAS_POSTS = [
     date: "2026-10-10",
     author: "Caleob King",
     meta: "By Caleob King • Software Post-Mortem & ELA Scansion Case Study • October 2026",
-    summary: "Can a STEM educator use AI to build a great English Language Arts tool? To find out, I built <em>The Bard's Meter</em>—an interactive Shakespearean prosody sandbox. In this retrospective essay, I examine what went right mechanically, the subtle pedagogical dangers of treating poetic scansion like binary math, and why deep subject expertise remains irreplaceable even in an era of effortless code generation.",
+    summary: "Can a STEM educator use AI to build a great English Language Arts tool? To find out, I built <em>The Bard's Meter</em> - an interactive Shakespearean prosody sandbox. In this retrospective essay, I examine what went right mechanically, the subtle pedagogical dangers of treating poetic scansion like binary math, and why deep subject expertise remains irreplaceable even in an era of effortless code generation.",
     articleUrl: "./articles/bards-meter-retrospective.html",
     appUrl: "../Apps/BardsMeter/index.html",
     actionLabel: "Read Retrospective Essay →",
@@ -64,7 +64,7 @@ const IDEAS_POSTS = [
     date: "2026-10-08",
     author: "Caleob King",
     meta: "Prepared for the 2026 Pearson Virtual Educator Conference",
-    summary: "How can classroom educators design and deploy custom, interactive browser-based learning tools without needing to be professional programmers? This presentation explores using modern AI workflows to create tailored, lightweight educational software for student devices—complete with full slides, live interactive demonstrations, and practical prompt frameworks.",
+    summary: "How can classroom educators design and deploy custom, interactive browser-based learning tools without needing to be professional programmers? This presentation explores using modern AI workflows to create tailored, lightweight educational software for student devices - complete with full slides, live interactive demonstrations, and practical prompt frameworks.",
     articleUrl: "../Conference/index.html",
     actionLabel: "Launch Presentation & Demos →",
     tags: ["Presentations", "AI Workflows"]

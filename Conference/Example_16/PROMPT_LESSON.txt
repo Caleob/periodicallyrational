@@ -1,0 +1,34 @@
+***PROMPT***
+
+Create a clean, modern web app UI for K-12 teachers and students to practice rational functions. Using the layout image as reference
+
+The app generates rational functions with 1, 2, or 3 linear factors in both the numerator and denominator, using integer constants between -8 and 8. The layout must fit completely on a single screen without vertical scrolling on desktop, while automatically adjusting to a square graph with vertical scrolling on mobile/narrow screens.
+
+**Functionality & Mechanics:**
+
+* **Interactive Features:** Students need to identify **Zeros** (plotted as large filled dots at x-intercepts), **Vertical Asymptotes** (plotted as dashed vertical lines), and **Holes** (plotted as large empty circles). Multiple identical roots only need to be identified once.
+* **Graph Controls:** Automatically scale the Y-axis to display key turning points, but include `y × 2` and `y × 1/2` control buttons next to the "Scaled Graph" title so users can manually double or halve the vertical scale. Place the "Submit" button as an overlay in the bottom-right corner of the graph.
+* **Modal Feedback:** When students hit "Submit", display a clean pop-up modal showing their score, a detailed breakdown of correct/incorrect items, and a button to load the next problem.
+
+**Header & Layout Adaptability:**
+
+* **Desktop:** Display a green top bar with the function equation and a purple "Next equation" button on the right.
+* **Mobile/Narrow Screens:** Hide the decorative introductory text (like "Rational Function Equation" and subtitle) to save vertical space, and place the "Next equation" button underneath the equation. The graph should lock to a 1:1 square aspect ratio.
+
+**UI Style & Controls:**
+
+* **Card Titles:** Keep control section titles concise: **Zeros**, **Vertical Asymptotes**, and **Holes**.
+* **Aesthetics:** Simple, teacher-friendly, warm classroom vibe (#fdfaf6 background), high contrast, rounded corners (12px), soft shadows, and large readable text (18px+).
+
+Deliver everything as a single, self-contained HTML file.
+
+
+
+***LESSON***
+Here are the core takeaways a new "vibe coder" should learn from building an app like this:
+
+* **Start with a Visual Anchor:** Using an image, wireframe, or mock layout gives your build an immediate target. It prevents feature creep and keeps the visual hierarchy clear from step one.
+* **Design for Responsive Edge Cases Early:** What fits cleanly on a widescreen desktop monitor will overflow on a laptop or stack awkwardly on a phone. Decide early whether your app should lock to `100vh` (no-scroll dashboard style) or allow vertical scrolling on smaller screens.
+* **Anticipate Math & Data Edge Cases:** Building dynamic tools requires thinking through the math. For rational functions, that meant handling factor cancellation (holes vs. asymptotes), zero-division spikes, dynamic auto-scaling, and deduplicating repeated factors so students aren't penalized.
+* **Give Users Manual Overrides:** Algorithmic automation (like auto-scaling graph bounds) is great, but algorithms fail on edge cases. Adding simple manual controls (like `y × 2` and `y × 1/2`) gives the user control when the auto-scale isn't quite right.
+* **Iterate and Refine Tone:** Great tools feel right. Shifting from rigid labels ("Manage Vertical Asymptotes") to clean labels ("Vertical Asymptotes"), replacing bulky inline cards with sleek overlay buttons or pop-up modals, and picking warm palette colors (#fdfaf6) turn a functional script into an approachable classroom product.
