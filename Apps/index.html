@@ -115,61 +115,49 @@
       margin-top: 14px;
     }
 
-    a.launch-btn {
-      display: inline-block;
-      background: #1a1a1a;
-      color: #ffffff;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 0.9em;
-      font-weight: 500;
-      transition: background 0.2s ease;
-    }
-
-    a.launch-btn:hover { background: #333; }
-
-    a.download-btn {
+    a.app-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: #f4f6f8;
+      justify-content: center;
+      background: #fafaf8;
+      color: var(--text);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.88em;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    a.app-btn:hover {
+      background: #f0eee8;
+      border-color: #cac5b8;
       color: var(--accent);
-      border: 1px solid #c2d4e7;
       text-decoration: none;
-      padding: 7px 14px;
-      border-radius: 6px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    a.app-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .retro-note {
+      margin-top: 6px;
       font-size: 0.88em;
-      font-weight: 500;
-      transition: background 0.2s ease, border-color 0.2s ease;
+      font-style: italic;
     }
 
-    a.download-btn:hover {
-      background: #e8f0f8;
-      border-color: var(--accent);
-    }
-
-    a.retro-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: transparent;
-      color: #6b4718;
-      border: 1px dashed #d1b48c;
+    .retro-note a {
+      color: var(--accent);
       text-decoration: none;
-      padding: 7px 14px;
-      border-radius: 6px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 0.88em;
-      font-weight: 500;
-      transition: background 0.2s ease, color 0.2s ease;
     }
 
-    a.retro-btn:hover {
-      background: #fdf8ee;
-      color: #422909;
+    .retro-note a:hover {
+      text-decoration: underline;
     }
 
     .empty-state {
@@ -224,22 +212,23 @@
     const cardsHtml = APPS_CATALOG.map(app => {
       let buttons = '';
       if (app.launchUrl) {
-        buttons += `<a class="launch-btn" href="${app.launchUrl}">Launch ${app.shortTitle || 'App'} →</a>`;
+        buttons += `<a class="app-btn" href="${app.launchUrl}" target="_blank" rel="noopener noreferrer" title="Open tool in a new tab">Launch</a>`;
       }
       if (app.zipUrl) {
-        buttons += `<a class="download-btn" href="${app.zipUrl}" download>📦 Download .zip (Remix) ⤓</a>`;
-      }
-      if (app.retrospectiveUrl) {
-        buttons += `<a class="retro-btn" href="${app.retrospectiveUrl}">Read Retrospective 📖</a>`;
+        buttons += `<a class="app-btn" href="${app.zipUrl}" download title="Download zip files to remix the app on your own">Remix</a>`;
       }
 
       const btnRow = buttons ? `<div class="btn-row">${buttons}</div>` : '';
+      const retroLink = app.retrospectiveUrl
+        ? `<div class="retro-note"><a href="${app.retrospectiveUrl}" target="_blank" rel="noopener noreferrer">Read companion retrospective &rarr;</a></div>`
+        : '';
 
       return `
         <div class="app-card">
           <span class="badge">${app.badge}</span>
           <h2>${app.title}</h2>
           <p>${app.summary}</p>
+          ${retroLink}
           ${btnRow}
         </div>
       `;
