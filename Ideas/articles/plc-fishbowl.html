@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLC Fishbowl: Closing the Teacher Reflection Gap — Periodically Rational</title>
+  <meta name="description" content="Exploring how AI-assisted reflection and peer observation can help tighten instructional feedback loops in professional learning communities.">
+  <style>
+    :root {
+      --bg: #fbfbf9;
+      --card-bg: #ffffff;
+      --text: #222222;
+      --muted: #5f6368;
+      --border: #e0ded9;
+      --accent: #1a4d80;
+      --accent-hover: #123356;
+      --badge-bg: #eef2f6;
+      --badge-text: #204060;
+      --callout-bg: #f4f7fa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: Georgia, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif;
+      max-width: 780px;
+      margin: 40px auto;
+      padding: 0 24px;
+      line-height: 1.8;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .top-bar {
+      margin-bottom: 28px;
+    }
+
+    .back-link {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 0.95em;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    article header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .badge-category {
+      display: inline-block;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.75em;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      border-radius: 4px;
+      padding: 3px 8px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 2.2em;
+      margin: 0 0 10px 0;
+      color: #111;
+      line-height: 1.25;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0 0 16px 0;
+      font-style: italic;
+      font-size: 1.15em;
+      line-height: 1.5;
+    }
+
+    .meta {
+      font-size: 0.88em;
+      color: var(--muted);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    h2 {
+      font-size: 1.45em;
+      margin: 36px 0 12px 0;
+      color: #111;
+      border-bottom: 1px solid #edece8;
+      padding-bottom: 6px;
+    }
+
+    h3 {
+      font-size: 1.2em;
+      margin: 24px 0 8px 0;
+      color: #222;
+    }
+
+    p {
+      margin: 16px 0;
+      font-size: 1.05em;
+    }
+
+    blockquote {
+      border-left: 3px solid var(--accent);
+      margin: 24px 0;
+      padding: 4px 0 4px 18px;
+      color: #444;
+      font-style: italic;
+    }
+
+    .app-callout {
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--accent);
+      background: var(--callout-bg);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+
+    .app-callout h3 {
+      margin: 0 0 8px 0;
+      color: var(--accent);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 1.15em;
+    }
+
+    .app-callout p {
+      margin: 0 0 16px 0;
+      font-size: 0.98em;
+      color: #333;
+    }
+
+    .btn-launch {
+      display: inline-block;
+      background: var(--accent);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.92em;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+
+    .btn-launch:hover {
+      background: var(--accent-hover);
+      color: #ffffff;
+    }
+
+    .callout-box {
+      border-left: 4px solid var(--accent);
+      background: #f4f7fa;
+      padding: 18px 22px;
+      border-radius: 0 8px 8px 0;
+      margin: 30px 0;
+    }
+
+    .callout-box h4 {
+      margin: 0 0 8px 0;
+      color: var(--accent);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 1em;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .draft-notice {
+      background: #fff8e6;
+      border: 1px solid #fae2a5;
+      color: #855d00;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.9em;
+      margin-bottom: 24px;
+    }
+
+    figure.article-figure {
+      margin: 32px 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    figure.article-figure img {
+      max-width: 100%;
+      width: 580px;
+      height: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      display: block;
+      margin: 0 auto;
+    }
+
+    figure.article-figure figcaption {
+      margin-top: 12px;
+      font-size: 0.88em;
+      color: var(--muted);
+      font-style: italic;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+    }
+
+    footer {
+      margin-top: 50px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.88em;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    footer p {
+      margin: 6px 0;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-link" href="../index.html">← Return to Writing &amp; Ideas</a>
+</div>
+
+<article>
+  <header>
+    <span class="badge-category">App Retrospective &amp; Pedagogy</span>
+    <h1>PLC Fishbowl: Closing the Teacher Reflection Gap</h1>
+    <p class="subtitle">Can AI help tighten the reflective loop when time and vulnerability keep us from observing one another?</p>
+    <div class="meta">
+      By <strong>Caleob King</strong> • Published October 2026 • <em>Draft / Work in Progress</em>
+    </div>
+  </header>
+
+  <div class="draft-notice">
+    📝 <strong>Author's Note:</strong> This essay is currently being drafted. In the meantime, you can explore the live application below.
+  </div>
+
+  <!-- Interactive App Callout -->
+  <div class="app-callout">
+    <h3>🐟 Interactive Tool: PLC Fishbowl</h3>
+    <p>Teachers get better through reflection. None of us can devote the time to watch our colleagues often enough, and few of us are brave enough to ask co-workers to watch us often enough to really tighten that loop. Can AI help close that gap?</p>
+    <a class="btn-launch" href="https://caleob.github.io/PLC_Fishbowl/" target="_blank" rel="noopener">Launch PLC Fishbowl ↗</a>
+  </div>
+
+  <h2>The Observation Dilemma</h2>
+  <p>Teachers get better through reflection. None of us can devote the time to watch our colleagues often enough and few of us are brave enough to ask co-workers to watch us often enough to really tighten that loop. Can AI help close that gap?</p>
+
+  <figure class="article-figure">
+    <img src="fishbowl_1.png" alt="PLC Fishbowl interface and reflection workspace" class="article-image">
+    <figcaption>PLC Fishbowl: An interactive environment designed to scaffold structured teacher observation and collaborative reflection.</figcaption>
+  </figure>
+
+  <p><em>[Draft section: Expand on the structural barriers in schools—packed schedules, lack of common planning time, the high emotional barrier of being observed, and how feedback is often delayed until evaluation cycles.]</em></p>
+
+  <h2>How PLC Fishbowl Works</h2>
+  <p><em>[Draft section: Discuss the architecture and core design of PLC Fishbowl. How does it simulate or scaffold peer observation? What does the reflection workflow look like?]</em></p>
+
+  <div class="callout-box">
+    <h4>Pedagogical Reflection</h4>
+    <p><em>[Draft insight: What makes AI observation effective without turning into an algorithmic evaluator? How do we keep the focus on teacher agency and professional growth?]</em></p>
+  </div>
+
+  <h2>Early Takeaways &amp; Open Questions</h2>
+  <p><em>[Draft section: Share what you've noticed so far using or testing the tool, feedback from fellow educators, and where this experiment is heading next.]</em></p>
+
+  <div style="text-align: center; margin: 36px 0;">
+    <a class="btn-launch" href="https://caleob.github.io/PLC_Fishbowl/" target="_blank" rel="noopener" style="font-size: 1em; padding: 12px 24px;">Explore PLC Fishbowl 🐟 ↗</a>
+  </div>
+
+  <hr style="border: none; border-top: 1px solid var(--border); margin: 36px 0;">
+
+  <footer>
+    <p><strong>Periodically Rational</strong> • Science, mathematics, and classroom inquiry by Caleob King.</p>
+    <p>
+      <a href="../index.html">← Back to Writing &amp; Ideas</a> •
+      <a href="../../Apps/index.html">Classroom Tools Hub</a> •
+      <a href="../../AboutMe/index.html">About &amp; Contact</a> •
+      <a href="../../index.html">Home</a>
+    </p>
+  </footer>
+</article>
+
+</body>
+</html>

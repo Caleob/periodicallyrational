@@ -14,6 +14,21 @@
 
 const IDEAS_POSTS = [
   {
+    id: "plc-fishbowl",
+    type: "App Retrospective",
+    badge: "App Retrospective",
+    title: "PLC Fishbowl: Closing the Teacher Reflection Gap",
+    date: "2026-10-13",
+    author: "Caleob King",
+    meta: "By Caleob King • Teacher Growth & Reflective Practice • October 2026",
+    summary: "Teachers get better through reflection. None of us can devote the time to watch our colleagues often enough and few of us are brave enough to ask co-workers to watch us often enough to really tighten that loop. Can AI help close that gap?",
+    articleUrl: "./articles/plc-fishbowl.html",
+    appUrl: "https://caleob.github.io/PLC_Fishbowl/",
+    actionLabel: "Read Essay →",
+    appActionLabel: "Launch PLC Fishbowl 🐟 ↗",
+    tags: ["Pedagogy", "AI in Education", "Teacher Growth"]
+  },
+  {
     id: "portal-to-somewhere",
     type: "Essay",
     badge: "Essay",

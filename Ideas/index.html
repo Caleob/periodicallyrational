@@ -293,7 +293,8 @@
           buttons += `<a class="button" href="${post.articleUrl}">${post.actionLabel || 'Read Essay →'}</a>`;
         }
         if (post.appUrl) {
-          buttons += `<a class="button-outline" href="${post.appUrl}">${post.appActionLabel || 'Launch App 🎭 →'}</a>`;
+          const targetAttr = post.appUrl.startsWith('http') ? ' target="_blank" rel="noopener"' : '';
+          buttons += `<a class="button-outline" href="${post.appUrl}"${targetAttr}>${post.appActionLabel || 'Launch App 🎭 →'}</a>`;
         }
         if (post.externalUrl) {
           buttons += `<a class="button" href="${post.externalUrl}" target="_blank" rel="noopener">${post.actionLabel || 'Read Source ↗'}</a>`;
