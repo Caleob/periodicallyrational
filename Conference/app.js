@@ -2,14 +2,16 @@
 'use strict';
 var $=function(s){return document.querySelector(s)};
 var view=$('#view'),hud=$('#hud');
-/* ---------- The safety line & wish starter (copied by buttons on the slides) ---------- */
-var SAFETY='Put everything in one single .html file. Don’t use outside internet links (use inline SVG for visuals and Web Audio for sound).';
-var FORMULA='Make a screen-share tool for my [grade] [subject] online class to run on my computer during live sessions.\n[Describe what appears on my screen, what I click or enter, and what students see and discuss.]\n'+SAFETY;
-var sbCode=''; // remembers whatever was pasted into the "See It & Save It" box between slides
 
-function toast(m){var t=$('#toast');t.textContent=m||'Copied ✓';t.classList.add('on');clearTimeout(toast.id);toast.id=setTimeout(function(){t.classList.remove('on')},2200)}
+/* ---------- The safety line, wish starter & tweak guardrail ---------- */
+var SAFETY='Put everything in one single .html file. Don\'t use outside internet links (use inline SVG for visuals and Web Audio for sound).';
+var FORMULA='Make a screen-share tool for my [grade] [subject] online class to run on my computer during live sessions.\n[Describe what appears on my screen, what I click or enter, and what students see and discuss.]\n'+SAFETY;
+var TWEAK_GUARD='Please give me the complete, updated single-file HTML code so I can copy and replace the whole thing.';
+var sbCode='';
+
+function toast(m){var t=$('#toast');t.textContent=m||'Copied!';t.classList.add('on');clearTimeout(toast.id);toast.id=setTimeout(function(){t.classList.remove('on')},2400)}
 function copy(txt,msg){
-  var ok=function(){toast(msg||'✓ Copied! Now paste it into your AI chat.')};
+  var ok=function(){toast(msg||'Copied! Now paste it into your Gemini chat.')};
   if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(ok,fb)}else fb();
   function fb(){var a=document.createElement('textarea');a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){toast('Press Ctrl+C to copy')}a.remove()}
 }
@@ -22,7 +24,13 @@ function saveFile(txt, filename, type){
   a.click();
   a.remove();
   setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1500);
-  toast('✓ Saved ' + filename + '. Look in your Downloads folder.');
+  toast('Saved ' + filename + '. Look in your Downloads folder.');
+}
+function openInNewTab(txt){
+  var b = new Blob([txt], {type: 'text/html;charset=utf-8'});
+  var url = URL.createObjectURL(b);
+  window.open(url, '_blank', 'noopener');
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
 }
 var saveTextFile = saveFile;
 
@@ -53,12 +61,12 @@ function lessonText(t){
 }
 function promptNote(t){
   if(t.promptNote) return t.promptNote;
-  if(t.prompt.length>1500) return 'This prompt is long because I wrote it after a lot of practice. <b>Yours doesn’t need to be!</b> A first wish can be two or three plain sentences, like the one above. (Peek at the Water Cycle Memory Match to see a short one.)';
+  if(t.prompt && t.prompt.length>1500) return 'This prompt is long because I refined it over several tries. <b>Yours doesn&rsquo;t need to be!</b> Start with two or three plain sentences like the summary above.';
   return '';
 }
 
 var GEMDEFS='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gemg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fef9c3"/><stop offset=".45" stop-color="#fbbf24"/><stop offset="1" stop-color="#7c3aed"/></linearGradient><symbol id="gem" viewBox="0 0 40 44"><polygon points="20,2 36,14 30,42 10,42 4,14" fill="url(#gemg)" stroke="#fff" stroke-opacity=".55" stroke-width="1.2"/><polygon points="20,2 36,14 20,20" fill="#fff" fill-opacity=".35"/><polygon points="4,14 20,20 10,42" fill="#000" fill-opacity=".18"/></symbol></defs></svg>';
-var CAPTION='Point at any gem for a quick peek. Click it to open the tool, see the exact wish, and pick up a tip.';
+var CAPTION='Point at any gem for a quick peek. Click it to open the tool, see the wish, and pick up a tip.';
 function gemHTML(t,i,g,k){
   return '<button class="gem" data-i="'+i+'" style="--hue:'+g.hue+'deg;--dur:'+(4.5+k%3*.7)+'s;--delay:'+(k*.35)+'s" aria-label="'+escapeHTML(t.name+': '+t.short+' ('+t.grades+')')+'">'
     +'<svg class="gemi" viewBox="0 0 40 44" aria-hidden="true"><use href="#gem"></use></svg>'
@@ -79,14 +87,22 @@ function caveHTML(){
 }
 function setCap(t){
   var c=$('#gemCaption');
-  if(c) c.innerHTML='<b>'+t.name+'</b> &mdash; '+t.short+' <span style="color:var(--cyan)">('+t.grades+')</span>';
+  if(c&&t) c.innerHTML='<b>'+t.name+'</b> &mdash; '+t.short+' <span style="color:var(--cyan)">('+t.grades+')</span>';
 }
 function resetCap(){
   var c=$('#gemCaption');
   if(c) c.textContent=CAPTION;
 }
+
 function openModal(i){
-  var t=TREASURES[i],m=$('#modal'),g=groupOf(t),note=promptNote(t);
+  var t=TREASURES[i];
+  if(!t)return;
+  var m=$('#modal'),g=groupOf(t),note=promptNote(t);
+  var isLong = (t.prompt || '').length > 1500;
+  var promptBlock = isLong
+    ? '<details class="mprompt-details"><summary>&#10024; View my full, polished prompt (click to expand)</summary><div class="mprompt-code">' + escapeHTML(t.prompt) + '</div></details>'
+    : '<h4 class="mprompt-h">The exact wish I typed into Gemini</h4><div class="mprompt-code">' + escapeHTML(t.prompt) + '</div>';
+
   m.innerHTML='<div class="mback" data-close="1"></div>' +
     '<div class="mdlg" role="dialog" aria-modal="true" aria-labelledby="mtitle">' +
       '<div class="mheader">' +
@@ -98,35 +114,34 @@ function openModal(i){
         '<p class="mdesc">' + t.short + '</p>' +
       '</div>' +
       '<div class="mtabs" role="tablist">' +
-        '<button class="mtab active" data-mtab="result">🚀 What It Does</button>' +
-        '<button class="mtab" data-mtab="prompt">🪄 The Wish</button>' +
-        '<button class="mtab" data-mtab="lesson">💡 Tips I Learned</button>' +
+        '<button class="mtab active" data-mtab="result">&#128640; What It Does</button>' +
+        '<button class="mtab" data-mtab="prompt">&#129668; The Wish</button>' +
+        '<button class="mtab" data-mtab="lesson">&#128161; Tips I Learned</button>' +
       '</div>' +
       '<div class="mbody">' +
         '<div class="mpane active" id="mpane-result">' +
           '<div class="mresult-wrap"><div class="mreadme-card">' + readmeHTML(t) + '</div></div>' +
           '<div class="mtab-actions">' +
-            '<a class="btn" href="' + encodeURI(t.file) + '" target="_blank" rel="noopener">🚀 Open the tool</a>' +
-            '<a class="btn alt" href="' + encodeURI(t.downloadFile || t.file) + '" download="' + (t.downloadName || '') + '" target="_blank" rel="noopener" data-savefiles="' + i + '">💾 Download a copy</a>' +
+            '<a class="btn" href="' + encodeURI(t.file) + '" target="_blank" rel="noopener">&#128640; Open the tool</a>' +
+            '<a class="btn alt" href="' + encodeURI(t.downloadFile || t.file) + '" download="' + (t.downloadName || '') + '" target="_blank" rel="noopener" data-savefiles="' + i + '">&#128190; Download a copy</a>' +
           '</div>' +
         '</div>' +
         '<div class="mpane" id="mpane-prompt">' +
           '<div class="mprompt-wrap">' +
-            '<div class="mwish"><span class="mwish-label">In plain words</span><p>' + t.wish + '</p></div>' +
-            '<h4 class="mprompt-h">The exact prompt I used</h4>' +
+            '<div class="mwish"><span class="mwish-label">How you can start (in plain words)</span><p>&ldquo;' + t.wish + '&rdquo;</p></div>' +
             (note ? '<p class="mnote">' + note + '</p>' : '') +
-            '<pre class="mprompt-code"><code>' + escapeHTML(t.prompt) + '</code></pre>' +
+            promptBlock +
           '</div>' +
           '<div class="mtab-actions">' +
-            '<button class="btn" data-copyprompt="' + i + '">📋 Copy the prompt</button>' +
-            '<button class="btn alt" data-saveprompt="' + i + '">💾 Save as a text file</button>' +
+            '<button class="btn" data-copyprompt="' + i + '">&#128203; Copy the prompt</button>' +
+            '<button class="btn alt" data-saveprompt="' + i + '">&#128190; Save as a text file</button>' +
           '</div>' +
         '</div>' +
         '<div class="mpane" id="mpane-lesson">' +
           '<div class="mlesson-wrap"><div class="mlesson-card">' + lessonHTML(t) + '</div></div>' +
           '<div class="mtab-actions">' +
-            '<button class="btn" data-copylesson="' + i + '">📋 Copy the tips</button>' +
-            '<button class="btn alt" data-savelesson="' + i + '">💾 Save as a text file</button>' +
+            '<button class="btn" data-copylesson="' + i + '">&#128203; Copy the tips</button>' +
+            '<button class="btn alt" data-savelesson="' + i + '">&#128190; Save as a text file</button>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -137,12 +152,56 @@ function openModal(i){
   var closeBtn=m.querySelector('.mclose');
   if(closeBtn) closeBtn.focus();
 }
+
 function closeModal(){
   var m=$('#modal');
   if(!m.classList.contains('open'))return;
   m.classList.remove('open');
   m.innerHTML='';
   document.body.style.overflow='';
+}
+
+function openLevelUpModal(){
+  var m=$('#modal');
+  m.innerHTML='<div class="mback" data-close="1"></div>' +
+    '<div class="mdlg levelup-dialog" role="dialog" aria-modal="true" aria-labelledby="lutitle">' +
+      '<div class="mheader">' +
+        '<div class="mtop-row">' +
+          '<span class="mbadge">&#129502;&#8205;&#9794;&#65039; Master of the Lamp &middot; Optional Level Up</span>' +
+          '<button class="mclose" data-close="1" aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<h3 id="lutitle">When (and How) to Break the Two Golden Rules</h3>' +
+        '<p class="mdesc">95% of classroom tools work best as a single offline file. When you build huge games or multi-part apps later on, here is what happens behind the curtain:</p>' +
+      '</div>' +
+      '<div class="mbody levelup-modal-body">' +
+        '<div class="break-box">' +
+          '<span class="break-tag">&#129502;&#8205;&#9794;&#65039; Breaking Rule #1: When one file gets too big or slow</span>' +
+          '<p>Websites are actually built from three separate ingredients:</p>' +
+          '<ul class="tri-list">' +
+            '<li><b>HTML</b> = <i>What is there</i> (the text, buttons, inputs, and structure)</li>' +
+            '<li><b>CSS</b> = <i>How it looks</i> (the colors, fonts, styling, and layout)</li>' +
+            '<li><b>JavaScript (JS)</b> = <i>What it does</i> (the math, clicks, animations, and logic)</li>' +
+          '</ul>' +
+          '<p class="break-note">If Gemini ever gives you a ZIP folder with separate <code>.html</code>, <code>.css</code>, and <code>.js</code> files, don&rsquo;t panic! That&rsquo;s just organizing the closet into three tidy drawers.</p>' +
+        '</div>' +
+        '<div class="break-box">' +
+          '<span class="break-tag">&#127912; Breaking Rule #2: Graphics, Audio &amp; External Styling</span>' +
+          '<p>To keep your tools working 100% offline without broken image links, our Wish Formula secretly asks Gemini for two built-in browser tricks:</p>' +
+          '<ul class="tri-list">' +
+            '<li><b>Inline SVG visuals:</b> Pictures drawn with math right inside the file instead of outside image links.</li>' +
+            '<li><b>Web Audio API sounds:</b> Chimes, buzzers, and ticks synthesized directly by your browser.</li>' +
+          '</ul>' +
+          '<p class="break-note"><b>What if you see &ldquo;Tailwind&rdquo;?</b> It&rsquo;s an external styling library that makes tools look sleek and modern. It works great while online, but if you want 100% offline reliability, tell Gemini: <i>&ldquo;Use vanilla HTML, CSS, and JS only.&rdquo;</i></p>' +
+        '</div>' +
+        '<div class="mtab-actions" style="justify-content:flex-end;margin-top:.4rem">' +
+          '<button class="btn" data-close="1">Got It &#10003;</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  m.classList.add('open');
+  document.body.style.overflow='hidden';
+  var closeBtn=m.querySelector('.mclose');
+  if(closeBtn) closeBtn.focus();
 }
 
 function openNotepadModal(){
@@ -155,12 +214,12 @@ function openNotepadModal(){
           '<button class="mclose" data-close="1" aria-label="Close">&times;</button>' +
         '</div>' +
         '<h3 id="nptitle">The Notepad Way: Save Any Code Offline</h3>' +
-        '<p class="mdesc">If you don’t have a preview window handy, you can turn Gemini code into a working web app using the text editor built into your computer:</p>' +
+        '<p class="mdesc">If you don&rsquo;t have this presentation open, you can turn Gemini code into a working web app anytime using the text editor built into your computer:</p>' +
       '</div>' +
       '<div class="mbody notepad-modal-body">' +
         '<div class="np-step-card">' +
           '<span class="np-step-num">1</span>' +
-          '<div class="np-step-text"><b>Open Notepad or TextEdit</b><p>Open <b>Notepad</b> on Windows, or <b>TextEdit</b> on Mac. <i>(On a Mac, choose Format → Make Plain Text first.)</i></p></div>' +
+          '<div class="np-step-text"><b>Open Notepad or TextEdit</b><p>Open <b>Notepad</b> on Windows, or <b>TextEdit</b> on Mac. <i>(On a Mac, choose Format &rarr; Make Plain Text first.)</i></p></div>' +
         '</div>' +
         '<div class="np-step-card">' +
           '<span class="np-step-num">2</span>' +
@@ -168,14 +227,14 @@ function openNotepadModal(){
         '</div>' +
         '<div class="np-step-card">' +
           '<span class="np-step-num">3</span>' +
-          '<div class="np-step-text"><b>Save as an HTML file</b><p>Go to <b>File → Save As</b>. Give it a name ending in <b>.html</b> (like <code>quiz.html</code>). In Notepad, change <b>“Save as type”</b> to <b>All files (*.*)</b> so it doesn’t add .txt.</p></div>' +
+          '<div class="np-step-text"><b>Save as an HTML file</b><p>Go to <b>File &rarr; Save As</b>. Give it a name ending in <b>.html</b> (like <code>quiz.html</code>). In Notepad, change <b>&ldquo;Save as type&rdquo;</b> to <b>All files (*.*)</b> so it doesn&rsquo;t add .txt.</p></div>' +
         '</div>' +
         '<div class="np-step-card">' +
           '<span class="np-step-num">4</span>' +
-          '<div class="np-step-text"><b>Double-click to open</b><p>Double-click your saved file in your Downloads or Desktop folder. It opens and runs in Chrome, Edge, or Safari—even completely offline!</p></div>' +
+          '<div class="np-step-text"><b>Double-click to open</b><p>Double-click your saved file in your Downloads or Desktop folder. It opens and runs in Chrome, Edge, or Safari&mdash;even completely offline!</p></div>' +
         '</div>' +
         '<div class="mtab-actions" style="justify-content:flex-end;margin-top:.8rem">' +
-          '<button class="btn" data-close="1">Got It ✓</button>' +
+          '<button class="btn" data-close="1">Got It &#10003;</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -193,21 +252,23 @@ function card(icon,title,body,cls){
 }
 function bubble(who,text,extra){
   return who==='you'
-    ? '<div class="card bubble you"><span class="who">👤 You</span><p>'+text+'</p></div>'
-    : '<div class="card bubble genie"><span class="who">✨ Gemini / Genie</span><p>'+text+'</p>'+(extra||'')+'</div>';
+    ? '<div class="card bubble you"><span class="who">&#128100; You</span><p>'+text+'</p></div>'
+    : '<div class="card bubble genie"><span class="who">&#10024; Gemini / Genie</span><p>'+text+'</p>'+(extra||'')+'</div>';
 }
 function phrases(icon,title,list){
-  return '<div class="card"><div class="cicon" aria-hidden="true">'+icon+'</div><h3>'+title+'</h3><div class="phrases">'
-    +list.map(function(p){return '<span class="phrase">'+p+'</span>'}).join('')+'</div></div>';
+  return '<div class="card"><div class="card-head"><h3>'+title+'</h3><span class="cicon" aria-hidden="true">'+icon+'</span></div><div class="phrases">'
+    +list.map(function(p){
+      return '<button type="button" class="phrase" data-copytweak="'+encodeURIComponent(p)+'" title="Click to copy this tweak + full-file reminder">'
+        +'<span>&ldquo;'+p+'&rdquo;</span><span class="phrase-copy-tag">&#128203; Copy</span></button>';
+    }).join('')+'</div></div>';
 }
 
-/* Ready-to-borrow wishes (teacher screen-share focused). The safety line is added automatically when copied. */
 var WISHES=[
-  ['Grades K–2 · Reading','Make a phonics warm-up tool to screen share with my kindergarten online class. Display one giant letter and three colorful picture choices. As students call out answers in mic or chat, I click the choice: cheer and chime for correct, gentle wiggle if incorrect so we can try again.'],
-  ['Grades 3–5 · Math','Make an interactive fraction comparison tool to screen share with my 4th graders. Show two large fraction bars side by side. I click the fraction my students vote for: reveal the answer with a visual overlay, play a chime, track our class streak, and load a new pair.'],
-  ['Grades 6–8 · ELA','Make a sentence unscramble warm-up to screen share in live class. Show words of a sentence mixed up in large, clear font. As students direct me in chat, let me drag words into order on screen and click Check. Include a box for me to paste my own sentences.'],
-  ['Science','Make an interactive water cycle diagram to screen share in my 6th grade science class. When I click on Evaporation, Condensation, Precipitation, or Collection, play a smooth visual animation and display 2 key bullet points for our live discussion.'],
-  ['Social Studies','Make a quote trivia game to screen share with my 8th grade history class. Display a historical quote and four large answer buttons. When students vote in poll/chat and I click their choice, reveal whether it’s correct along with a 2-sentence background fact.'],
+  ['Grades 3-5 · Math','Make a "Mystery Number" screen-share warm-up for my 4th grade math class. Display a 4x4 grid of numbers and a list of 4 math clues (like "I am a multiple of 3" or "I am greater than 20"). As students discuss in chat, let me click numbers on the grid to cross them out until only the secret number remains, plus a button to generate a fresh board.'],
+  ['Grades 6-8 · ELA','Make a vocabulary "Forbidden Words" game to screen share with my middle school class. Display one target vocabulary word at the top and 3 "forbidden" clue words below it, alongside a 30-second countdown timer. One student describes the word on mic without using the forbidden words while the chat guesses. Include a box where I can paste my own weekly word list.'],
+  ['Grades 9-12 · STEM','Make a "Find the Error" screen-share tool for my high school Algebra/Chemistry class. Display a worked multi-step problem where one step has a common mistake. Let me click to highlight or reveal one step at a time as students debate in the chat where the math went wrong, then click a button to flip the faulty step into the corrected solution.'],
+  ['Grades 9-12 · Humanities','Make a live Socratic seminar and debate board to screen share with my high school class. Display a central prompt at the top and two side-by-side columns ("Agree / Claim A" and "Disagree / Claim B"). As students share arguments and text evidence on mic or in chat, let me quickly type and drop their points into either column, star the strongest points, and export the final board as a study note.'],
+  ['Social Studies · Trivia','Make a quote trivia game to screen share with my history class. Display a historical quote and four large answer buttons. When students vote in poll/chat and I click their choice, reveal whether it\'s correct along with a 2-sentence background fact.'],
   ['Live Classroom Helper','Make a live breakout group maker for my online class. I paste my student roster, and it automatically sorts them into groups of 4 on screen. Let me drag student names between groups live on screen, and provide a button to copy formatted group lists directly into meeting chat.']
 ];
 
@@ -217,85 +278,72 @@ var SLIDES=[
   +'<h1>The Classroom Genie</h1>'
   +'<p class="hero-sub">Make your own classroom tools with AI. No coding required.</p>'
   +'<div class="card glow hero-card"><p>AI is like a genie: it grants your wish <b>exactly</b> the way you say it.</p>'
-  +'<p>The good news? <b>This genie gives you unlimited wishes.</b> If the first try isn’t quite right, you just wish again.</p></div>'
+  +'<p>The good news? <b>This genie gives you unlimited wishes.</b> If the first try isn&rsquo;t quite right, you just wish again.</p></div>'
   +'<div class="hero-foot static">'
-  +'<p class="hero-meta">Pearson Virtual Schools Staff Conference · Caleob King</p>'
+  +'<p class="hero-meta">Pearson Virtual Schools Staff Conference &middot; Caleob King</p>'
   +'<p class="hero-cue">Press Space, the right arrow, or rub the lamp to begin.</p></div>'
   +'</div>'}},
 
 {t:'Sound Familiar?',h:function(){return '<h2>Sound Familiar?</h2>'
-  +'<div class="lead">Ready-made classroom websites can be great, until they aren’t.</div>'
+  +'<div class="lead">Ready-made classroom websites can be great, until they aren&rsquo;t.</div>'
   +'<div class="grid g3">'
-  +card('🔑','The Login Headache','Another account. Another forgotten password. Another website asking for student names.')
-  +card('🧩','The Almost-Right Tool','It’s close, but it doesn’t quite fit your lesson, your students, or your standards.')
-  +card('🚧','The Locked Door','The free trial ends, or the school filter blocks the site the morning you need it.')
+  +card('&#128273;','The Login Headache','Another account. Another forgotten password. Another website asking for student names.')
+  +card('&#129513;','The Almost-Right Tool','It&rsquo;s close, but it doesn&rsquo;t quite fit your lesson, your students, or your standards.')
+  +card('&#128679;','The Locked Door','The free trial ends, or the school filter blocks the site the morning you need it.')
   +'</div>'
-  +'<div class="banner"><b>What if…</b> you could make the exact tool you need in a few minutes, and it simply opened on your computer? No account. No login. No cost. And student names never leave your computer.</div>'}},
+  +'<div class="banner"><b>What if&hellip;</b> you could make the exact tool you need in a few minutes, and it opened right in your web browser&mdash;just like a normal webpage, ready to screen-share? No account. No login. No cost. <b>Nothing to install (no IT ticket needed!).</b> And student names never leave your computer.</div>'}},
 
 {t:'How It Works: The Genie Loop',h:function(){return '<h2>How It Works: The Genie Loop</h2>'
   +'<div class="lead">Making a tool is a conversation, not a test. It goes around and around like this:</div>'
   +'<div class="grid loop">'
-  +card('💭','1. Imagine','Think of one small thing that would make your week easier.<em>“I wish I had a fair way to call on students.”</em>')
-  +card('🪄','2. Wish','Type it into Gemini (our school-approved AI tool) in plain, everyday words.<em>“Make a spinning wheel that picks a name from my class list.”</em>')
-  +card('👀','3. Try','The AI builds it. Open it and click around like a student would.<em>“It works! But it picked the same kid twice.”</em>')
-  +card('🔁','4. Tweak','Tell the AI what to change, then try again. Repeat as often as you like.<em>“Take each name off the wheel after it’s picked.”</em>')
+  +card('&#128173;','1. Imagine','Think of one small thing that would make your week easier.<em>&ldquo;I wish I had a fair way to call on students.&rdquo;</em>')
+  +card('&#129668;','2. Wish','Type it into Gemini (our school-approved AI tool) in plain, everyday words.<em>&ldquo;Make a spinning wheel that picks a name from my class list.&rdquo;</em>')
+  +card('&#128064;','3. Try','The AI builds it. Open it and click around like a student would.<em>&ldquo;It works! But it picked the same kid twice.&rdquo;</em>')
+  +card('&#128257;','4. Tweak','Tell the AI what to change, then try again. Repeat as often as you like.<em>&ldquo;Take each name off the wheel after it&rsquo;s picked.&rdquo;</em>')
   +'</div>'
-  +'<div class="banner">You don’t need the perfect wish. <b>You just need a first wish.</b> Most good tools get there one small tweak at a time.</div>'}},
+  +'<div class="banner">You don&rsquo;t need the perfect wish. <b>You just need a first wish.</b> Most good tools get there one small tweak at a time.</div>'}},
 
 {t:'Watch a Wish Grow',h:function(){return '<h2>Watch a Wish Grow</h2>'
-  +'<div class="lead">Here’s what a typical conversation looks like (shortened a bit).</div>'
+  +'<div class="lead">Here&rsquo;s what a typical conversation looks like (shortened a bit).</div>'
   +'<div class="chat chat-grid">'
   +bubble('you','Make a spinning wheel that picks a random name from a class list I paste in.')
-  +bubble('genie','Here’s your wheel! Paste your names in the box and click Spin.','<span class="chip">📄 spin-wheel.html</span>')
-  +bubble('you','Love it! But it picked Jordan twice in a row. Can you take each name off after it’s picked?')
-  +bubble('genie','Done! Picked names now come off the wheel. I added an Undo button too, just in case.','<span class="chip">📄 spin-wheel.html (version 2)</span>')
+  +bubble('genie','Here&rsquo;s your wheel! Paste your names in the box and click Spin.','<span class="chip">&#128196; spin-wheel.html</span>')
+  +bubble('you','Love it! But it picked Jordan twice in a row. Can you take each name off after it&rsquo;s picked?')
+  +bubble('genie','Done! Picked names now come off the wheel. I added an Undo button too, just in case.','<span class="chip">&#128196; spin-wheel.html (version 2)</span>')
   +bubble('you','Can it make a ticking sound while it spins? And use brighter colors?')
-  +bubble('genie','Ticking sound and brighter colors added. Spin away!','<span class="chip">📄 spin-wheel.html (version 3)</span>')
+  +bubble('genie','Ticking sound and brighter colors added. Spin away!','<span class="chip">&#128196; spin-wheel.html (version 3)</span>')
   +'</div>'
-  +'<div class="banner banner-row"><span><b>Three plain-English messages. Zero code.</b> That’s the whole skill.</span>'
-  +'<a class="btn" href="Example_1/WheelPicker.html" target="_blank" rel="noopener">🎡 Try a finished wheel</a></div>'}},
+  +'<div class="banner banner-row"><span><b>Three plain-English messages. Zero code.</b> That&rsquo;s the whole skill.</span>'
+  +'<a class="btn" href="Example_1/WheelPicker.html" target="_blank" rel="noopener">&#127905; Try a finished wheel</a></div>'}},
 
 {t:'The Cave of Wonders',h:function(){return '<h2>The Cave of Wonders</h2>'
   +'<div class="lead">Sixteen real tools and ideas, each one made by describing it to AI. Click any gem to explore:</div>'
   +'<div class="cave-wrap static">'+caveHTML()+'</div>'}},
 
-{t:'Two Rules—and When to Break Them',h:function(){return '<h2>Two Golden Rules — And When to Break Them</h2>'
-  +'<div class="lead">Start every wish with these two guardrails. As your tools grow, here is when and how to bend them:</div>'
+{t:'Two Golden Rules',h:function(){return '<h2>Two Golden Rules</h2>'
+  +'<div class="lead">Include these two simple requests at the end of every wish so your tool works anywhere without headaches:</div>'
   +'<div class="grid rules-grid">'
   +'<div class="card rule-card">'
-    +'<div class="card-head"><h3>1. “Put everything in one single file”</h3><span class="pill guard">Rule #1</span></div>'
-    +'<div class="rule-body">'
-      +'<p class="rule-why"><b>Why start here:</b> One file is foolproof. Double-click it and it opens in any browser. No accounts, no installs, easy to email or keep in a folder.</p>'
-      +'<div class="break-box">'
-        +'<span class="break-tag">🚀 When to break it (Advanced Move)</span>'
-        +'<p>Break this rule when your tool gets <b>too big, complex, or slow</b> for one single document.</p>'
-        +'<p class="slow-explain">Websites are actually built from three separate ingredients:</p>'
-        +'<ul class="tri-list">'
-          +'<li><b>HTML</b> = <i>What is there</i> (the text, buttons, inputs, and structure)</li>'
-          +'<li><b>CSS</b> = <i>How it looks</i> (the colors, fonts, styling, and layout)</li>'
-          +'<li><b>JavaScript (JS)</b> = <i>What it does</i> (the math, clicks, animations, and logic)</li>'
-        +'</ul>'
-        +'<p class="break-note">If Gemini gives you a ZIP with separate .html, .css, and .js files, don’t panic! That’s just organizing the closet into three tidy drawers.</p>'
-      +'</div>'
-    +'</div>'
+    +'<div class="card-head"><h3>1. &ldquo;Put everything in one single file&rdquo;</h3><span class="pill guard">Rule #1</span></div>'
+    +'<p class="rule-why">Instead of a messy folder of parts, Gemini gives you <b>one clickable webpage file</b> that opens right in Chrome, Edge, or Safari.</p>'
+    +'<ul class="rule-benefit-list">'
+      +'<li><b>Easy to keep:</b> Save it in your lesson folder just like a Word doc or PDF.</li>'
+      +'<li><b>Easy to share:</b> Email the file to a teammate and it works on their computer too.</li>'
+    +'</ul>'
   +'</div>'
   +'<div class="card rule-card">'
-    +'<div class="card-head"><h3>2. “Don’t use anything from the internet”</h3><span class="pill guard">Rule #2</span></div>'
-    +'<div class="rule-body">'
-      +'<p class="rule-why"><b>Why start here:</b> School filters have nothing to block, and your tool works 100% offline even if classroom Wi-Fi cuts out.</p>'
-      +'<div class="break-box">'
-        +'<span class="break-tag">🎨 How to handle assets &amp; libraries</span>'
-        +'<p>Any assets your tool needs should be computer-generated right inside the file:</p>'
-        +'<ul class="tri-list">'
-          +'<li><b>Visuals:</b> Ask for <i>inline SVG graphics</i> (drawn with math, not outside image links).</li>'
-          +'<li><b>Audio:</b> Ask for <i>Web Audio API chimes &amp; ticks</i> (synthesized by your browser).</li>'
-        +'</ul>'
-        +'<p class="break-note"><b>What if you see "Tailwind"?</b> It’s an external styling link. It is generally safe and makes tools look modern and beautiful! But if your filter blocks it or you want 100% offline tools, insist on: <i>“Use vanilla HTML, CSS, and JS only.”</i></p>'
-      +'</div>'
-    +'</div>'
+    +'<div class="card-head"><h3>2. &ldquo;Don&rsquo;t use outside internet links&rdquo;</h3><span class="pill guard">Rule #2</span></div>'
+    +'<p class="rule-why">Gemini draws all visuals and creates all sound effects <b>right inside the file itself</b> instead of pulling from outside websites.</p>'
+    +'<ul class="rule-benefit-list">'
+      +'<li><b>Filter-proof:</b> School web filters have nothing to block on the morning of your lesson.</li>'
+      +'<li><b>100% Offline:</b> Works even if your internet connection slows down.</li>'
+    +'</ul>'
   +'</div>'
   +'</div>'
-  +'<div class="banner">🔒 <b>Privacy Note:</b> We have a <b>0-PII policy with Gemini</b>, so you can safely use classroom curriculum and lesson materials directly in your prompts!</div>'}},
+  +'<div class="levelup-row static">'
+    +'<button class="btn alt levelup-btn" data-open-levelup="1">&#129502;&#8205;&#9794;&#65039; Master of the Lamp: When to Break the Rules (Level Up)</button>'
+  +'</div>'
+  +'<div class="banner">&#128274; <b>Privacy Note:</b> Our school&rsquo;s Gemini setup is privacy-protected (0-PII) so you can safely paste in your lesson plans and curriculum! (And since your finished tool runs on your own computer, student names you type into a tool never go to the cloud at all.)</div>'}},
 
 {t:'Your Wish Starter & Borrowed Wishes',h:function(){return '<h2>Your Wish Starter &amp; Borrowed Wishes</h2>'
   +'<div class="lead">Built for live online teaching: run on your computer and shared via screen share. Copy the general formula OR borrow a ready-made wish below:</div>'
@@ -303,82 +351,83 @@ var SLIDES=[
     +'<div class="card starter-card">'
       +'<div class="starter-head">'
         +'<div><span class="pill role">Teacher Screen-Share Formula</span> <span class="dim">Fill in the blanks and paste into Gemini</span></div>'
-        +'<button class="btn" data-copy="formula">📋 Copy Wish Formula</button>'
+        +'<button class="btn" data-copy="formula">&#128203; Copy Wish Formula</button>'
       +'</div>'
       +'<div class="formula-parts">'
-        +'<div class="part"><span class="pill aud">1 · Who &amp; Where</span><p>Make a screen-share tool for my <mark>[grade] [subject]</mark> online class to run on my computer during live sessions.</p></div>'
-        +'<div class="part"><span class="pill task">2 · Live Screen Share</span><p><mark>[Describe what appears on my screen, what I click or enter, and what students see and discuss.]</mark></p></div>'
-        +'<div class="part"><span class="pill guard">3 · Single-File Guardrail</span><p>'+SAFETY+'</p></div>'
+        +'<div class="part"><span class="pill aud">1 &middot; Who &amp; Where</span><p>Make a screen-share tool for my <mark>[grade] [subject]</mark> online class to run on my computer during live sessions.</p></div>'
+        +'<div class="part"><span class="pill task">2 &middot; Live Screen Share</span><p><mark>[Describe what appears on my screen, what I click or enter, and what students see and discuss.]</mark></p></div>'
+        +'<div class="part"><span class="pill guard">3 &middot; Single-File Guardrail</span><p>'+SAFETY+'</p><span class="guard-reassure">&#10024; Gemini speaks this language&mdash;just leave it attached!</span></div>'
       +'</div>'
     +'</div>'
     +'<div class="borrow-header">'
-      +'<h3>✨ Ready-to-Borrow Wishes (Screen-Share Ready)</h3>'
-      +'<span class="dim">Click any button to copy the prompt + single-file rule straight to your clipboard</span>'
+      +'<h3>&#10024; Ready-to-Borrow Wishes (Screen-Share &amp; Productivity Ready)</h3>'
+      +'<span class="dim">Click any button to copy the wish + single-file rule straight to your clipboard</span>'
     +'</div>'
     +'<div class="grid g3 wishbank static">'
     +WISHES.map(function(w){
       return '<div class="card wish"><div class="wish-top"><span class="pill">'+w[0]+'</span>'
-        +'<button class="btn alt btn-sm" data-copytxt="'+encodeURIComponent(w[1]+'\n\n'+SAFETY)+'">📋 Copy</button></div>'
+        +'<button class="btn alt btn-sm" data-copytxt="'+encodeURIComponent(w[1]+'\n\n'+SAFETY)+'">&#128203; Copy</button></div>'
         +'<p>'+w[1]+'</p></div>';
     }).join('')
     +'</div>'
   +'</div>'
-  +'<div class="banner"><b>Take a few minutes:</b> Copy the formula or one of these wishes right now, paste it into Gemini, and test the result! We’ll gather feedback and tweak together.</div>'}},
+  +'<div class="banner">&#10024; <b>Step 1:</b> Click <b>Copy</b> on the formula or your favorite wish above and paste it into Gemini. Once Gemini writes your code, head to the next slide to turn it into a working tool!</div>'}},
 
-{t:'See It & Save It',h:function(){return '<h2>See It &amp; Save It</h2>'
-  +'<div class="lead">Gemini will hand you a block of code. You don’t need to read it. Just copy, paste, and look.</div>'
-  +'<div class="sb-steps-row">'
-    +'<div class="sb-step"><span class="s-badge">1</span><div class="s-text"><b>Copy</b><span class="s-desc">Click "Copy" on Gemini code box</span></div></div>'
-    +'<div class="sb-step-arrow">➜</div>'
-    +'<div class="sb-step"><span class="s-badge">2</span><div class="s-text"><b>Paste &amp; Show</b><span class="s-desc">Paste below and click "Show Me"</span></div></div>'
-    +'<div class="sb-step-arrow">➜</div>'
-    +'<div class="sb-step"><span class="s-badge">3</span><div class="s-text"><b>Save</b><span class="s-desc">Click "Save My Tool" for .html file</span></div></div>'
+{t:'Save & Open Your Tool',h:function(){return '<h2>Save &amp; Open Your Tool: The Magic File Maker</h2>'
+  +'<div class="lead">Gemini will hand you a block of code. You never need to read it! Paste it below to turn it into a clickable webpage file and launch it full-screen:</div>'
+  +'<div class="sb-steps-row static">'
+    +'<div class="sb-step"><span class="s-badge">1</span><div class="s-text"><b>Copy from Gemini</b><span class="s-desc">Click the Copy icon on Gemini&rsquo;s code box</span></div></div>'
+    +'<div class="sb-step-arrow">&#10140;</div>'
+    +'<div class="sb-step"><span class="s-badge">2</span><div class="s-text"><b>Paste &amp; Name Below</b><span class="s-desc">Paste into the box and give it a title</span></div></div>'
+    +'<div class="sb-step-arrow">&#10140;</div>'
+    +'<div class="sb-step"><span class="s-badge">3</span><div class="s-text"><b>Save &amp; Launch Full-Screen</b><span class="s-desc">Saves your .html file and opens it in a new tab!</span></div></div>'
   +'</div>'
-  +'<div class="sandbox static">'
-    +'<div class="sb-left">'
+  +'<div class="file-maker-wrap static">'
+    +'<div class="file-maker-card">'
       +'<div class="sb-top-bar">'
-        +'<label for="sb-code" class="sb-label">Paste your code here:</label>'
-        +'<button class="btn alt btn-sm" id="sb-clear">Clear</button>'
+        +'<label for="sb-code" class="sb-label">Paste your Gemini code here:</label>'
+        +'<button class="btn alt btn-sm" id="sb-clear">Clear Box</button>'
       +'</div>'
-      +'<textarea id="sb-code" spellcheck="false" placeholder="Click here, then press Ctrl+V (Windows) or Cmd+V (Mac) to paste code..."></textarea>'
+      +'<textarea id="sb-code" spellcheck="false" placeholder="Click here, then press Ctrl+V (Windows) or Cmd+V (Mac) to paste the code from Gemini..."></textarea>'
       +'<div class="sb-bottom-bar">'
         +'<div class="sb-name-group">'
-          +'<label for="sb-name">Tool name:</label>'
+          +'<label for="sb-name">File name:</label>'
           +'<input id="sb-name" value="my-classroom-tool" autocomplete="off">'
           +'<span class="dim">.html</span>'
         +'</div>'
         +'<div class="sb-action-btns">'
-          +'<button class="btn" id="sb-run">▶ Show Me</button>'
-          +'<button class="btn sb-save-btn" id="sb-save">💾 Save My Tool</button>'
+          +'<button class="btn" id="sb-both">&#128640; Save .html &amp; Open in New Tab</button>'
+          +'<button class="btn alt" id="sb-open">&#127760; Open in New Tab Only</button>'
+          +'<button class="btn alt" id="sb-save">&#128190; Download .html Only</button>'
         +'</div>'
       +'</div>'
-    +'</div>'
-    +'<div class="sb-right">'
-      +'<div class="sb-preview-header">'
-        +'<span class="sb-label">Live Preview</span>'
-        +'<span class="dim">Fully interactive preview</span>'
-      +'</div>'
-      +'<iframe id="sb-frame" title="Preview of your tool" sandbox="allow-scripts allow-modals allow-forms allow-popups allow-downloads"></iframe>'
+      +'<div class="reopen-note">&#128194; <b>How to use it next week:</b> Your saved <code>.html</code> file goes to your <b>Downloads</b> folder. Double-click it anytime (or move it to your lesson folder) and it opens right in your browser!</div>'
     +'</div>'
   +'</div>'
-  +'<div class="sb-footer-bar">'
-    +'<div class="sb-tip">💡 <b>Shortcut:</b> Gemini often has a built-in <b>Canvas / Artifact</b> preview button right in the chat!</div>'
-    +'<button class="btn alt np-open-btn" id="btn-notepad" data-open-notepad="1">📝 No preview box handy? The Notepad Way</button>'
+  +'<div class="sb-footer-bar static">'
+    +'<div class="sb-tip">&#128161; <b>Bonus Shortcut:</b> If you see a <b>&ldquo;Preview&rdquo; or &ldquo;Open in Canvas&rdquo;</b> button at the bottom of Gemini&rsquo;s code box, you can click that to test your tool right inside Gemini before downloading!</div>'
+    +'<button class="btn alt np-open-btn" id="btn-notepad" data-open-notepad="1">&#128221; Saving without this page? The Notepad Way</button>'
   +'</div>'},init:sandboxInit},
 
 {t:'Magic Words for Tweaking',h:function(){return '<h2>Magic Words for Tweaking</h2>'
-  +'<div class="lead">Your first version is a rough draft. Talk to the AI like a helpful colleague: say what you see, and what you’d like instead.</div>'
-  +'<div class="grid g2">'
-  +phrases('🎨','Make it look right',['“Make the words big enough to read on a shared screen.”','“Use bright, cheerful colors.”','“Make it calm and simple, with less on the screen.”'])
-  +phrases('🖱️','Make it easier to use',['“Add a Start Over button.”','“Add a mute button.”','“Make the buttons bigger for little hands.”'])
-  +phrases('♻️','Make it reusable',['“Let me paste in my own list of words.”','“Add buttons to save my setup to a file and load it again later.”'])
-  +phrases('🛠️','When something’s not working',['“When I click Spin, nothing happens. Please fix it.”','“The words run off the edge of the screen.”','Still stuck? “Start over with a simpler version.”'])
+  +'<div class="lead">Your first version is a rough draft! Click any phrase below to copy it (with a built-in reminder for Gemini to give you the whole updated file):</div>'
+  +'<div class="grid g2 static">'
+  +phrases('&#127912;','Make it look right',['Make the words big enough to read on a shared screen.','Use bright, cheerful colors.','Make it calm and simple, with less on the screen.'])
+  +phrases('&#128421;&#65039;','Make it easier on screen share',['Add a dark mode / high-contrast toggle so it\'s easier to read on screen share.','Add keyboard shortcuts (like Spacebar to advance) so I can run it quickly while teaching.','Add a Start Over button and a mute button.'])
+  +phrases('&#9851;&#65039;','Make it reusable',['Let me paste in my own list of words or questions.','Add buttons to save my setup to a file and load it again later.'])
+  +phrases('&#128736;&#65039;','When something\'s not working',['When I click the button, nothing happens. Please fix it.','The words run off the edge of the screen. Please make everything fit cleanly.','Start over with a simpler, cleaner version.'])
   +'</div>'
-  +'<div class="banner">Every tweak is just one more message. If a change makes things worse, say <b>“Go back to the last version.”</b></div>'}},
+  +'<div class="banner">Every tweak is just one more message. If a change makes things worse, say <b>&ldquo;Go back to the last version.&rdquo;</b> And if Gemini ever gives you just a small piece of code, say <b>&ldquo;Give me the whole updated file.&rdquo;</b></div>'}},
 
 {t:'Tinker Time',h:function(){
   return '<div class="final-stage static">'
-    +'<div class="tinker-head"><h2>Tinker Time</h2><p class="tinker-goal">Make one wish. Try it. Tweak it once. <b>That’s a win.</b></p></div>'
+    +'<div class="tinker-head"><h2>Tinker Time</h2><p class="tinker-goal">Make one wish. Try it. Tweak it once. <b>That&rsquo;s a win.</b></p></div>'
+    +'<div class="tinker-jump-row" aria-label="Quick links back to workshop slides">'
+    +'<button class="jump-link-btn" data-go="7">&larr; Back to Wish List</button>'
+    +'<button class="jump-link-btn" data-go="8">&larr; Back to Magic File Maker</button>'
+    +'<button class="jump-link-btn" data-go="9">&larr; Back to Magic Words</button>'
+    +'<button class="jump-link-btn" data-go="5">&larr; Cave of Wonders</button>'
+    +'</div>'
     +'<div class="final-timer-card">'
     +'<div class="led final-led" id="led" role="timer" aria-live="off">10:00</div>'
     +'<div class="timer-controls">'
@@ -414,30 +463,46 @@ var SLIDES=[
 var CAVE_SLIDE=1;
 SLIDES.forEach(function(s,i){if(s.t==='The Cave of Wonders')CAVE_SLIDE=i+1});
 
-/* ---------- See It & Save It: paste-and-preview box ---------- */
-var SB_EMPTY='<!DOCTYPE html><meta charset="utf-8"><body style="margin:0;height:100vh;display:grid;place-items:center;font:18px system-ui,sans-serif;color:#94a3b8;background:#0b0d18;text-align:center;padding:1rem">Your tool will appear here ✨</body>';
 function cleanCode(c){
-  // AI chats sometimes include the ``` fences around code; remove them.
   return (c||'').trim().replace(/^```[a-zA-Z]*\s*\n?/,'').replace(/\n?```\s*$/,'').trim();
 }
+function getCleanName(nm){
+  return ((nm&&nm.value)||'').trim().replace(/\.html?$/i,'').replace(/[^\w\- ]+/g,'').replace(/\s+/g,'-')||'my-classroom-tool';
+}
 function sandboxInit(){
-  var ta=$('#sb-code'),fr=$('#sb-frame'),nm=$('#sb-name');
+  var ta=$('#sb-code'),nm=$('#sb-name');
   if(!ta)return;
   ta.value=sbCode;
-  fr.srcdoc=sbCode?cleanCode(sbCode):SB_EMPTY;
   ta.oninput=function(){sbCode=ta.value};
-  $('#sb-run').onclick=function(){
+
+  var bothBtn=$('#sb-both');
+  if(bothBtn)bothBtn.onclick=function(){
     var c=cleanCode(ta.value);
-    if(!c){toast('Paste your code into the box first');ta.focus();return}
-    fr.srcdoc=c;
+    if(!c){toast('Paste your code from Gemini into the box first');ta.focus();return}
+    var n=getCleanName(nm)+'.html';
+    openInNewTab(c);
+    saveFile(c,n,'text/html;charset=utf-8');
+    toast('Opened in a new tab & saved ' + n + ' to Downloads!');
   };
-  $('#sb-save').onclick=function(){
+
+  var openBtn=$('#sb-open');
+  if(openBtn)openBtn.onclick=function(){
     var c=cleanCode(ta.value);
-    if(!c){toast('Paste your code into the box first');ta.focus();return}
-    var n=(nm.value||'').trim().replace(/\.html?$/i,'').replace(/[^\w\- ]+/g,'').replace(/\s+/g,'-')||'my-classroom-tool';
-    saveFile(c,n+'.html','text/html;charset=utf-8');
+    if(!c){toast('Paste your code from Gemini into the box first');ta.focus();return}
+    openInNewTab(c);
+    toast('Opened your tool in a new browser tab!');
   };
-  $('#sb-clear').onclick=function(){ta.value='';sbCode='';fr.srcdoc=SB_EMPTY;ta.focus()};
+
+  var saveBtn=$('#sb-save');
+  if(saveBtn)saveBtn.onclick=function(){
+    var c=cleanCode(ta.value);
+    if(!c){toast('Paste your code from Gemini into the box first');ta.focus();return}
+    var n=getCleanName(nm)+'.html';
+    saveFile(c,n,'text/html;charset=utf-8');
+  };
+
+  var clearBtn=$('#sb-clear');
+  if(clearBtn)clearBtn.onclick=function(){ta.value='';sbCode='';ta.focus()};
 }
 
 /* ---------- Timer & Music Player ---------- */
@@ -462,7 +527,6 @@ function chime(){
   }catch(e){}
 }
 
-/* Music files located in \music folder */
 var MUSIC_PLAYLIST=[
   {title:'Ambient Focus',file:'music/Ambient_Focus.mp3'},
   {title:'Upbeat Flow',file:'music/Upbeat_Flow.mp3'},
@@ -527,7 +591,7 @@ function loadTrack(idx,autoPlay){
       p.then(function(){
         musicState.isPlaying=true;
         updateMusicUI();
-      }).catch(function(e){
+      }).catch(function(){
         musicState.isPlaying=false;
         updateMusicUI();
       });
@@ -603,11 +667,13 @@ function stepMinute(direction){
 }
 
 function timerInit(){
-  var led=$('#led'),go=$('#tgo');
+  var led=$('#led'),goBtn=$('#tgo');
   function draw(){if(led)led.textContent=fmt(tm.left)}
-  function stop(){clearInterval(tm.id);tm.run=0;if(go)go.textContent='Play'}
+  function stop(){clearInterval(tm.id);tm.run=0;if(goBtn)goBtn.textContent='Play'}
   function setT(s){stop();tm.left=s;tm.base=s;draw()}
-  tm.base=tm.base||600;draw();
+  tm.base=tm.base||600;
+  draw();
+  if(goBtn)goBtn.textContent=tm.run?'Pause':'Play';
 
   var upBtn=$('#t-up');
   if(upBtn)upBtn.onclick=function(){stepMinute(1)};
@@ -618,11 +684,12 @@ function timerInit(){
   var rsBtn=$('#trs');
   if(rsBtn)rsBtn.onclick=function(){setT(tm.base)};
 
-  if(go){
-    go.onclick=function(){
+  if(goBtn){
+    goBtn.onclick=function(){
       if(tm.run){stop();return}
       if(tm.left<=0)tm.left=tm.base;
-      tm.run=1;go.textContent='Pause';
+      tm.run=1;goBtn.textContent='Pause';
+      clearInterval(tm.id);
       tm.id=setInterval(function(){
         tm.left--;draw();
         if(tm.left<=0){stop();chime();toast('Time is up!')}
@@ -630,7 +697,6 @@ function timerInit(){
     };
   }
 
-  // Music Player bindings
   var mPrev=$('#m-prev'),mPlay=$('#m-play'),mNext=$('#m-next'),mMute=$('#m-mute'),mVol=$('#m-vol');
   if(mPrev)mPrev.onclick=function(){prevTrack()};
   if(mPlay)mPlay.onclick=function(){toggleMusicPlay()};
@@ -640,7 +706,6 @@ function timerInit(){
     mVol.oninput=function(e){setVolume(+e.target.value)};
   }
 
-  // Bottom action buttons
   var padletBtn=$('#btn-padlet');
   if(padletBtn)padletBtn.onclick=function(e){
     e.preventDefault();
@@ -658,11 +723,6 @@ function timerInit(){
 
 /* ---------- Views ---------- */
 function slideView(n,full){
-  if(n!==SLIDES.length&&musicAudio&&!musicAudio.paused){
-    musicAudio.pause();
-    musicState.isPlaying=false;
-    updateMusicUI();
-  }
   var s=SLIDES[n-1];hud.classList.remove('hide');
   view.innerHTML='<section aria-label="Slide '+n+'">'+s.h()+'</section>';
   arm(view.firstChild,full);
@@ -694,7 +754,7 @@ function step(d){
 
 /* ---------- Lamp and smoke transition ---------- */
 var LAMPSVG='<svg viewBox="0 0 200 120" aria-hidden="true" style="overflow:visible"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fde68a"/><stop offset=".55" stop-color="#f59e0b"/><stop offset="1" stop-color="#92400e"/></linearGradient><filter id="bl"><feGaussianBlur stdDeviation="1.6"/></filter></defs><g fill="none" stroke-linecap="round" filter="url(#bl)"><path class="w w1" stroke="#c4b5fd" stroke-width="4" d="M20 30C4 16 34 6 16-8S30-32 14-48"/><path class="w w2" stroke="#67e8f9" stroke-width="3" d="M22 28C36 14 6 4 24-10S8-34 26-50"/><path class="w w3" stroke="#f0abfc" stroke-width="3" d="M18 32C0 22 26 12 10 0S28-24 12-38"/></g><path d="M52 66C36 62 30 50 18 34L27 29C40 43 50 49 62 53Z" fill="url(#lg)"/><path d="M46 78C46 58 72 50 100 50S154 58 154 78 128 106 100 106 46 98 46 78Z" fill="url(#lg)" stroke="#fde68a" stroke-width="2"/><path d="M150 66C178 62 184 92 158 98" fill="none" stroke="#f59e0b" stroke-width="8" stroke-linecap="round"/><path d="M84 52C88 40 112 40 116 52Z" fill="#d97706"/><circle cx="100" cy="38" r="5" fill="#fde68a"/><rect x="78" y="104" width="44" height="8" rx="3" fill="#92400e"/><path d="M62 70C70 62 90 60 104 62" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
-/* ---------- Procedural dune scape (bottom fifth of every screen) ---------- */
+
 function duneLayer(w,h,base,amp,color,seed){
   var n=7,pts=[];
   for(var i=0;i<=n;i++){
@@ -765,6 +825,7 @@ document.addEventListener('mouseout',function(e){var g=e.target.closest('.gem');
 document.addEventListener('focusin',function(e){var g=e.target.closest('.gem');if(g)setCap(TREASURES[+g.dataset.i])});
 document.addEventListener('focusout',function(e){var g=e.target.closest('.gem');if(g)resetCap()});
 document.addEventListener('click',function(e){
+  var lu=e.target.closest('[data-open-levelup]');if(lu){openLevelUpModal();return}
   var np=e.target.closest('#btn-notepad,[data-open-notepad]');if(np){openNotepadModal();return}
   var g=e.target.closest('[data-i]');if(g&&g.classList.contains('gem')){openModal(+g.dataset.i);return}
   var cl=e.target.closest('[data-close]');if(cl){closeModal();return}
@@ -774,7 +835,6 @@ document.addEventListener('click',function(e){
     if(dlg){
       dlg.querySelectorAll('.mtab').forEach(function(b){b.classList.toggle('active',b===mt)});
       dlg.querySelectorAll('.mpane').forEach(function(p){p.classList.toggle('active',p.id==='mpane-'+tabId)});
-      
     }
     return;
   }
@@ -783,7 +843,7 @@ document.addEventListener('click',function(e){
     var idx=+cp.dataset.copyprompt;
     if(TREASURES[idx]&&TREASURES[idx].prompt){
       copy(TREASURES[idx].prompt);
-      toast('✓ Prompt copied to clipboard!');
+      toast('Prompt copied to clipboard!');
     }
     return;
   }
@@ -804,7 +864,7 @@ document.addEventListener('click',function(e){
       var txt=tr.lessonMd || lessonText(tr);
       if(txt){
         copy(txt);
-        toast('✓ Lesson copied to clipboard!');
+        toast('Lesson copied to clipboard!');
       }
     }
     return;
@@ -826,14 +886,20 @@ document.addEventListener('click',function(e){
     var idx=+sf.dataset.savefiles;
     var tr=TREASURES[idx];
     if(tr){
-      toast('✓ Downloading ' + (tr.downloadName || 'file(s)'));
+      toast('Downloading ' + (tr.downloadName || 'file(s)'));
     }
+    return;
+  }
+  var tw=e.target.closest('[data-copytweak]');
+  if(tw){
+    var rawTweak=decodeURIComponent(tw.dataset.copytweak);
+    copy(rawTweak+'\n\n'+TWEAK_GUARD, 'Tweak copied (with full-file reminder)!');
     return;
   }
   var t=e.target.closest('[data-nav],[data-go],[data-copy],[data-copytxt],[data-dl]');
   if(!t){if(!e.target.closest('button,a,input,textarea,summary,pre,.drawer,.top'))step(1);return}
   if(t.dataset.nav)step(+t.dataset.nav);
-  if(t.dataset.go&&!busy)go(+t.dataset.go);
+  if(t.dataset.go&&!busy){full=true;go(+t.dataset.go)}
   if(t.dataset.copy)copy(FORMULA);
   if(t.dataset.copytxt)copy(decodeURIComponent(t.dataset.copytxt));
   if(t.dataset.dl){var b=new Blob(['<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>My Classroom Tool</title>\n</head>\n<body>\n<!-- Paste the code from your AI chat here, replacing this whole file. -->\n</body>\n</html>\n'],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='tool.html';document.body.appendChild(a);a.click();a.remove();toast('tool.html downloaded')}
