@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Periodically Rational — Science, Mathematics & Classroom Tools</title>
   <meta name="description" content="Science and mathematics education, browser-native classroom tools, and writings by Caleob King.">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <meta property="og:image" content="./PR_logo.jpg">
   <style>
     :root {
       --bg: #fbfbf9;
@@ -26,7 +30,7 @@
 
     body {
       font-family: Georgia, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif;
-      max-width: 780px;
+      max-width: 860px;
       margin: 40px auto;
       padding: 0 24px;
       line-height: 1.65;
@@ -34,46 +38,111 @@
       background: var(--bg);
     }
 
-    header {
-      margin-bottom: 24px;
+    .site-header {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 28px;
     }
 
-    h1 {
-      font-size: 2.3em;
-      margin: 0 0 6px 0;
+    @media (min-width: 700px) {
+      .site-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+    }
+
+    .site-branding {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+      white-space: nowrap;
+    }
+
+    /* Brand Logo (Antigravity target: .site-brand-logo) */
+    .site-brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: transform 0.15s ease;
+    }
+
+    .brand-link:hover .site-brand-logo {
+      transform: scale(1.05);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .site-title {
+      font-size: 1.55em;
+      margin: 0;
       letter-spacing: -0.02em;
       color: #111;
+      line-height: 1.15;
+      white-space: nowrap;
     }
 
-    .subtitle {
+    .site-tagline {
       color: var(--muted);
-      margin: 0 0 16px 0;
+      margin: 2px 0 0 0;
       font-style: italic;
-      font-size: 1.05em;
+      font-size: 0.9em;
+      white-space: nowrap;
     }
 
-    nav.quick-nav {
+    nav.main-nav {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 8px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 0.9em;
+      flex-shrink: 0;
     }
 
-    nav.quick-nav a {
+    nav.main-nav a.nav-tab {
       color: var(--accent);
       text-decoration: none;
-      padding: 5px 12px;
+      padding: 7px 14px;
       border-radius: 6px;
       background: rgba(26, 77, 128, 0.06);
       font-weight: 500;
-      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+      transition: background 0.15s ease, color 0.15s ease;
     }
 
-    nav.quick-nav a:hover {
+    nav.main-nav a.nav-tab:hover {
       background: rgba(26, 77, 128, 0.14);
       color: var(--accent-hover);
+    }
+
+    nav.main-nav a.nav-tab.active {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    @media (max-width: 699px) {
+      nav.main-nav {
+        flex-wrap: wrap;
+      }
     }
 
     hr {
@@ -217,13 +286,21 @@
 </head>
 <body>
 
-<header>
-  <h1>Periodically Rational</h1>
-  <p class="subtitle">Discussions about STEM education</p>
-  <nav class="quick-nav" aria-label="Main Navigation">
-    <a href="./AboutMe/index.html">About Caleob King</a>
-    <a href="./Apps/index.html">Classroom Tools</a>
-    <a href="./Ideas/index.html">Writing & Ideas</a>
+<header class="site-header">
+  <div class="site-branding">
+    <a href="./index.html" class="brand-link" aria-label="Periodically Rational Home">
+      <!-- Brand Logo (Antigravity target: .site-brand-logo) -->
+      <img src="./PR_icon.png" alt="Periodically Rational Logo" class="site-brand-logo">
+      <div class="brand-text">
+        <h1 class="site-title">Periodically Rational</h1>
+        <span class="site-tagline">Discussions about STEM education</span>
+      </div>
+    </a>
+  </div>
+  <nav class="main-nav" aria-label="Main Navigation">
+    <a href="./AboutMe/index.html" class="nav-tab">About Caleob King</a>
+    <a href="./Apps/index.html" class="nav-tab">Classroom Tools</a>
+    <a href="./Ideas/index.html" class="nav-tab">Writing & Ideas</a>
   </nav>
 </header>
 
