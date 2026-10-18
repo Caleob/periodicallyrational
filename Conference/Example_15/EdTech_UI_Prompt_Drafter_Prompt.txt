@@ -1,0 +1,52 @@
+
+I want to build a simple, single-page web tool to help non-technical teachers design their own classroom apps using AI.
+
+I need an interactive screen where teachers can easily drag, resize, and arrange simple colored shapes (like big panels, rounded buttons, and input boxes) on a solid black background to sketch out their layout. Big sections should automatically stay in the background so small buttons placed on top don't get trapped or hard to click, and the exported shapes need to stay completely blank with no text inside so the AI doesn't get confused.
+
+Include a spot at the top where the teacher can write what the overall app is supposed to do, plus a simple sidebar list where they can type what each colored shape is for. Finally, add easy buttons to copy or save the image and copy a ready-to-use prompt that matches the colors to the descriptions, so they can just paste both straight into Gemini to generate the app.
+
+--------
+Create a complete, single-file HTML/CSS/JavaScript web tool designed for non-technical teachers to visually draft ed-tech web app layouts and automatically generate a paired mockup image and structured AI prompt.
+
+### Core Workflow & Outputs
+
+1. **Plain Black Canvas Export:**
+* The interactive canvas represents the app interface and renders on a solid, pure black background (no visible grid lines in exports to avoid confusing vision AI).
+* Exported shapes must remain **completely blank** (no text labels or character overlays inside the shapes on export, preventing vision models from misreading text).
+* Provide a one-click button to download an 800×600 PNG and/or copy the clean mockup image directly to the clipboard.
+
+
+2. **Synchronized Text Prompt Generator:**
+* Generate a live, copyable text prompt matching the visual layout.
+* Map elements by color name and hex code (e.g., `- Purple rounded rectangle (#a855f7): [teacher's description]`).
+* Include a dedicated, integrated top input field for the overall **"Main Purpose of the App"** (e.g., grade level, subject, learning objectives) that prefixes the generated prompt.
+
+---
+
+### Canvas & Layering Mechanics
+
+* **Smart Foreground/Background Sorting:** Large container regions must automatically stay in the background (lower z-index) so smaller elements (buttons, inputs, icons) placed over them always remain on top and easy to click, select, drag, or resize without unpredictable layer conflicts.
+* **Visual Shapes Palette (Geometric, Not Prescriptive):**
+* Group additions by shape/form rather than developer jargon (e.g., **Large Region/Panel**, **Rounded Rectangle**, **Pill**, **Circle/Dial**, **Input Box**, **Media/Diagram Area**).
+* Include quick horizontal and vertical splitting buttons to divide selected regions or the whole canvas into common layouts.
+
+
+* **Interactive Manipulation:**
+* Full drag-to-move and drag-to-resize handles on the canvas.
+* Manual layer nudging (Bring Forward / Send Backward) and element deletion.
+
+
+
+---
+
+### Legend & Element Editing
+
+* An inline, live-synced sidebar list where teachers can easily name each element and type its functional description without losing canvas context.
+* Color pickers and distinct vibrant default swatches (purple, blue, green, yellow, orange, pink, cyan, red) that ensure high contrast against the solid black background.
+
+---
+
+### Design & Architecture
+
+* Deliver the entire tool as a **self-contained, standalone HTML file** (embedded CSS/JS or modern CDN utility classes like Tailwind, zero build step required).
+* Prioritize an elegant, calm, teacher-friendly UI with high contrast, clear typography, and a polished 3-column or responsive split-pane layout (Tools & Shapes | Canvas | Legend & Export).

@@ -1,16 +1,19 @@
-# Lesson 15: Designing Your Custom Everyday Helper
+# Lesson 15: Multimodal Prompting & Visual Layout Drafters
 
-### 1. Target the Weekly "Paper-Cut" Tasks
-* The most valuable AI-built tools are rarely complex semester-long platforms.
-* Instead, identify the small, friction-heavy chores you perform every single week: sorting seating charts, compiling missing assignment notices, generating customized warm-ups, or formatting meeting notes.
-* Eliminating a 15-minute weekly friction point saves over 9 hours across a school year.
+### 1. Show, Don't Just Tell (Why Visual Wireframes Beat Wall-of-Text Prompts)
+* Describing a complex two-dimensional screen layout using only prose (*"put a banner at the top, a 300px sidebar on the left, a canvas in the center, and three buttons at the bottom"*) is tedious and frequently misunderstood by AI models.
+* Vision-capable language models (like Gemini) excel at spatial reasoning when provided with a visual reference.
+* Supplying a clean geometric wireframe alongside your prompt gives the AI an unambiguous spatial blueprint, resulting in immediate, beautifully proportioned interface layouts on turn one.
 
-### 2. The Input-Process-Output Formula for Productivity Tools
-* When wishing for a productivity helper, structure your request in three simple parts:
-  1. **What you paste in:** Class roster, rubric scores, raw notes, or an assignment link.
-  2. **What the tool does:** Sorts, pairs, anonymizes, or calculates.
-  3. **What you copy out:** A formatted email paragraph, a clickable link, or a printable summary.
+### 2. Keep Wireframe Shapes Textless (Preventing Vision AI Hallucinations)
+* A common mistake when prompting with images is putting mock text or messy handwriting inside wireframe boxes.
+* Vision models attempt to OCR (read) every letter, often misinterpreting sample labels as structural code requirements or hallucinating unintended behaviors.
+* By exporting completely blank colored shapes and mapping their purpose through an external color legend, you provide pure spatial coordinates without confusing the model's optical recognition engine.
 
-### 3. Keep It Private and In-Memory
-* Productivity tools frequently handle student rosters or teacher notes.
-* Always specify zero-server execution so your data lives strictly in your browser's temporary memory and disappears the moment you close the tab.
+### 3. Automate the Tedious Parts (Color-Coded Prompt Pairing)
+* Manually typing out color names, hex codes, element groupings, and layout relationships takes 15–20 minutes of tedious prompt engineering.
+* By building a dedicated helper tool that binds canvas shapes to a live prompt generator, teachers can drag and drop shapes in two minutes and receive both a reference image and a perfectly formatted prompt with zero manual formatting.
+
+### 4. Smart Canvas Layering (Auto-Background Sorting)
+* When building visual canvas tools, users often create buttons first and then try to draw a background panel behind them, accidentally trapping the small buttons underneath.
+* Designing the tool with automatic z-index sorting—ensuring large structural panels automatically remain in the background—guarantees that buttons, pills, and inputs placed on top remain instantly selectable, draggable, and editable.

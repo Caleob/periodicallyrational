@@ -3,399 +3,1394 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Everyday Helper Studio - The Classroom Genie</title>
+  <title>EdTech UI Prompt Drafter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
-      --bg: #090a10;
-      --card: rgba(255, 255, 255, 0.04);
-      --card-border: rgba(168, 85, 247, 0.3);
-      --text: #f8fafc;
-      --mute: #94a3b8;
-      --purple: #a855f7;
-      --purple-light: #c084fc;
-      --gold: #fbbf24;
-      --cyan: #38bdf8;
-      --green: #22c55e;
+      --bg: #fdfaf6;
+      --surface: #ffffff;
+      --surface-2: #f4efe8;
+      --ink: #1e1b18;
+      --ink-soft: #6e675f;
+      --line: #e6dec3;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: radial-gradient(ellipse at 20% 0, #2e1065 0, transparent 50%),
-                  radial-gradient(ellipse at 80% 100%, #1e1b4b 0, transparent 55%),
-                  #090a10;
-      color: var(--text);
-      min-height: 100vh;
-      padding: 2rem 1.5rem 4rem;
-      line-height: 1.6;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    .wrap {
-      max-width: 960px;
-      margin: 0 auto;
+    .canvas-grid {
+      background-color: #070709;
+      background-image: radial-gradient(#27272a 1px, transparent 1px);
+      background-size: 20px 20px;
     }
-    header {
-      text-align: center;
-      margin-bottom: 2.5rem;
+    .shape-selected {
+      outline: 3px solid #ffffff;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 5px #3b82f6, 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: rgba(168, 85, 247, 0.15);
-      border: 1px solid var(--purple);
-      color: var(--purple-light);
-      padding: 0.35rem 0.9rem;
-      border-radius: 9999px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+    .shape-sibling {
+      outline: 2px dashed rgba(255, 255, 255, 0.85);
+      outline-offset: 2px;
     }
-    h1 {
-      font-size: clamp(2rem, 4vw, 2.8rem);
-      font-weight: 800;
-      color: var(--gold);
-      margin-bottom: 0.6rem;
-      line-height: 1.2;
-    }
-    .lead {
-      color: var(--mute);
-      font-size: 1.1rem;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 1.8rem;
-      margin-bottom: 1.8rem;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-    h2 {
-      font-size: 1.4rem;
-      color: var(--purple-light);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .quick-templates {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      margin-bottom: 1.5rem;
-    }
-    .btn-template {
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: var(--text);
-      padding: 0.45rem 0.9rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-template:hover {
-      background: rgba(168, 85, 247, 0.25);
-      border-color: var(--purple);
-      color: #fff;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.2rem;
-      margin-bottom: 1.2rem;
-    }
-    @media (max-width: 700px) {
-      .grid { grid-template-columns: 1fr; }
-    }
-    label {
-      display: block;
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: #cbd5e1;
-      margin-bottom: 0.4rem;
-    }
-    input, select, textarea {
-      width: 100%;
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 8px;
-      padding: 0.7rem 0.9rem;
-      color: #fff;
-      font-family: inherit;
-      font-size: 0.95rem;
-      transition: border-color 0.2s;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--purple);
-      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
-    }
-    textarea {
-      resize: vertical;
-      min-height: 85px;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #a855f7, #7c3aed);
-      border: none;
-      color: #fff;
-      font-weight: 700;
-      padding: 0.85rem 1.8rem;
-      border-radius: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
-    }
-    .prompt-box {
-      background: #040508;
-      border: 1px solid rgba(168, 85, 247, 0.4);
-      border-radius: 12px;
-      padding: 1.2rem;
-      margin-top: 1.5rem;
-      position: relative;
-    }
-    pre {
-      font-family: "Fira Code", monospace, Consolas, monospace;
-      font-size: 0.9rem;
-      color: #e2e8f0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      line-height: 1.5;
-    }
-    .actions-bar {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.8rem;
-      margin-top: 1rem;
-    }
-    .btn-copy {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      padding: 0.5rem 1.1rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: all 0.2s;
-    }
-    .btn-copy:hover {
-      background: var(--purple);
-      border-color: var(--purple-light);
-    }
-    .info-list {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .info-item {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 1rem;
-    }
-    .info-item h4 {
-      color: var(--gold);
-      font-size: 0.98rem;
-      margin-bottom: 0.3rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .info-item p {
-      font-size: 0.86rem;
-      color: var(--mute);
-    }
-    #toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: #22c55e;
-      color: #000;
-      font-weight: 700;
-      padding: 0.75rem 1.4rem;
-      border-radius: 9999px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      display: none;
-      z-index: 100;
-    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #d6cebf; border-radius: 999px; }
+    ::-webkit-scrollbar-track { background: transparent; }
   </style>
 </head>
-<body>
-  <div class="wrap">
-    <header>
-      <div class="badge">🧰 Cave of Wonders · Slot 15</div>
-      <h1>Everyday Helper Studio</h1>
-      <p class="lead">This slot is reserved for your next weekly classroom time-saver. Use this interactive scratchpad to draft your wish, generate a Golden Prompt, and build a custom helper with Gemini.</p>
-    </header>
+<body class="lg:h-screen lg:overflow-hidden min-h-screen flex flex-col select-none">
 
-    <section class="card">
-      <h2>🪄 Interactive Wish Builder</h2>
-      <p style="color:var(--mute); font-size:0.92rem; margin-bottom:1rem;">Select a quick starter template or customize the fields below to architect your prompt:</p>
+  <!-- MINIMAL TOP HEADER -->
+  <header class="bg-white border-b border-stone-200 px-5 py-2.5 shrink-0 z-50 shadow-sm">
+    <div class="max-w-[1800px] mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="h-8 w-8 rounded-xl bg-amber-500 text-white grid place-items-center font-bold text-sm shadow-sm">
+          ✨
+        </div>
+        <div class="flex items-baseline gap-2.5">
+          <h1 class="font-bold text-base leading-tight text-stone-900">EdTech UI Prompt Drafter</h1>
+          <span class="hidden sm:inline text-xs text-stone-400">&bull;</span>
+          <p class="hidden sm:inline text-xs text-stone-500">Sketch with shapes &amp; pen &rarr; Paste image + prompt into school-safe Gemini</p>
+        </div>
+      </div>
+      <div class="text-[11px] font-medium text-stone-400 hidden md:block">
+        Tip: Press <kbd class="px-1.5 py-0.5 bg-stone-100 border border-stone-200 rounded text-stone-600 font-mono">Ctrl+Z</kbd> to undo shapes or pen strokes
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE (3-Column Grid: 3 Left | 6 Center Wide Canvas | 3 Right) -->
+  <div class="flex-1 max-w-[1800px] w-full mx-auto grid grid-cols-1 lg:grid-cols-12 min-h-0 lg:overflow-hidden">
+
+    <!-- LEFT SIDEBAR: SHAPES PALETTE & SCROLLABLE APP PURPOSE (3 cols) -->
+    <aside class="lg:col-span-3 bg-[#f6f2eb] border-b lg:border-b-0 lg:border-r border-stone-200 p-4 flex flex-col gap-4 lg:h-full lg:overflow-y-auto min-h-0">
       
-      <div class="quick-templates">
-        <button class="btn-template" onclick="loadTemplate('sub')">📋 Substitute Teacher Brief</button>
-        <button class="btn-template" onclick="loadTemplate('missing')">✉️ Missing Work Notice Formatter</button>
-        <button class="btn-template" onclick="loadTemplate('pairs')">👥 Partner & Group Shuffler</button>
-        <button class="btn-template" onclick="loadTemplate('warmup')">☕ Daily Warm-Up Board</button>
+      <!-- Add Visual Shapes + Quick Split -->
+      <div class="shrink-0">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="h-5 w-5 rounded-full bg-stone-800 text-white text-[11px] font-bold grid place-items-center">1</span>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-stone-700">Add Visual Shapes</h2>
+        </div>
+        <p class="text-[11px] text-stone-500 mb-2.5 leading-relaxed">
+          Large regions auto-stay in the background. Use <strong>&#8635; Clone</strong> to duplicate identical shapes!
+        </p>
+
+        <div class="grid grid-cols-2 gap-1.5">
+          <!-- Region (Background) -->
+          <button onclick="addShape('region')" class="col-span-2 flex items-center justify-between p-2.5 rounded-xl bg-stone-900 text-white hover:bg-stone-800 shadow-sm active:scale-[0.99] transition group">
+            <div class="flex items-center gap-2.5">
+              <div class="w-6 h-4 rounded-[3px] bg-blue-500 border border-white/30"></div>
+              <div class="text-left">
+                <div class="text-xs font-semibold leading-none">Large Region</div>
+                <div class="text-[10px] text-stone-400 mt-0.5">Panels, workspaces, banners</div>
+              </div>
+            </div>
+            <span class="text-[9px] uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded-full text-stone-300">Auto-Back</span>
+          </button>
+
+          <!-- Rounded Rect -->
+          <button onclick="addShape('roundRect')" class="flex flex-col items-start p-2 rounded-xl bg-white border border-stone-200 hover:border-stone-800 transition text-left">
+            <div class="w-7 h-3.5 rounded-md bg-amber-500 mb-1 shadow-sm"></div>
+            <span class="text-xs font-bold text-stone-800">Rounded Rect</span>
+            <span class="text-[10px] text-stone-400">Button / card</span>
+          </button>
+
+          <!-- Pill Shape -->
+          <button onclick="addShape('pill')" class="flex flex-col items-start p-2 rounded-xl bg-white border border-stone-200 hover:border-stone-800 transition text-left">
+            <div class="w-7 h-3 rounded-full bg-emerald-500 mb-1.5 shadow-sm"></div>
+            <span class="text-xs font-bold text-stone-800">Pill Shape</span>
+            <span class="text-[10px] text-stone-400">Choice button / tag</span>
+          </button>
+
+          <!-- Circle -->
+          <button onclick="addShape('circle')" class="flex flex-col items-start p-2 rounded-xl bg-white border border-stone-200 hover:border-stone-800 transition text-left">
+            <div class="w-4 h-4 rounded-full bg-red-500 mb-1 shadow-sm"></div>
+            <span class="text-xs font-bold text-stone-800">Circle / Dial</span>
+            <span class="text-[10px] text-stone-400">Item slot, wheel, icon</span>
+          </button>
+
+          <!-- Input Field -->
+          <button onclick="addShape('input')" class="flex flex-col items-start p-2 rounded-xl bg-white border border-stone-200 hover:border-stone-800 transition text-left">
+            <div class="w-7 h-3.5 rounded bg-white border-2 border-pink-500 mb-1 flex items-center px-1">
+              <div class="w-3 h-0.5 bg-stone-300"></div>
+            </div>
+            <span class="text-xs font-bold text-stone-800">Input / Text Box</span>
+            <span class="text-[10px] text-stone-400">Typing, roster, numbers</span>
+          </button>
+
+          <!-- Media / Graph Box -->
+          <button onclick="addShape('media')" class="col-span-2 flex items-center gap-2.5 p-2 rounded-xl bg-white border border-stone-200 hover:border-stone-800 transition text-left">
+            <div class="w-6 h-5 rounded bg-cyan-500 grid place-items-center text-white text-[10px] font-bold shrink-0">⛰</div>
+            <div>
+              <div class="text-xs font-bold text-stone-800">Visual / Graph / Image Area</div>
+              <div class="text-[10px] text-stone-400">Diagrams, plots, geometry canvas, pictures</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Quick Split Region -->
+        <div class="mt-2.5 pt-2.5 border-t border-stone-200/80">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[10.5px] font-bold uppercase tracking-wider text-stone-600">Quick Split Region</span>
+            <span class="text-[10px] text-stone-400">Splits selected or canvas</span>
+          </div>
+          <div class="grid grid-cols-2 gap-1.5">
+            <button onclick="splitCanvas('h')" class="py-1.5 px-2 rounded-xl bg-white border border-stone-200 hover:border-stone-800 text-[11px] font-semibold text-stone-700 flex items-center justify-center gap-1 transition">
+              <span>⊟</span> Top / Bottom
+            </button>
+            <button onclick="splitCanvas('v')" class="py-1.5 px-2 rounded-xl bg-white border border-stone-200 hover:border-stone-800 text-[11px] font-semibold text-stone-700 flex items-center justify-center gap-1 transition">
+              <span>⊞</span> Left / Right
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div class="grid">
-        <div>
-          <label for="helper-grade">Grade / Setting</label>
-          <select id="helper-grade">
-            <option value="Any Grade (Virtual Classroom)">Any Grade (Virtual Classroom)</option>
-            <option value="Elementary (Grades K-5)">Elementary (Grades K-5)</option>
-            <option value="Middle School (Grades 6-8)">Middle School (Grades 6-8)</option>
-            <option value="High School (Grades 9-12)">High School (Grades 9-12)</option>
+      <!-- STEP 2: LARGE SCROLLABLE APP PURPOSE SECTION -->
+      <div class="pt-3 border-t border-stone-300/80 flex-1 flex flex-col min-h-[210px]">
+        <div class="flex items-center justify-between gap-2 mb-1.5">
+          <div class="flex items-center gap-2">
+            <span class="h-5 w-5 rounded-full bg-stone-800 text-white text-[11px] font-bold grid place-items-center">2</span>
+            <label for="appGoalInput" class="text-xs font-bold uppercase tracking-wider text-stone-800">Main App Purpose</label>
+          </div>
+          <select id="gradeSelect" class="bg-white px-2 py-1 rounded-lg text-[11px] font-semibold text-stone-700 border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
+            <option value="Elementary (K-5)">Elementary (K-5)</option>
+            <option value="Middle School (6-8)">Middle School (6-8)</option>
+            <option value="High School (9-12)" selected>High School (9-12)</option>
+            <option value="Teacher Utility">Teacher Utility</option>
           </select>
         </div>
-        <div>
-          <label for="helper-name">Tool Name</label>
-          <input type="text" id="helper-name" value="SubPlan Rapid Brief" />
+        <p class="text-[11px] text-stone-500 mb-2 leading-snug">
+          Describe the overall goal, subject topic, rules, or scoring mechanics for your tool:
+        </p>
+        <textarea 
+          id="appGoalInput" 
+          placeholder="e.g., A 10-question geometry classifier where students inspect 4 generated shapes, toggle which ones match the target property (like convex pentagons), and get instant visual feedback..."
+          class="flex-1 w-full min-h-[130px] bg-white p-3 rounded-xl text-xs sm:text-sm text-stone-900 border border-stone-300 shadow-inner focus:outline-none focus:ring-2 focus:ring-amber-500 select-text resize-y leading-relaxed overflow-y-auto"
+        ></textarea>
+      </div>
+
+      <!-- Compact Tip -->
+      <div class="bg-amber-50/90 border border-amber-200/80 rounded-xl p-2.5 text-[10.5px] text-amber-950 leading-relaxed shrink-0">
+        <span class="font-bold">💡 Clones &amp; Pen!</span> Clicking <strong>&#8635; Clone</strong> groups identical shapes (<strong class="font-mono">&times;N</strong>). Use the <strong>✏️ Pen</strong> above the canvas to draw arrows or motion paths on top!
+      </div>
+    </aside>
+
+    <!-- CENTER: EXPANDED WIDE CANVAS & INTEGRATED DRAWING CONTROLS (6 cols) -->
+    <main class="lg:col-span-6 bg-[#101014] flex flex-col justify-between p-3 sm:p-5 relative lg:h-full overflow-hidden">
+      
+      <!-- Top Canvas Toolbar (Houses Undo, Sample, Reset & Status) -->
+      <div class="w-full flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-stone-800 shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <span class="font-bold text-xs sm:text-sm text-stone-100">Visual Map Canvas</span>
+          <span id="shapeCountBadge" class="text-[11px] bg-stone-800 text-stone-300 px-2.5 py-0.5 rounded-full font-mono">0 shapes</span>
+        </div>
+
+        <!-- Integrated Canvas Actions -->
+        <div class="flex items-center gap-2">
+          <button 
+            id="undoBtn" 
+            onclick="undoLastAction()" 
+            disabled
+            title="Undo last pen stroke, drag, resize, clone, or delete (Ctrl+Z)"
+            class="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-100 border border-stone-700 text-xs font-bold transition flex items-center gap-1.5 shadow-sm disabled:opacity-35 disabled:cursor-not-allowed"
+          >
+            <span class="text-sm leading-none">&#8630;</span> Undo <span id="undoCountBadge" class="text-[10px] font-mono text-amber-400"></span>
+          </button>
+          <button 
+            onclick="loadExample()" 
+            class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold transition"
+          >
+            Load Sample Idea
+          </button>
+          <button 
+            onclick="clearAll()" 
+            class="px-3 py-1.5 rounded-xl bg-stone-800/80 hover:bg-red-950/60 hover:text-red-300 hover:border-red-800/60 text-stone-300 border border-stone-700 text-xs font-semibold transition"
+          >
+            Reset
+          </button>
         </div>
       </div>
 
-      <div style="margin-bottom: 1.2rem;">
-        <label for="helper-input">What will you paste or type into it? (The Raw Material)</label>
-        <textarea id="helper-input">Schedule times, classroom link, student roster highlights, and today's lesson objectives.</textarea>
-      </div>
+      <!-- Persistent Canvas Control Bar: Houses PEN TOOL + Color Selector + Shape Controls -->
+      <div class="w-full min-h-[44px] flex items-center justify-between my-1.5 shrink-0 bg-stone-900/95 border border-stone-700/90 rounded-xl px-3 py-1.5 gap-2 shadow-lg">
+        
+        <!-- Left Side: Always-Available Pen Tool + Contextual Color Swatches -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <!-- Pen Toggle Button (Near Color Selector) -->
+          <button 
+            id="penToggleBtn"
+            onclick="togglePenMode()"
+            title="Toggle 8px White Annotation Pen (Always draws on the top layer)"
+            class="py-1 px-2.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition shadow-sm bg-stone-800 border-stone-600 text-stone-200 hover:bg-stone-700"
+          >
+            <span>✏️</span>
+            <span id="penBtnText">Pen (8px)</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-white border border-stone-400 inline-block"></span>
+          </button>
 
-      <div style="margin-bottom: 1.2rem;">
-        <label for="helper-action">What should the tool do with this information? (The Work)</label>
-        <textarea id="helper-action">Format the raw notes into a crisp, one-page substitute briefing card with quick-copy announcement links and emergency contact buttons.</textarea>
-      </div>
+          <button 
+            id="clearPenBtn"
+            onclick="clearAnnotations()"
+            title="Clear all pen strokes"
+            class="hidden py-1 px-2 rounded-lg bg-stone-800 hover:bg-red-950 text-stone-300 hover:text-red-200 border border-stone-700 text-[11px] font-semibold transition"
+          >
+            Clear Ink
+          </button>
 
-      <div style="margin-bottom: 1.5rem;">
-        <label for="helper-output">What do you want to copy or export at the end? (The Result)</label>
-        <input type="text" id="helper-output" value="A polished, clean summary card with a one-click 'Copy for Email' button." />
-      </div>
+          <!-- Divider & Shape Color Selector (Shown when a shape is selected and Pen is off) -->
+          <div id="shapeColorSection" class="hidden flex items-center gap-2 pl-2 border-l border-stone-700">
+            <span id="selectedBadgeLabel" class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-blue-600 text-white">#1</span>
+            <div id="colorSwatches" class="flex items-center gap-1"></div>
+          </div>
 
-      <button class="btn-primary" onclick="generatePrompt()">
-        <span>🪄 Generate Golden Prompt</span>
-      </button>
+          <!-- Status Hint when no shape selected or when Pen is active -->
+          <span id="toolbarHintText" class="text-[11px] text-stone-400 hidden sm:inline pl-1">
+            Click a shape to edit, or click <strong class="text-stone-200">✏️ Pen</strong> to draw on top.
+          </span>
+        </div>
 
-      <div class="prompt-box" id="prompt-output-box">
-        <label style="color:var(--purple-light); margin-bottom:0.6rem;">Your Ready-to-Copy Prompt for Gemini:</label>
-        <pre id="prompt-text"></pre>
-        <div class="actions-bar">
-          <button class="btn-copy" onclick="copyPrompt()">📋 Copy Prompt</button>
+        <!-- Right Side: Contextual Shape Actions (Clone, Layer, Delete) -->
+        <div id="shapeActionButtons" class="hidden flex items-center gap-1.5 shrink-0">
+          <button 
+            onclick="cloneSelected()" 
+            title="Duplicate this shape with the exact same size and shared description"
+            class="py-1 px-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1 shadow-sm active:scale-95 transition"
+          >
+            <span class="text-sm leading-none">&#8635;</span> Clone
+          </button>
+          <button onclick="nudgeLayer(1)" title="Bring shape forward" class="py-1 px-2 rounded-lg bg-stone-800 border border-stone-700 hover:bg-stone-700 text-[11px] font-semibold text-stone-200">
+            &uarr;
+          </button>
+          <button onclick="nudgeLayer(-1)" title="Send shape backward" class="py-1 px-2 rounded-lg bg-stone-800 border border-stone-700 hover:bg-stone-700 text-[11px] font-semibold text-stone-200">
+            &darr;
+          </button>
+          <button 
+            onclick="deleteSelected()" 
+            title="Delete selected shape"
+            class="py-1 px-2 rounded-lg bg-red-950/80 border border-red-800/70 hover:bg-red-900 text-xs font-bold text-red-200 flex items-center gap-1 active:scale-95 transition"
+          >
+            <span>✕</span>
+          </button>
         </div>
       </div>
-    </section>
 
-    <section class="card">
-      <h2>🚀 How to Turn This Wish into a Working App</h2>
-      <ul class="info-list">
-        <li class="info-item">
-          <h4>1. Paste into Gemini</h4>
-          <p>Open your school-approved AI chat (like Gemini), paste the generated prompt, and press Enter.</p>
-        </li>
-        <li class="info-item">
-          <h4>2. Save as HTML</h4>
-          <p>Click "Copy code", open Notepad (Windows) or TextEdit (Mac), paste the code, and save as <code>index.html</code>.</p>
-        </li>
-        <li class="info-item">
-          <h4>3. Drop into Example_15</h4>
-          <p>Drop your file into the <code>Example_15/</code> folder to permanently make this slot your own custom tool!</p>
-        </li>
-      </ul>
-    </section>
+      <!-- Wide 16:10 Interactive Stage (Fills the expanded center column) -->
+      <div class="flex-1 w-full flex items-center justify-center min-h-0 overflow-hidden py-1">
+        <div 
+          id="canvasStage" 
+          class="relative w-full h-full max-w-[920px] max-h-[575px] aspect-[16/10] canvas-grid rounded-2xl border-2 border-stone-700/90 shadow-[0_0_50px_rgba(0,0,0,0.85)] overflow-hidden"
+          onmousedown="handleStageMouseDown(event)"
+        >
+          <!-- Empty State -->
+          <div id="emptyState" class="absolute inset-0 grid place-items-center p-6 text-center pointer-events-none">
+            <div class="max-w-sm">
+              <div class="w-12 h-12 rounded-2xl bg-stone-900 border border-stone-800 grid place-items-center mx-auto mb-3 text-xl">
+                🎨
+              </div>
+              <p class="text-white font-semibold text-base">Wide App Design Canvas</p>
+              <p class="text-stone-400 text-xs mt-1 leading-relaxed">
+                Add shapes on the left, use <strong>✏️ Pen (8px)</strong> to sketch arrows or paths on top, or click <strong>"Load Sample Idea"</strong> above.
+              </p>
+            </div>
+          </div>
+
+          <!-- Dynamic Shapes Layer -->
+          <div id="shapesLayer" class="absolute inset-0"></div>
+
+          <!-- ALWAYS-ON-TOP 8PX SINGLE-COLOR PEN ANNOTATION LAYER (z-index: 9000) -->
+          <canvas 
+            id="annotationCanvas" 
+            width="960" 
+            height="600" 
+            class="absolute inset-0 w-full h-full pointer-events-none"
+            style="z-index: 9000;"
+          ></canvas>
+        </div>
+      </div>
+
+      <!-- Helper Footer under Canvas -->
+      <div class="w-full flex items-center justify-between pt-2 text-[11px] text-stone-400 px-1 shrink-0">
+        <span>Drag shapes to move &bull; Toggle <strong>✏️ Pen</strong> to draw 8px white annotations on the top layer</span>
+        <span class="font-mono text-stone-500">Clean 960&times;600 PNG Export</span>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR: SCROLLABLE INLINE LEGEND & EXPORT (3 cols) -->
+    <aside class="lg:col-span-3 bg-white border-t lg:border-t-0 lg:border-l border-stone-200 flex flex-col lg:h-full min-h-0 overflow-hidden">
+      
+      <!-- Step 3: Live Element & Annotation Legend (Independently Scrollable!) -->
+      <div class="p-4 border-b border-stone-200 flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div class="flex items-center justify-between mb-1 shrink-0">
+          <div class="flex items-center gap-2">
+            <span class="h-5 w-5 rounded-full bg-stone-800 text-white text-[11px] font-bold grid place-items-center">3</span>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-stone-700">Name &amp; Describe</h2>
+          </div>
+          <span class="text-[10.5px] text-stone-400">Shapes + Pen Notes</span>
+        </div>
+        <p class="text-[11px] text-stone-500 mb-2.5 shrink-0">
+          Cloned shapes group together (<strong class="text-stone-700">&times; 2, &times; 3</strong>) and pen drawings get their own annotation box.
+        </p>
+
+        <!-- Dedicated Scrollable Container -->
+        <div id="legendList" class="flex-1 overflow-y-auto space-y-2.5 pr-1 select-text min-h-[180px] max-h-[380px] lg:max-h-none"></div>
+      </div>
+
+      <!-- Step 4: Export Image & Prompt (Pinned at bottom of right column) -->
+      <div class="p-4 bg-stone-50 flex flex-col gap-2.5 shrink-0">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="h-5 w-5 rounded-full bg-amber-500 text-white text-[11px] font-bold grid place-items-center">4</span>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-stone-800">Send to School-Safe Gemini</h2>
+          </div>
+          <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+            Ready
+          </span>
+        </div>
+
+        <!-- Step 4A & 4B Action Buttons -->
+        <div class="grid grid-cols-2 gap-2">
+          <button 
+            id="copyImgBtn"
+            onclick="copyCanvasImage()" 
+            class="flex items-center justify-center gap-1.5 py-2.5 px-2.5 rounded-xl bg-stone-900 hover:bg-black text-white font-semibold text-xs shadow-sm active:scale-[0.99] transition disabled:opacity-40"
+          >
+            <span>📋</span> <span id="copyImgText">1. Copy Map Image</span>
+          </button>
+
+          <button 
+            id="copyPromptBtn"
+            onclick="copyPromptText()" 
+            class="flex items-center justify-center gap-1.5 py-2.5 px-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-sm active:scale-[0.99] transition"
+          >
+            <span>✨</span> <span id="copyPromptText">2. Copy AI Prompt</span>
+          </button>
+        </div>
+
+        <div class="flex items-center justify-between text-[11px] text-stone-500 px-1">
+          <span>Paste both into your Gemini chat!</span>
+          <button onclick="downloadCanvasPNG()" class="underline hover:text-stone-900 font-medium">
+            Download PNG
+          </button>
+        </div>
+
+        <!-- Live Prompt Preview -->
+        <details class="group bg-white rounded-xl border border-stone-200 overflow-hidden">
+          <summary class="px-3 py-1.5 text-xs font-semibold text-stone-600 cursor-pointer flex items-center justify-between hover:bg-stone-50">
+            <span>Preview Generated Gemini Prompt</span>
+            <span class="text-[10px] font-mono text-stone-400 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <textarea 
+            id="promptPreview" 
+            readonly 
+            rows="6"
+            class="w-full p-2.5 text-[11px] font-mono text-stone-700 bg-stone-50 border-t border-stone-200 focus:outline-none resize-none select-text leading-relaxed"
+          ></textarea>
+        </details>
+      </div>
+
+    </aside>
   </div>
 
-  <div id="toast">✓ Copied to clipboard!</div>
-
   <script>
-    var templates = {
-      sub: {
-        name: "SubPlan Rapid Brief",
-        grade: "Any Grade (Virtual Classroom)",
-        input: "Schedule times, meeting links, attendance directions, and emergency procedures.",
-        action: "Clean up and organize the notes into a distraction-free, one-page briefing dashboard for a visiting substitute teacher.",
-        output: "A clean dashboard with live links, formatted timetable, and a 'Copy Plain Text Summary' button."
-      },
-      missing: {
-        name: "Missing Work Notice Builder",
-        grade: "Middle School (Grades 6-8)",
-        input: "Student first name, missing assignment titles, and submission deadline.",
-        action: "Assemble a warm, encouraging, student-friendly email reminder paragraph without requiring student IDs or PII.",
-        output: "A live preview box and a 'Copy Email Text' button for fast parent/student messaging."
-      },
-      pairs: {
-        name: "Quick Partner & Group Maker",
-        grade: "Elementary (Grades K-5)",
-        input: "Class roster pasted in as a raw list of names.",
-        action: "Randomize names into pairs or trios with a fun visual animation, ensuring no repeat pairings from prior rounds.",
-        output: "Colorful group cards and a 'Copy Group List' button formatted for meeting chat."
-      },
-      warmup: {
-        name: "Daily Bell-Ringer Board",
-        grade: "High School (Grades 9-12)",
-        input: "Daily quote, 3-question warm-up check, and 5-minute countdown timer setting.",
-        action: "Render a clean, high-contrast screen-share card with an integrated timer chime and toggleable answer reveal buttons.",
-        output: "A sleek fullscreen display optimized for Zoom or Teams screen sharing."
-      }
+    // --- PALETTE & SHAPE DEFINITIONS ---
+    const PALETTE = [
+      { hex: '#3b82f6', name: 'Blue' },
+      { hex: '#ef4444', name: 'Red' },
+      { hex: '#ec4899', name: 'Pink' },
+      { hex: '#eab308', name: 'Yellow' },
+      { hex: '#10b981', name: 'Green' },
+      { hex: '#a855f7', name: 'Purple' },
+      { hex: '#f97316', name: 'Orange' },
+      { hex: '#06b6d4', name: 'Cyan' }
+    ];
+
+    // Single high-contrast color and fixed 8px width for the top-layer annotation pen
+    const PEN_COLOR_HEX = '#ffffff';
+    const PEN_COLOR_NAME = 'White';
+    const PEN_SIZE_PX = 8;
+
+    const SHAPE_META = {
+      region:    { label: 'Large Region',    promptNoun: 'large rectangular region', promptPlural: 'large rectangular regions', w: 46, h: 32 },
+      roundRect: { label: 'Rounded Rect',    promptNoun: 'rounded rectangle',        promptPlural: 'rounded rectangles',        w: 20, h: 11 },
+      pill:      { label: 'Pill Shape',      promptNoun: 'pill-shaped button',       promptPlural: 'pill-shaped buttons',       w: 18, h: 9 },
+      circle:    { label: 'Circle / Dial',   promptNoun: 'circular element',         promptPlural: 'circular elements',         w: 14, h: 22 },
+      input:     { label: 'Input Box',       promptNoun: 'white input box',          promptPlural: 'white input boxes',         w: 32, h: 10 },
+      media:     { label: 'Visual / Canvas', promptNoun: 'visual/diagram area',      promptPlural: 'visual/diagram areas',      w: 36, h: 28 }
     };
 
-    function loadTemplate(key) {
-      var t = templates[key];
-      if (!t) return;
-      document.getElementById('helper-name').value = t.name;
-      document.getElementById('helper-grade').value = t.grade;
-      document.getElementById('helper-input').value = t.input;
-      document.getElementById('helper-action').value = t.action;
-      document.getElementById('helper-output').value = t.output;
-      generatePrompt();
+    let elements = [];
+    let selectedId = null;
+    let colorCursor = 0;
+    let dragState = null;
+
+    // --- PEN ANNOTATION STATE (Always on Top Layer) ---
+    let isPenMode = false;
+    let isDrawingStroke = false;
+    let annotations = []; // Array of stroke arrays: [ [{x, y}, {x, y}, ...], ... ]
+    let annotationDescription = '';
+
+    // --- UNDO HISTORY STACK ---
+    const MAX_HISTORY = 20;
+    let historyStack = [];
+
+    const stageEl = document.getElementById('canvasStage');
+    const shapesLayerEl = document.getElementById('shapesLayer');
+    const annotationCanvas = document.getElementById('annotationCanvas');
+    const annCtx = annotationCanvas.getContext('2d');
+    const emptyStateEl = document.getElementById('emptyState');
+    const legendListEl = document.getElementById('legendList');
+    const promptPreviewEl = document.getElementById('promptPreview');
+    const appGoalInput = document.getElementById('appGoalInput');
+    const gradeSelect = document.getElementById('gradeSelect');
+    const undoBtn = document.getElementById('undoBtn');
+    const undoCountBadge = document.getElementById('undoCountBadge');
+
+    // Initialize color swatches in the top canvas control bar
+    const swatchesContainer = document.getElementById('colorSwatches');
+    PALETTE.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'w-5 h-5 rounded-full border-2 border-white/90 shadow-sm hover:scale-110 transition';
+      btn.style.backgroundColor = c.hex;
+      btn.title = c.name;
+      btn.onclick = () => updateSelectedColor(c);
+      swatchesContainer.appendChild(btn);
+    });
+
+    appGoalInput.addEventListener('input', updatePrompt);
+    gradeSelect.addEventListener('change', updatePrompt);
+
+    // Keyboard shortcuts (Ctrl+Z for Undo, Delete/Backspace when not typing in an input)
+    window.addEventListener('keydown', (e) => {
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !isTyping) {
+        e.preventDefault();
+        undoLastAction();
+      } else if ((e.key === 'Delete' || e.key === 'Backspace') && !isTyping && selectedId && !isPenMode) {
+        e.preventDefault();
+        deleteSelected();
+      }
+    });
+
+    function saveHistorySnapshot() {
+      const snapshot = JSON.stringify({
+        elements,
+        selectedId,
+        colorCursor,
+        annotations,
+        annotationDescription
+      });
+      if (historyStack.length > 0 && historyStack[historyStack.length - 1] === snapshot) return;
+      historyStack.push(snapshot);
+      if (historyStack.length > MAX_HISTORY) historyStack.shift();
+      updateUndoButtonUI();
     }
 
-    function generatePrompt() {
-      var name = document.getElementById('helper-name').value.trim() || 'Everyday Helper';
-      var grade = document.getElementById('helper-grade').value;
-      var input = document.getElementById('helper-input').value.trim();
-      var action = document.getElementById('helper-action').value.trim();
-      var output = document.getElementById('helper-output').value.trim();
-
-      var prompt = 'Act as an expert educational productivity tool developer and front-end engineer.\n\n' +
-        'Build a lightweight, safe, single-file HTML/CSS/JavaScript web utility called "' + name + '" for ' + grade + ' teachers.\n\n' +
-        'Technical & Privacy Guardrails:\n' +
-        '1. Single Standalone File: Deliver all HTML, CSS, and vanilla JavaScript combined in one single file. No external frameworks, CDNs, or server dependencies.\n' +
-        '2. Client-Side Privacy: Operates 100% in local browser memory. Zero student PII storage or network transmission.\n' +
-        '3. Screen-Share Optimized: High-contrast, modern slate theme with crisp typography and clean card layouts.\n\n' +
-        'Workflow & Layout:\n' +
-        '- Input Section: Allow the teacher to paste or input: ' + input + '\n' +
-        '- Processing & Logic: ' + action + '\n' +
-        '- Output Display: ' + output + '\n' +
-        '- Action Controls: Prominent "Copy to Clipboard" button with temporary visual confirmation feedback, plus a "Reset / Clear Form" button.';
-
-      document.getElementById('prompt-text').textContent = prompt;
+    function undoLastAction() {
+      if (historyStack.length === 0) return;
+      const last = JSON.parse(historyStack.pop());
+      elements = last.elements;
+      selectedId = last.selectedId;
+      colorCursor = last.colorCursor;
+      annotations = last.annotations || [];
+      annotationDescription = last.annotationDescription || '';
+      updateUndoButtonUI();
+      renderAll();
     }
 
-    function copyPrompt() {
-      var text = document.getElementById('prompt-text').textContent;
-      navigator.clipboard.writeText(text).then(function() {
-        var t = document.getElementById('toast');
-        t.style.display = 'block';
-        setTimeout(function() { t.style.display = 'none'; }, 2500);
+    function updateUndoButtonUI() {
+      undoBtn.disabled = historyStack.length === 0;
+      undoCountBadge.textContent = historyStack.length > 0 ? `(${historyStack.length})` : '';
+    }
+
+    // --- PEN MODE & DRAWING HANDLERS ---
+    function togglePenMode(forceState) {
+      isPenMode = typeof forceState === 'boolean' ? forceState : !isPenMode;
+      if (isPenMode) {
+        selectedId = null;
+        annotationCanvas.classList.remove('pointer-events-none');
+        annotationCanvas.classList.add('cursor-crosshair');
+      } else {
+        annotationCanvas.classList.add('pointer-events-none');
+        annotationCanvas.classList.remove('cursor-crosshair');
+      }
+      renderAll();
+      if (isPenMode) {
+        setTimeout(() => {
+          const annInp = document.getElementById('annotation_desc_input');
+          if (annInp && annotations.length > 0) annInp.focus();
+        }, 30);
+      }
+    }
+
+    function getCanvasCoordinates(ev) {
+      const rect = annotationCanvas.getBoundingClientRect();
+      return {
+        x: ((ev.clientX - rect.left) / rect.width) * annotationCanvas.width,
+        y: ((ev.clientY - rect.top) / rect.height) * annotationCanvas.height
+      };
+    }
+
+    annotationCanvas.addEventListener('mousedown', (ev) => {
+      if (!isPenMode) return;
+      ev.stopPropagation();
+      saveHistorySnapshot();
+      isDrawingStroke = true;
+      const pt = getCanvasCoordinates(ev);
+      annotations.push([pt]);
+      renderAnnotations();
+      updateEmptyStateVisibility();
+    });
+
+    window.addEventListener('mousemove', (ev) => {
+      if (isDrawingStroke && isPenMode) {
+        const pt = getCanvasCoordinates(ev);
+        const currentStroke = annotations[annotations.length - 1];
+        if (currentStroke) {
+          currentStroke.push(pt);
+          renderAnnotations();
+        }
+        return;
+      }
+
+      if (!dragState) return;
+      const el = elements.find(e => e.id === dragState.id);
+      if (!el) return;
+
+      const dx = ((ev.clientX - dragState.startX) / dragState.stageW) * 100;
+      const dy = ((ev.clientY - dragState.startY) / dragState.stageH) * 100;
+
+      if (dragState.mode === 'move') {
+        el.x = Math.round(Math.max(0, Math.min(100 - el.w, dragState.origX + dx)));
+        el.y = Math.round(Math.max(0, Math.min(100 - el.h, dragState.origY + dy)));
+      } else if (dragState.mode === 'resize') {
+        const newW = Math.round(Math.max(5, Math.min(100 - el.x, dragState.origW + dx)));
+        const newH = Math.round(Math.max(5, Math.min(100 - el.y, dragState.origH + dy)));
+        elements.forEach(member => {
+          if ((member.groupId || member.id) === dragState.groupId) {
+            member.w = newW;
+            member.h = newH;
+          }
+        });
+      }
+      renderCanvas();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDrawingStroke) {
+        isDrawingStroke = false;
+        renderLegend();
+        renderInspector();
+        updatePrompt();
+      }
+      if (dragState) {
+        dragState = null;
+        updatePrompt();
+      }
+    });
+
+    function drawStrokesOnContext(ctx) {
+      ctx.save();
+      ctx.strokeStyle = PEN_COLOR_HEX;
+      ctx.fillStyle = PEN_COLOR_HEX;
+      ctx.lineWidth = PEN_SIZE_PX;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      annotations.forEach(stroke => {
+        if (!stroke || stroke.length === 0) return;
+        if (stroke.length === 1) {
+          ctx.beginPath();
+          ctx.arc(stroke[0].x, stroke[0].y, PEN_SIZE_PX / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(stroke[0].x, stroke[0].y);
+          for (let i = 1; i < stroke.length; i++) {
+            ctx.lineTo(stroke[i].x, stroke[i].y);
+          }
+          ctx.stroke();
+        }
+      });
+      ctx.restore();
+    }
+
+    function renderAnnotations() {
+      annCtx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+      drawStrokesOnContext(annCtx);
+    }
+
+    function clearAnnotations() {
+      if (annotations.length === 0 && !annotationDescription) return;
+      saveHistorySnapshot();
+      annotations = [];
+      annotationDescription = '';
+      renderAll();
+    }
+
+    function nextColor() {
+      const c = PALETTE[colorCursor % PALETTE.length];
+      colorCursor++;
+      return c;
+    }
+
+    // --- GROUPING HELPERS (For Cloned Shapes) ---
+    function getShapeGroups() {
+      const groups = [];
+      const map = new Map();
+      elements.forEach(el => {
+        const gid = el.groupId || el.id;
+        if (!map.has(gid)) {
+          const g = {
+            groupId: gid,
+            representative: el,
+            members: [el],
+            groupIndex: groups.length + 1
+          };
+          map.set(gid, g);
+          groups.push(g);
+        } else {
+          map.get(gid).members.push(el);
+        }
+      });
+      return groups;
+    }
+
+    function getSelectedGroupId() {
+      const el = elements.find(e => e.id === selectedId);
+      return el ? (el.groupId || el.id) : null;
+    }
+
+    // --- SMART FOREGROUND / BACKGROUND SORTING ---
+    function computeZIndex(el) {
+      const area = el.w * el.h;
+      const basePriority = el.type === 'region' ? 100 : 500;
+      const areaOffset = Math.max(0, 100 - Math.round(area / 100));
+      const manualOffset = (el.zBias || 0) * 120;
+      return basePriority + areaOffset + manualOffset;
+    }
+
+    // --- ADD, CLONE & SPLIT SHAPES ---
+    function addShape(type, customProps = {}, skipHistory = false) {
+      // Automatically exit pen mode when adding a shape so the user can position it immediately
+      if (isPenMode) togglePenMode(false);
+      if (!skipHistory) saveHistorySnapshot();
+
+      const meta = SHAPE_META[type];
+      const color = nextColor();
+      const offset = (elements.length % 6) * 3;
+      const id = 'el_' + Math.random().toString(36).slice(2, 8);
+      const groupId = customProps.groupId || ('grp_' + id);
+
+      const newEl = {
+        id,
+        groupId,
+        type,
+        color: color.hex,
+        colorName: color.name,
+        label: '',
+        description: '',
+        x: Math.min(94 - meta.w, 10 + offset),
+        y: Math.min(94 - meta.h, 10 + offset),
+        w: meta.w,
+        h: meta.h,
+        zBias: 0,
+        ...customProps
+      };
+
+      elements.push(newEl);
+      selectedId = id;
+      renderAll();
+      focusLegendInput(groupId);
+    }
+
+    function cloneGroup(targetGroupId) {
+      if (isPenMode) togglePenMode(false);
+      const group = getShapeGroups().find(g => g.groupId === targetGroupId);
+      if (!group) return;
+      saveHistorySnapshot();
+
+      const source = group.members[group.members.length - 1];
+      const id = 'el_' + Math.random().toString(36).slice(2, 8);
+
+      let nextX = source.x + source.w + 3;
+      let nextY = source.y;
+      if (nextX + source.w > 97) {
+        nextX = Math.min(96 - source.w, Math.max(3, group.members[0].x + 4));
+        nextY = Math.min(96 - source.h, source.y + source.h + 4);
+      }
+
+      const cloned = {
+        ...source,
+        id,
+        groupId: group.groupId,
+        x: Math.round(nextX),
+        y: Math.round(nextY)
+      };
+
+      elements.push(cloned);
+      selectedId = id;
+      renderAll();
+    }
+
+    function cloneSelected() {
+      const gid = getSelectedGroupId();
+      if (gid) cloneGroup(gid);
+    }
+
+    function splitCanvas(dir) {
+      if (isPenMode) togglePenMode(false);
+      saveHistorySnapshot();
+      const target = elements.find(e => e.id === selectedId && e.type === 'region');
+      if (!target) {
+        const c1 = nextColor();
+        const c2 = nextColor();
+        if (dir === 'h') {
+          addShape('region', { x: 3, y: 3, w: 94, h: 45, color: c1.hex, colorName: c1.name, label: 'Top Panel' }, true);
+          addShape('region', { x: 3, y: 52, w: 94, h: 45, color: c2.hex, colorName: c2.name, label: 'Bottom Panel' }, true);
+        } else {
+          addShape('region', { x: 3, y: 3, w: 45, h: 94, color: c1.hex, colorName: c1.name, label: 'Left Sidebar' }, true);
+          addShape('region', { x: 52, y: 3, w: 45, h: 94, color: c2.hex, colorName: c2.name, label: 'Main Workspace' }, true);
+        }
+        return;
+      }
+
+      const c2 = nextColor();
+      if (dir === 'h') {
+        const newH = Math.round(Math.max(10, (target.h - 2) / 2));
+        const bottomY = target.y + newH + 2;
+        target.h = newH;
+        addShape('region', { x: target.x, y: bottomY, w: target.w, h: newH, color: c2.hex, colorName: c2.name }, true);
+      } else {
+        const newW = Math.round(Math.max(10, (target.w - 2) / 2));
+        const rightX = target.x + newW + 2;
+        target.w = newW;
+        addShape('region', { x: rightX, y: target.y, w: newW, h: target.h, color: c2.hex, colorName: c2.name }, true);
+      }
+      renderAll();
+    }
+
+    function updateSelectedColor(c) {
+      const gid = getSelectedGroupId();
+      if (!gid) return;
+      saveHistorySnapshot();
+      elements.forEach(el => {
+        if ((el.groupId || el.id) === gid) {
+          el.color = c.hex;
+          el.colorName = c.name;
+        }
+      });
+      renderAll();
+    }
+
+    function nudgeLayer(delta) {
+      const gid = getSelectedGroupId();
+      if (!gid) return;
+      saveHistorySnapshot();
+      elements.forEach(el => {
+        if ((el.groupId || el.id) === gid) {
+          el.zBias = (el.zBias || 0) + delta;
+        }
+      });
+      renderCanvas();
+    }
+
+    function deleteSelected() {
+      if (!selectedId) return;
+      saveHistorySnapshot();
+      elements = elements.filter(e => e.id !== selectedId);
+      selectedId = elements.length ? elements[elements.length - 1].id : null;
+      renderAll();
+    }
+
+    function deleteFromGroup(groupId) {
+      const group = getShapeGroups().find(g => g.groupId === groupId);
+      if (!group) return;
+      saveHistorySnapshot();
+      const targetToRemove = group.members.find(m => m.id === selectedId) || group.members[group.members.length - 1];
+      elements = elements.filter(e => e.id !== targetToRemove.id);
+      if (selectedId === targetToRemove.id) {
+        const remaining = elements.find(e => (e.groupId || e.id) === groupId);
+        selectedId = remaining ? remaining.id : (elements.length ? elements[elements.length - 1].id : null);
+      }
+      renderAll();
+    }
+
+    function clearAll() {
+      if (elements.length > 0 || annotations.length > 0) saveHistorySnapshot();
+      elements = [];
+      annotations = [];
+      annotationDescription = '';
+      selectedId = null;
+      isPenMode = false;
+      annotationCanvas.classList.add('pointer-events-none');
+      annotationCanvas.classList.remove('cursor-crosshair');
+      appGoalInput.value = '';
+      renderAll();
+    }
+
+    function updateEmptyStateVisibility() {
+      emptyStateEl.style.display = (elements.length === 0 && annotations.length === 0) ? 'grid' : 'none';
+    }
+
+    // --- RENDER FUNCTIONS ---
+    function renderAll() {
+      renderCanvas();
+      renderAnnotations();
+      renderLegend();
+      renderInspector();
+      updatePrompt();
+    }
+
+    function renderInspector() {
+      const penBtn = document.getElementById('penToggleBtn');
+      const penBtnText = document.getElementById('penBtnText');
+      const clearPenBtn = document.getElementById('clearPenBtn');
+      const shapeColorSection = document.getElementById('shapeColorSection');
+      const shapeActionButtons = document.getElementById('shapeActionButtons');
+      const toolbarHintText = document.getElementById('toolbarHintText');
+      const badge = document.getElementById('selectedBadgeLabel');
+
+      // Update Pen Button State
+      if (isPenMode) {
+        penBtn.className = 'py-1 px-3 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition shadow-md bg-amber-500 border-amber-400 text-stone-950 ring-2 ring-amber-300/60';
+        penBtnText.textContent = 'Pen Active (Click to Exit)';
+      } else {
+        penBtn.className = 'py-1 px-2.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition shadow-sm bg-stone-800 border-stone-600 text-stone-200 hover:bg-stone-700';
+        penBtnText.textContent = 'Pen (8px)';
+      }
+
+      if (annotations.length > 0) {
+        clearPenBtn.classList.remove('hidden');
+      } else {
+        clearPenBtn.classList.add('hidden');
+      }
+
+      const el = elements.find(e => e.id === selectedId);
+      if (isPenMode) {
+        shapeColorSection.classList.add('hidden');
+        shapeActionButtons.classList.add('hidden');
+        toolbarHintText.classList.remove('hidden');
+        toolbarHintText.innerHTML = `<span class="text-amber-300 font-semibold">Drawing on top layer (8px white ink)</span> &bull; Describe your pen notes in Step 3!`;
+      } else if (!el) {
+        shapeColorSection.classList.add('hidden');
+        shapeActionButtons.classList.add('hidden');
+        toolbarHintText.classList.remove('hidden');
+        toolbarHintText.innerHTML = `Click a shape to edit color/clone, or click <strong class="text-stone-200">✏️ Pen (8px)</strong> to draw on top.`;
+      } else {
+        shapeColorSection.classList.remove('hidden');
+        shapeActionButtons.classList.remove('hidden');
+        toolbarHintText.classList.add('hidden');
+        const groups = getShapeGroups();
+        const grp = groups.find(g => g.groupId === (el.groupId || el.id));
+        const countSuffix = grp && grp.members.length > 1 ? ` × ${grp.members.length}` : '';
+        badge.textContent = `#${grp ? grp.groupIndex : 1} ${el.colorName.toUpperCase()} ${SHAPE_META[el.type].label.toUpperCase()}${countSuffix}`;
+        badge.style.backgroundColor = el.color;
+      }
+    }
+
+    function renderCanvas() {
+      shapesLayerEl.innerHTML = '';
+      updateEmptyStateVisibility();
+      const strokeLabel = annotations.length > 0 ? ` • ${annotations.length} pen ${annotations.length === 1 ? 'stroke' : 'strokes'}` : '';
+      document.getElementById('shapeCountBadge').textContent = `${elements.length} ${elements.length === 1 ? 'shape' : 'shapes'}${strokeLabel}`;
+
+      const groups = getShapeGroups();
+      const groupMap = new Map(groups.map(g => [g.groupId, g]));
+      const activeGroupId = getSelectedGroupId();
+
+      elements.forEach((el) => {
+        const gid = el.groupId || el.id;
+        const grp = groupMap.get(gid);
+        const isSelected = el.id === selectedId && !isPenMode;
+        const isSibling = !isSelected && gid === activeGroupId && !isPenMode;
+        const memberIdx = grp.members.indexOf(el) + 1;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = `absolute group cursor-move transition-shadow ${
+          isSelected ? 'shape-selected' : isSibling ? 'shape-sibling' : 'hover:outline hover:outline-2 hover:outline-white/70'
+        }`;
+        wrapper.style.left = `${el.x}%`;
+        wrapper.style.top = `${el.y}%`;
+        wrapper.style.width = `${el.w}%`;
+        wrapper.style.height = `${el.h}%`;
+        wrapper.style.zIndex = computeZIndex(el) + (isSelected ? 50 : isSibling ? 25 : 0);
+
+        if (el.type === 'region') {
+          wrapper.style.backgroundColor = el.color;
+          wrapper.style.borderRadius = '6px';
+        } else if (el.type === 'roundRect') {
+          wrapper.style.backgroundColor = el.color;
+          wrapper.style.borderRadius = '14px';
+        } else if (el.type === 'pill') {
+          wrapper.style.backgroundColor = el.color;
+          wrapper.style.borderRadius = '9999px';
+        } else if (el.type === 'circle') {
+          wrapper.style.backgroundColor = el.color;
+          wrapper.style.borderRadius = '50%';
+        } else if (el.type === 'input') {
+          wrapper.style.backgroundColor = '#ffffff';
+          wrapper.style.border = `3.5px solid ${el.color}`;
+          wrapper.style.borderRadius = '10px';
+          const line = document.createElement('div');
+          line.className = 'w-2/5 h-1 bg-stone-300 rounded-full ml-3 mt-3 pointer-events-none';
+          wrapper.appendChild(line);
+        } else if (el.type === 'media') {
+          wrapper.style.backgroundColor = el.color;
+          wrapper.style.borderRadius = '10px';
+          wrapper.style.backgroundImage = 'repeating-linear-gradient(45deg, rgba(255,255,255,0.12) 0, rgba(255,255,255,0.12) 10px, transparent 10px, transparent 20px)';
+        }
+
+        const badge = document.createElement('div');
+        badge.className = 'pointer-events-none absolute top-1.5 left-1.5 max-w-[90%] flex items-center gap-1 bg-black/75 text-white text-[10.5px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm truncate shadow';
+        const cloneTag = grp.members.length > 1 ? ` <span class="opacity-75 font-mono text-[9.5px]">(${memberIdx}/${grp.members.length})</span>` : '';
+        badge.innerHTML = `<span>${grp.groupIndex}${cloneTag}</span>${grp.representative.label ? `<span class="font-normal opacity-90 truncate">&bull; ${escapeHtml(grp.representative.label)}</span>` : ''}`;
+        wrapper.appendChild(badge);
+
+        wrapper.addEventListener('mousedown', (ev) => {
+          if (isPenMode) return;
+          ev.stopPropagation();
+          saveHistorySnapshot();
+          const prevSelected = selectedId;
+          selectedId = el.id;
+          const rect = stageEl.getBoundingClientRect();
+          dragState = {
+            mode: 'move',
+            id: el.id,
+            groupId: gid,
+            startX: ev.clientX,
+            startY: ev.clientY,
+            origX: el.x,
+            origY: el.y,
+            stageW: rect.width,
+            stageH: rect.height
+          };
+          if (prevSelected !== selectedId) {
+            renderCanvas();
+            renderInspector();
+            highlightLegendCard(gid);
+          }
+        });
+
+        const handle = document.createElement('div');
+        handle.className = `absolute -bottom-1.5 -right-1.5 w-4 h-4 rounded-full bg-white border-2 border-blue-600 shadow cursor-nwse-resize ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`;
+        handle.addEventListener('mousedown', (ev) => {
+          if (isPenMode) return;
+          ev.stopPropagation();
+          saveHistorySnapshot();
+          selectedId = el.id;
+          const rect = stageEl.getBoundingClientRect();
+          dragState = {
+            mode: 'resize',
+            id: el.id,
+            groupId: gid,
+            startX: ev.clientX,
+            startY: ev.clientY,
+            origW: el.w,
+            origH: el.h,
+            stageW: rect.width,
+            stageH: rect.height
+          };
+        });
+        wrapper.appendChild(handle);
+
+        shapesLayerEl.appendChild(wrapper);
       });
     }
 
-    // Initial generation
-    generatePrompt();
+    function renderLegend() {
+      legendListEl.innerHTML = '';
+      const groups = getShapeGroups();
+      const showAnnotationCard = isPenMode || annotations.length > 0 || annotationDescription.trim().length > 0;
+
+      if (groups.length === 0 && !showAnnotationCard) {
+        legendListEl.innerHTML = `
+          <div class="text-center py-8 px-4 rounded-2xl border border-dashed border-stone-200 text-stone-400 text-xs">
+            No shapes or pen annotations yet. Add a shape on the left or click <strong>✏️ Pen (8px)</strong> above the canvas!
+          </div>`;
+        return;
+      }
+
+      // 1. Render Top-Layer Pen Annotation Description Card (if active or has strokes)
+      if (showAnnotationCard) {
+        const annCard = document.createElement('div');
+        annCard.className = `p-2.5 rounded-xl border-2 transition-all ${
+          isPenMode ? 'bg-stone-900 text-white border-amber-400 shadow-md' : 'bg-stone-900 text-white border-stone-800'
+        }`;
+
+        annCard.innerHTML = `
+          <div class="flex items-center justify-between gap-1 mb-1.5">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-5 h-5 rounded-full bg-white text-stone-900 text-[11px] font-bold grid place-items-center shrink-0 shadow-sm">
+                ✏️
+              </span>
+              <span class="text-[10px] font-extrabold tracking-wide px-1.5 py-0.5 rounded bg-white/15 text-amber-300 truncate uppercase">
+                ${PEN_COLOR_NAME} Pen Annotations (${PEN_SIZE_PX}px) &bull; ${annotations.length} ${annotations.length === 1 ? 'stroke' : 'strokes'}
+              </span>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button 
+                onclick="togglePenMode()" 
+                class="px-2 py-0.5 rounded-lg text-[10.5px] font-bold transition ${isPenMode ? 'bg-amber-400 text-stone-950' : 'bg-white/10 hover:bg-white/20 text-white'}"
+              >
+                ${isPenMode ? 'Done Drawing' : 'Draw More'}
+              </button>
+              <button 
+                onclick="clearAnnotations()" 
+                title="Clear all pen strokes and annotation description" 
+                class="px-1.5 py-0.5 rounded-lg text-stone-400 hover:text-red-400 hover:bg-white/10 text-xs font-bold transition"
+              >✕</button>
+            </div>
+          </div>
+          <input 
+            id="annotation_desc_input"
+            type="text" 
+            value="${escapeHtml(annotationDescription)}"
+            placeholder="What do your white pen drawings/arrows show? (e.g., Arrows show cards moving to the bin)"
+            class="w-full bg-stone-800 px-2.5 py-1.5 rounded-lg border border-stone-700 text-xs text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
+          />
+        `;
+
+        legendListEl.appendChild(annCard);
+
+        const annInp = annCard.querySelector('#annotation_desc_input');
+        annInp.addEventListener('input', (e) => {
+          annotationDescription = e.target.value;
+          updatePrompt();
+        });
+      }
+
+      // 2. Render Grouped Shape Cards
+      const activeGroupId = getSelectedGroupId();
+
+      groups.forEach((grp) => {
+        const el = grp.representative;
+        const count = grp.members.length;
+        const isSelected = grp.groupId === activeGroupId && !isPenMode;
+        const headerTitle = `${el.colorName.toUpperCase()} ${SHAPE_META[el.type].label.toUpperCase()}${count > 1 ? ` × ${count}` : ''}`;
+
+        const card = document.createElement('div');
+        card.id = `legend_card_${grp.groupId}`;
+        card.className = `p-2.5 rounded-xl border transition-all ${isSelected ? 'bg-amber-50/80 border-amber-400 shadow-sm' : 'bg-stone-50/70 border-stone-200 hover:border-stone-300'}`;
+        card.onclick = () => {
+          if (isPenMode) togglePenMode(false);
+          if (getSelectedGroupId() !== grp.groupId) {
+            selectedId = grp.members[0].id;
+            renderCanvas();
+            renderInspector();
+            highlightLegendCard(grp.groupId);
+          }
+        };
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-1 mb-1.5">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-5 h-5 rounded-full text-white text-[11px] font-bold grid place-items-center shrink-0 shadow-sm" style="background:${el.color}">
+                ${grp.groupIndex}
+              </span>
+              <span class="text-[10px] font-extrabold tracking-wide px-1.5 py-0.5 rounded bg-stone-200/80 text-stone-800 truncate">
+                ${headerTitle}
+              </span>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button 
+                onclick="event.stopPropagation(); cloneGroup('${grp.groupId}')" 
+                title="Clone another identical ${el.colorName} ${SHAPE_META[el.type].label}" 
+                class="flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-[11px] font-bold transition"
+              >
+                <span class="text-xs leading-none">&#8635;</span><span>+1</span>
+              </button>
+              <button 
+                onclick="event.stopPropagation(); deleteFromGroup('${grp.groupId}')" 
+                title="${count > 1 ? 'Remove 1 cloned shape from this group' : 'Delete this shape'}" 
+                class="px-1.5 py-0.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 text-xs font-bold transition"
+              >✕</button>
+            </div>
+          </div>
+          <input 
+            id="label_input_${grp.groupId}"
+            type="text" 
+            value="${escapeHtml(el.label)}"
+            placeholder="Short name (e.g., Answer Choices)"
+            class="w-full mb-1.5 bg-white px-2.5 py-1 rounded-lg border border-stone-200 text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+          <input 
+            id="desc_input_${grp.groupId}"
+            type="text" 
+            value="${escapeHtml(el.description)}"
+            placeholder="${count > 1 ? `What do these ${count} identical items do?` : 'What happens here?'}"
+            class="w-full bg-white px-2.5 py-1.5 rounded-lg border border-stone-200 text-xs text-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+        `;
+
+        legendListEl.appendChild(card);
+
+        const labelInp = card.querySelector(`#label_input_${grp.groupId}`);
+        const descInp = card.querySelector(`#desc_input_${grp.groupId}`);
+
+        labelInp.addEventListener('input', (e) => {
+          grp.members.forEach(m => m.label = e.target.value);
+          renderCanvas();
+          updatePrompt();
+        });
+        descInp.addEventListener('input', (e) => {
+          grp.members.forEach(m => m.description = e.target.value);
+          updatePrompt();
+        });
+      });
+    }
+
+    function highlightLegendCard(groupId) {
+      getShapeGroups().forEach(grp => {
+        const card = document.getElementById(`legend_card_${grp.groupId}`);
+        if (!card) return;
+        if (grp.groupId === groupId && !isPenMode) {
+          card.className = 'p-2.5 rounded-xl border transition-all bg-amber-50/80 border-amber-400 shadow-sm';
+        } else {
+          card.className = 'p-2.5 rounded-xl border transition-all bg-stone-50/70 border-stone-200 hover:border-stone-300';
+        }
+      });
+    }
+
+    function focusLegendInput(groupId) {
+      setTimeout(() => {
+        const inp = document.getElementById(`label_input_${groupId}`);
+        if (inp) {
+          inp.focus();
+          inp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 30);
+    }
+
+    // --- STAGE CLICK HANDLER ---
+    function handleStageMouseDown(ev) {
+      if (isPenMode) return;
+      if (ev.target === stageEl || ev.target === shapesLayerEl) {
+        selectedId = null;
+        renderAll();
+      }
+    }
+
+    // --- PROMPT GENERATION (Includes Shapes + Top-Layer Pen Annotations) ---
+    function updatePrompt() {
+      const goal = appGoalInput.value.trim() || 'An interactive classroom learning tool for students.';
+      const grade = gradeSelect.value;
+      const groups = getShapeGroups();
+      const hasPen = annotations.length > 0 || annotationDescription.trim().length > 0;
+
+      if (groups.length === 0 && !hasPen) {
+        promptPreviewEl.value = `Build a complete, single-file HTML classroom web app.\n\nMain App Purpose (${grade}):\n${goal}\n\n(Add shapes or pen annotations on the canvas to generate the visual layout map!)`;
+        return;
+      }
+
+      const lines = groups.map((grp, i) => {
+        const el = grp.representative;
+        const count = grp.members.length;
+        const meta = SHAPE_META[el.type];
+        const countBadge = count > 1 ? ` × ${count}` : '';
+        const shapeNoun = count > 1 ? `${count} identical ${el.colorName} ${meta.promptPlural}` : `${el.colorName} ${meta.promptNoun}`;
+        const namePart = el.label.trim() ? `"${el.label.trim()}"` : `Group #${i + 1}`;
+        const descPart = el.description.trim() || 'Implement appropriate interactive classroom behavior for this element.';
+        return `- ${el.colorName.toUpperCase()} ${meta.label.toUpperCase()}${countBadge} (${shapeNoun}, ${el.color}) [${namePart}]: ${descPart}`;
+      });
+
+      if (hasPen) {
+        const penDesc = annotationDescription.trim() || 'Follow the visual flow, arrows, or connections indicated by the white hand-drawn strokes.';
+        lines.push(`- TOP-LAYER WHITE PEN ANNOTATIONS (${PEN_SIZE_PX}px freehand lines/markings in ${PEN_COLOR_HEX} drawn on top of the layout): ${penDesc}`);
+      }
+
+      promptPreviewEl.value = `Build a complete, self-contained, single-file HTML classroom web app (all HTML, CSS, and JS in one file, running 100% locally in the browser with no student PII sent externally).
+
+MAIN APP PURPOSE (${grade}):
+${goal}
+
+VISUAL LAYOUT MAP (matches the attached black-background color-coded image — ignore the black canvas background and use a clean, bright, accessible classroom theme):
+${lines.join('\n')}
+
+DESIGN & TECHNICAL REQUIREMENTS:
+- Follow the spatial positions, groupings, and relative sizes of the colored shapes in the reference image.${hasPen ? '\n- Do NOT literally draw the white freehand pen lines in the final UI; instead, implement the behavior, motion, or connections those white annotation markings represent.' : ''}
+- Use large, readable typography, clear visual feedback, and intuitive controls for ${grade}.
+- Output ONLY the complete, runnable HTML code block so I can save and open it directly in my browser.`;
+    }
+
+    // --- CLEAN PNG RENDERING (960x600 Widescreen 16:10 + Top-Layer 8px Pen Strokes) ---
+    function renderCleanOffscreenCanvas() {
+      const W = 960;
+      const H = 600;
+      const c = document.createElement('canvas');
+      c.width = W;
+      c.height = H;
+      const ctx = c.getContext('2d');
+
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, W, H);
+
+      const sorted = [...elements].sort((a, b) => computeZIndex(a) - computeZIndex(b));
+
+      sorted.forEach(el => {
+        const x = (el.x / 100) * W;
+        const y = (el.y / 100) * H;
+        const w = (el.w / 100) * W;
+        const h = (el.h / 100) * H;
+
+        ctx.fillStyle = el.color;
+        ctx.strokeStyle = el.color;
+
+        if (el.type === 'region') {
+          roundRectPath(ctx, x, y, w, h, 8);
+          ctx.fill();
+        } else if (el.type === 'roundRect') {
+          roundRectPath(ctx, x, y, w, h, 16);
+          ctx.fill();
+        } else if (el.type === 'pill') {
+          roundRectPath(ctx, x, y, w, h, Math.min(w, h) / 2);
+          ctx.fill();
+        } else if (el.type === 'circle') {
+          ctx.beginPath();
+          ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (el.type === 'input') {
+          ctx.fillStyle = '#ffffff';
+          roundRectPath(ctx, x, y, w, h, 10);
+          ctx.fill();
+          ctx.lineWidth = 5;
+          ctx.stroke();
+        } else if (el.type === 'media') {
+          roundRectPath(ctx, x, y, w, h, 10);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+          ctx.lineWidth = 3;
+          ctx.strokeRect(x + w * 0.35, y + h * 0.3, w * 0.3, h * 0.4);
+        }
+      });
+
+      // Always render the 8px pen annotation layer on the very top of the exported image
+      drawStrokesOnContext(ctx);
+
+      return c;
+    }
+
+    function roundRectPath(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + w - radius, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+      ctx.lineTo(x + w, y + h - radius);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      ctx.lineTo(x + radius, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    async function copyCanvasImage() {
+      if (elements.length === 0 && annotations.length === 0) return;
+      const c = renderCleanOffscreenCanvas();
+      const btnText = document.getElementById('copyImgText');
+      try {
+        const blob = await new Promise(res => c.toBlob(res, 'image/png'));
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        btnText.textContent = '✓ Image Copied!';
+        setTimeout(() => btnText.textContent = '1. Copy Map Image', 2000);
+      } catch (err) {
+        downloadCanvasPNG();
+        btnText.textContent = '✓ Downloaded PNG!';
+        setTimeout(() => btnText.textContent = '1. Copy Map Image', 2000);
+      }
+    }
+
+    function downloadCanvasPNG() {
+      if (elements.length === 0 && annotations.length === 0) return;
+      const c = renderCleanOffscreenCanvas();
+      const a = document.createElement('a');
+      a.href = c.toDataURL('image/png');
+      a.download = 'edtech-ui-map.png';
+      a.click();
+    }
+
+    async function copyPromptText() {
+      const btnText = document.getElementById('copyPromptText');
+      try {
+        await navigator.clipboard.writeText(promptPreviewEl.value);
+      } catch {
+        promptPreviewEl.select();
+        document.execCommand('copy');
+      }
+      btnText.textContent = '✓ Prompt Copied!';
+      setTimeout(() => btnText.textContent = '2. Copy AI Prompt', 2000);
+    }
+
+    // --- SAMPLE IDEA LOADER ---
+    function loadExample() {
+      saveHistorySnapshot();
+      colorCursor = 0;
+      isPenMode = false;
+      annotationCanvas.classList.add('pointer-events-none');
+      annotationCanvas.classList.remove('cursor-crosshair');
+
+      appGoalInput.value = 'A 10-question polygon classifier where students inspect 4 generated shapes, toggle which ones match the target geometric property (e.g., "Select all concave polygons" or "Select all shapes with parallel sides"), and submit their answer for instant feedback and score tracking.';
+      gradeSelect.value = 'High School (9-12)';
+
+      const cDesc = '4 generated geometric shapes (polygons or curved non-polygons) that students click to inspect or select';
+      const pDesc = '4 selection toggle buttons corresponding to each shape above';
+
+      elements = [
+        {
+          id: 'ex_blue_bg', groupId: 'grp_blue_bg', type: 'region',
+          color: '#3b82f6', colorName: 'Blue',
+          label: 'Shape Display Stage', description: 'Top banner holding the 4 generated geometric shapes for the current question',
+          x: 3, y: 3, w: 94, h: 35, zBias: 0
+        },
+        { id: 'ex_c1', groupId: 'grp_red_circles', type: 'circle', color: '#ef4444', colorName: 'Red', label: 'Generated Shapes', description: cDesc, x: 10, y: 8, w: 14, h: 24, zBias: 0 },
+        { id: 'ex_c2', groupId: 'grp_red_circles', type: 'circle', color: '#ef4444', colorName: 'Red', label: 'Generated Shapes', description: cDesc, x: 33, y: 8, w: 14, h: 24, zBias: 0 },
+        { id: 'ex_c3', groupId: 'grp_red_circles', type: 'circle', color: '#ef4444', colorName: 'Red', label: 'Generated Shapes', description: cDesc, x: 55, y: 8, w: 14, h: 24, zBias: 0 },
+        { id: 'ex_c4', groupId: 'grp_red_circles', type: 'circle', color: '#ef4444', colorName: 'Red', label: 'Generated Shapes', description: cDesc, x: 76, y: 8, w: 14, h: 24, zBias: 0 },
+
+        {
+          id: 'ex_pink_bg', groupId: 'grp_pink_bg', type: 'region',
+          color: '#ec4899', colorName: 'Pink',
+          label: 'Selection Bar', description: 'Middle control strip holding the toggle buttons under each shape',
+          x: 3, y: 44, w: 94, h: 16, zBias: 0
+        },
+        { id: 'ex_p1', groupId: 'grp_yellow_pills', type: 'pill', color: '#eab308', colorName: 'Yellow', label: 'Shape Select Toggles', description: pDesc, x: 9, y: 48, w: 16, h: 8, zBias: 0 },
+        { id: 'ex_p2', groupId: 'grp_yellow_pills', type: 'pill', color: '#eab308', colorName: 'Yellow', label: 'Shape Select Toggles', description: pDesc, x: 32, y: 48, w: 16, h: 8, zBias: 0 },
+        { id: 'ex_p3', groupId: 'grp_yellow_pills', type: 'pill', color: '#eab308', colorName: 'Yellow', label: 'Shape Select Toggles', description: pDesc, x: 54, y: 48, w: 16, h: 8, zBias: 0 },
+        { id: 'ex_p4', groupId: 'grp_yellow_pills', type: 'pill', color: '#eab308', colorName: 'Yellow', label: 'Shape Select Toggles', description: pDesc, x: 75, y: 48, w: 16, h: 8, zBias: 0 },
+
+        {
+          id: 'ex_green_bg', groupId: 'grp_green_bg', type: 'region',
+          color: '#10b981', colorName: 'Green',
+          label: 'Question Prompt & Submit', description: 'Displays the target classification prompt and Submit Answer button',
+          x: 3, y: 66, w: 61, h: 29, zBias: 0
+        },
+        {
+          id: 'ex_score_bg', groupId: 'grp_score_bg', type: 'region',
+          color: '#ef4444', colorName: 'Red',
+          label: 'Score & Progress Tracker', description: 'Shows current question (1 of 10), score, timer, and a Download Report button at the end',
+          x: 67, y: 66, w: 30, h: 29, zBias: 0
+        }
+      ];
+
+      // Sample 8px white arrow connecting a circle to its toggle button
+      annotations = [
+        [{ x: 163, y: 200 }, { x: 163, y: 245 }, { x: 163, y: 280 }],
+        [{ x: 148, y: 262 }, { x: 163, y: 282 }, { x: 178, y: 262 }]
+      ];
+      annotationDescription = 'White arrow shows that each yellow toggle button directly controls/selects the red shape above it.';
+
+      selectedId = 'ex_c1';
+      renderAll();
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // Initial render
+    renderAll();
   </script>
 </body>
 </html>

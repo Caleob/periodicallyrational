@@ -113,28 +113,32 @@ window.TREASURES = [
   },
   {
     group:"helpers",
-    name:"Everyday Helper Studio",
-    short:"Build your next custom weekly time-saver",
-    grades:"Any grade",
+    name:"EdTech UI Prompt Drafter",
+    short:"Sketch your app layout with shapes and generate a Gemini prompt",
+    grades:"Any grade (A tool for teachers)",
     file:"Example_15/index.html",
-    downloadFile:"Example_15/Placeholder_Helper.zip", downloadName:"Placeholder_Helper.zip",
-    wish:"A dedicated studio to imagine and generate your next weekly classroom helper—draft sub plans, format announcements, or streamline repetitive grading chores.",
-    prompt:"Act as an expert educational productivity tool developer. Build a flexible, safe, zero-dependency single-file HTML/CSS/JavaScript web utility designed to streamline a routine weekly teacher task.\n\n[Placeholder: Example 15 slot ready for your custom Everyday Helper prompt. Describe your weekly task, input format, and output layout.]",
-    what:"A placeholder workshop reserved for your next everyday teacher helper. What routine chore steals 15 minutes of your time every single week? Use the built-in wish generator to create custom prompts for sub plans, grading snippets, student grouping, or family announcements.",
+    downloadFile:"Example_15/EdTech_UI_Prompt_Drafter.zip", downloadName:"EdTech_UI_Prompt_Drafter.zip",
+    wish:"An interactive screen where teachers can drag, resize, and arrange simple colored shapes on a black background to sketch out their app layout. Keep big sections in the background, leave exported shapes blank so AI doesn't get confused, and generate a prompt matching each color to its description so I can paste both straight into Gemini.",
+    prompt:"I want to build a simple, single-page web tool to help non-technical teachers design their own classroom apps using AI.\n\nI need an interactive screen where teachers can easily drag, resize, and arrange simple colored shapes (like big panels, rounded buttons, and input boxes) on a solid black background to sketch out their layout. Big sections should automatically stay in the background so small buttons placed on top don't get trapped or hard to click, and the exported shapes need to stay completely blank with no text inside so the AI doesn't get confused.\n\nInclude a spot at the top where the teacher can write what the overall app is supposed to do, plus a simple sidebar list where they can type what each colored shape is for. Finally, add easy buttons to copy or save the image and copy a ready-to-use prompt that matches the colors to the descriptions, so they can just paste both straight into Gemini to generate the app.\n\n--------\nCreate a complete, single-file HTML/CSS/JavaScript web tool designed for non-technical teachers to visually draft ed-tech web app layouts and automatically generate a paired mockup image and structured AI prompt.\n\n### Core Workflow & Outputs\n\n1. **Plain Black Canvas Export:**\n* The interactive canvas represents the app interface and renders on a solid, pure black background (no visible grid lines in exports to avoid confusing vision AI).\n* Exported shapes must remain **completely blank** (no text labels or character overlays inside the shapes on export, preventing vision models from misreading text).\n* Provide a one-click button to download an 800×600 PNG and/or copy the clean mockup image directly to the clipboard.\n\n2. **Synchronized Text Prompt Generator:**\n* Generate a live, copyable text prompt matching the visual layout.\n* Map elements by color name and hex code (e.g., `- Purple rounded rectangle (#a855f7): [teacher's description]`).\n* Include a dedicated, integrated top input field for the overall **\"Main Purpose of the App\"** (e.g., grade level, subject, learning objectives) that prefixes the generated prompt.\n\n---\n\n### Canvas & Layering Mechanics\n\n* **Smart Foreground/Background Sorting:** Large container regions must automatically stay in the background (lower z-index) so smaller elements (buttons, inputs, icons) placed over them always remain on top and easy to click, select, drag, or resize without unpredictable layer conflicts.\n* **Visual Shapes Palette (Geometric, Not Prescriptive):**\n* Group additions by shape/form rather than developer jargon (e.g., **Large Region/Panel**, **Rounded Rectangle**, **Pill**, **Circle/Dial**, **Input Box**, **Media/Diagram Area**).\n* Include quick horizontal and vertical splitting buttons to divide selected regions or the whole canvas into common layouts.\n\n* **Interactive Manipulation:**\n* Full drag-to-move and drag-to-resize handles on the canvas.\n* Manual layer nudging (Bring Forward / Send Backward) and element deletion.\n\n---\n\n### Legend & Element Editing\n\n* An inline, live-synced sidebar list where teachers can easily name each element and type its functional description without losing canvas context.\n* Color pickers and distinct vibrant default swatches (purple, blue, green, yellow, orange, pink, cyan, red) that ensure high contrast against the solid black background.\n\n---\n\n### Design & Architecture\n\n* Deliver the entire tool as a **self-contained, standalone HTML file** (embedded CSS/JS or modern CDN utility classes like Tailwind, zero build step required).\n* Prioritize an elegant, calm, teacher-friendly UI with high contrast, clear typography, and a polished 3-column or responsive split-pane layout (Tools & Shapes | Canvas | Legend & Export).",
+    what:"A visual blueprint tool for teachers who want to design custom classroom apps. Instead of trying to describe a complex screen layout using only words, you drag and resize colored shapes (panels, buttons, input boxes, dials) on a clean canvas, add hand-drawn arrows with a white pen, and label what each box does. It exports a textless mockup image and automatically writes a matching, color-coded prompt ready to paste straight into Gemini.",
     uses:[
-      ["Target weekly chores","Eliminate repetitive administrative paperwork and classroom routines."],
-      ["Interactive prompt builder","Select your grade and chore to draft an instant, custom Golden Prompt."],
-      ["Runs 100% offline","No login, no subscriptions, completely private on your desktop."],
-      ["Ready for your files","Drop your finished HTML file into Example_15 to replace this placeholder."]
+      ["Sketch before you prompt","Give Gemini an unambiguous visual blueprint so buttons, inputs, and work panels end up in the right places."],
+      ["Textless shapes for vision AI","Shapes export completely blank so AI vision models don't get confused by OCR or hallucinate labels."],
+      ["Auto-synchronized prompt","As you label shapes and describe what they do, your prompt writes itself in real time with exact color codes."],
+      ["Hand-drawn motion arrows","Click the pen tool to sketch white flow arrows showing how cards move, flip, or connect."]
     ],
-    lesson:{title:"Your Turn to Make a Wish", points:[
-      ["Target the paper-cut tasks",[
-        "The most valuable tools aren't complicated. They solve one small, annoying routine you repeat every week.",
-        "Eliminating a 15-minute weekly friction point saves over 9 hours across a school year."
+    lesson:{title:"A Picture Plus a Legend Is Worth a Thousand Words", points:[
+      ["Show the layout instead of describing it in paragraphs",[
+        "Telling an AI “put a banner at the top, two sidebars, and three buttons” often leads to awkward, cluttered layouts.",
+        "Feeding the AI a simple colored wireframe alongside your wish gives it an unambiguous visual target."
       ]],
-      ["Start with three plain sentences",[
-        "Describe what you paste in, what the tool does, and what you want to copy out.",
-        "You don't need code words—just explain what you want to see on your screen."
+      ["Keep wireframe shapes blank",[
+        "When mockup shapes have fake text, vision models try to read every letter and often introduce bizarre bugs.",
+        "Blank shapes mapped to a sidebar legend tell the AI what each box does without confusing its vision system."
+      ]],
+      ["Automate the tedious parts",[
+        "Manually typing hex codes and coordinate descriptions is slow.",
+        "A simple helper that pairs canvas shapes with a copy-ready prompt turns 20 minutes of prompt writing into a two-minute drag-and-drop sketch."
       ]]
     ]}
   },
