@@ -10,11 +10,11 @@ Both sections are **data-driven**: you never have to manually edit cards or touc
 
 | Section | Master Data Ledger | Where the Content Lives | How It Works |
 | :--- | :--- | :--- | :--- |
-| **Ideas & Writing** | [`Ideas/posts.js`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Ideas/posts.js) | [`Ideas/articles/`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Ideas/articles/) | Automatically sorted by date; includes interactive filter pills (*Essays*, *Retrospectives*, *Readings*). |
-| **Classroom Apps** | [`Apps/apps.js`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Apps/apps.js) | Dedicated folder inside [`/Apps/`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Apps/) | Automatically renders **Launch** button, and if a `.zip` archive is specified, automatically injects a **Download & Remix (.zip)** button. |
+| **Ideas & Writing** | [`Ideas/posts.js`](./Ideas/posts.js) | [`Ideas/articles/`](./Ideas/articles/) | Automatically sorted by date; includes interactive filter pills (*Essays*, *Retrospectives*, *Readings*). |
+| **Classroom Apps** | [`Apps/apps.js`](./Apps/apps.js) | Dedicated folder inside [`/Apps/`](./Apps/) | Automatically renders **Launch** button, and if a `.zip` archive is specified, automatically injects a **Download & Remix (.zip)** button. |
 
 > [!TIP]
-> **Zero Local Server Needed**: Because we use `posts.js` and `apps.js` rather than raw `.json`, you can double-click [`Ideas/index.html`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Ideas/index.html) or [`Apps/index.html`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Apps/index.html) straight from Windows File Explorer to test offline without browser security errors.
+> **Zero Local Server Needed**: Because we use `posts.js` and `apps.js` rather than raw `.json`, you can double-click [`Ideas/index.html`](./Ideas/index.html) or [`Apps/index.html`](./Apps/index.html) straight from Windows File Explorer to test offline without browser security errors.
 
 ---
 
@@ -22,7 +22,7 @@ Both sections are **data-driven**: you never have to manually edit cards or touc
 
 When you come across a great article on Substack, Edutopia, or an academic paper and want to recommend it:
 
-1. Open [`Ideas/posts.js`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Ideas/posts.js).
+1. Open [`Ideas/posts.js`](./Ideas/posts.js).
 2. Paste this block at the top of the `IDEAS_POSTS` list (right after `const IDEAS_POSTS = [`):
 
 ```javascript
@@ -48,10 +48,10 @@ When you come across a great article on Substack, Edutopia, or an academic paper
 
 ## 📝 Recipe 2: Publish a New Essay or Proof Note
 
-1. Go to [`Ideas/articles/`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Ideas/articles/).
+1. Go to [`Ideas/articles/`](./Ideas/articles/).
 2. Make a copy of `_article_template.html` and rename it (e.g., `inquiry-geometry.html`).
 3. Open your new file and edit the title, subtitle, and paragraphs.
-4. Register the essay in [`Ideas/posts.js`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Ideas/posts.js):
+4. Register the essay in [`Ideas/posts.js`](./Ideas/posts.js):
 
 ```javascript
   {
@@ -74,9 +74,9 @@ When you come across a great article on Substack, Edutopia, or an academic paper
 
 An App Retrospective is simply an essay that reflects on an interactive tool and provides direct links to both the essay and the app:
 
-1. Ensure the app prototype lives in its own folder inside [`/Apps/`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Apps/) (e.g. `Apps/BardsMeter/`).
-2. Write your retrospective essay in [`Ideas/articles/your-retrospective.html`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Ideas/articles/).
-3. Add the entry to [`Ideas/posts.js`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Ideas/posts.js) with **both** `articleUrl` and `appUrl`:
+1. Ensure the app prototype lives in its own folder inside [`/Apps/`](./Apps/) (e.g. `Apps/BardsMeter/`).
+2. Write your retrospective essay in [`Ideas/articles/your-retrospective.html`](./Ideas/articles/).
+3. Add the entry to [`Ideas/posts.js`](./Ideas/posts.js) with **both** `articleUrl` and `appUrl`:
 
 ```javascript
   {
@@ -107,7 +107,7 @@ Every app has its own self-contained folder under `Apps/`:
 2. Place your app's files inside (e.g., `Apps/WaveOptics/index.html`, styles, audio).
 3. **(Optional) Add a Remix .zip**: If you want students or educators to be able to download and remix the tool, compress the app files into a zip archive and place it right inside that app's folder:
    `Apps/WaveOptics/WaveOptics.zip`
-4. Register the tool in [`Apps/apps.js`](file:///c:/Users/Xenon/OneDrive/Desktop/PeriodicallyRational/Apps/apps.js):
+4. Register the tool in [`Apps/apps.js`](./Apps/apps.js):
 
 ```javascript
   {
@@ -135,7 +135,7 @@ Once you've made your changes and verified them by double-clicking the HTML file
 
 1. Open PowerShell or Terminal in the repository folder:
    ```powershell
-   cd C:\Users\Xenon\OneDrive\Desktop\PeriodicallyRational
+   cd C:\Users\caleo\Documents\PeriodicallyRational
    ```
 2. Stage all updated files:
    ```powershell

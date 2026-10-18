@@ -32,7 +32,6 @@ function openInNewTab(txt){
   window.open(url, '_blank', 'noopener');
   setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
 }
-var saveTextFile = saveFile;
 
 /* ---------- Cave of Wonders: content lives in treasures.js ---------- */
 var TREASURES = window.TREASURES || [];
@@ -454,8 +453,7 @@ var SLIDES=[
     +'</div>'
     +'</div>'
     +'<div class="final-actions-row">'
-    +'<button class="btn rounded-action-btn" id="btn-padlet">Ideas Padlet</button>'
-    +'<button class="btn alt rounded-action-btn" id="btn-survey">Feedback Survey</button>'
+    +'<a class="btn rounded-action-btn" id="btn-padlet" href="https://padlet.com/ctking/wish-wall-s024jeclbv9ousv6zm5u" target="_blank" rel="noopener">Ideas Padlet</a>'
     +'</div>'
     +'</div>';
 },init:timerInit}
@@ -530,7 +528,9 @@ function chime(){
 var MUSIC_PLAYLIST=[
   {title:'Ambient Focus',file:'music/Ambient_Focus.mp3'},
   {title:'Upbeat Flow',file:'music/Upbeat_Flow.mp3'},
-  {title:'Gentle Chords',file:'music/Gentle_Chords.mp3'},
+  {title:'Parade in a Teacup',file:'music/Parade in a Teacup.mp3'},
+  {title:'Robot Groove Circuit',file:'music/Robot Groove Circuit.mp3'},
+  {title:'Summer Night in Archfall',file:'music/Summer Night in Archfall.mp3'},
   {title:'Lofi Pause',file:'music/Lofi_Pause.mp3'},
   {title:'Retro Arcade',file:'music/Retro_Arcade.mp3'}
 ];
@@ -583,7 +583,7 @@ function updateMusicUI(){
 function loadTrack(idx,autoPlay){
   musicState.idx=(idx+MUSIC_PLAYLIST.length)%MUSIC_PLAYLIST.length;
   var audio=getAudio();
-  audio.src=MUSIC_PLAYLIST[musicState.idx].file;
+  audio.src=encodeURI(MUSIC_PLAYLIST[musicState.idx].file);
   audio.loop=true;
   if(autoPlay){
     var p=audio.play();
@@ -706,18 +706,6 @@ function timerInit(){
     mVol.oninput=function(e){setVolume(+e.target.value)};
   }
 
-  var padletBtn=$('#btn-padlet');
-  if(padletBtn)padletBtn.onclick=function(e){
-    e.preventDefault();
-    toast('Ideas Padlet: Link coming soon');
-  };
-
-  var surveyBtn=$('#btn-survey');
-  if(surveyBtn)surveyBtn.onclick=function(e){
-    e.preventDefault();
-    toast('Feedback Survey: Link coming soon');
-  };
-
   updateMusicUI();
 }
 
@@ -736,7 +724,7 @@ var st={u:[],i:0},full=false,busy=false,first=true;
 var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 function arm(sec,all){
   st.u=[].filter.call(sec.querySelectorAll('.card,.banner,li,:scope>p,.card>p,.hero>p'),function(e){
-    if(e.closest('.static,.drawer'))return false;
+    if(e.closest('.static'))return false;
     if(e.matches('.hero>p:first-of-type'))return false;
     if(e.matches('.card')&&e.querySelector('li'))return false;
     if(e.matches('.card>p')&&!e.parentNode.querySelector('li'))return false;
@@ -852,7 +840,7 @@ document.addEventListener('click',function(e){
     var idx=+sp.dataset.saveprompt;
     var tr=TREASURES[idx];
     if(tr&&tr.prompt){
-      saveTextFile(tr.prompt, tr.name.replace(/[^a-zA-Z0-9_-]/g,'_')+'_Prompt.txt');
+      saveFile(tr.prompt, tr.name.replace(/[^a-zA-Z0-9_-]/g,'_')+'_Prompt.txt');
     }
     return;
   }
@@ -876,7 +864,7 @@ document.addEventListener('click',function(e){
     if(tr){
       var txt=tr.lessonMd || lessonText(tr);
       if(txt){
-        saveTextFile(txt, tr.name.replace(/[^a-zA-Z0-9_-]/g,'_')+'_Lesson.md');
+        saveFile(txt, tr.name.replace(/[^a-zA-Z0-9_-]/g,'_')+'_Lesson.md');
       }
     }
     return;
@@ -897,7 +885,7 @@ document.addEventListener('click',function(e){
     return;
   }
   var t=e.target.closest('[data-nav],[data-go],[data-copy],[data-copytxt],[data-dl]');
-  if(!t){if(!e.target.closest('button,a,input,textarea,summary,pre,.drawer,.top'))step(1);return}
+  if(!t){if(!e.target.closest('button,a,input,textarea,summary,pre'))step(1);return}
   if(t.dataset.nav)step(+t.dataset.nav);
   if(t.dataset.go&&!busy){full=true;go(+t.dataset.go)}
   if(t.dataset.copy)copy(FORMULA);
@@ -911,7 +899,6 @@ document.addEventListener('keydown',function(e){
   var k=e.key;
   if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();step(1)}
   else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();step(-1)}
-  else if(k==='Escape'){var d=$('#drawer');if(d)d.classList.remove('open')}
 });
 var sx=null;
 document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
