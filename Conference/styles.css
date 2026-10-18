@@ -71,10 +71,15 @@ li::before{content:"\2726";position:absolute;left:0;color:var(--gold);text-shado
 @keyframes rub{25%{transform:rotate(-4deg) scale(1.05)}75%{transform:rotate(4deg) scale(1.05)}}
 
 /* ===== Cave of Wonders (3 Columns, 4 Gems High) ===== */
+main[data-slide="5"],
+main:has(.cave-wrap) {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
 .cave-wrap {
   width: 100%;
-  max-width: 1380px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 .cave-groups {
   display: grid;

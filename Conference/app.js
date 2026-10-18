@@ -712,6 +712,7 @@ function timerInit(){
 /* ---------- Views ---------- */
 function slideView(n,full){
   var s=SLIDES[n-1];hud.classList.remove('hide');
+  view.setAttribute('data-slide', n);
   view.innerHTML='<section aria-label="Slide '+n+'">'+s.h()+'</section>';
   arm(view.firstChild,full);
   if(s.init)s.init();
