@@ -14,14 +14,17 @@ Create a complete, single-file HTML web application (HTML, CSS, and JS combined 
 - Unplaced cards float gently with subtle, continuous CSS drifting/hovering physics to feel alive and playful.
 - Dragging a card out of the floating dock pauses its floating animation and makes it draggable.
 
-### 3. Elastic Top Timeline Rail
+### 3. Magnetic Top Timeline Rail (Continuous Field Physics)
 - Occupies the top/middle 60% of the screen.
-- Features a central horizontal line (the timeline stem).
-- Elastic Insertion & Dynamic Spacing: When dragging a card over the timeline, adjacent attached cards fluidly slide left and right (using dynamic CSS transforms or FLIP transitions) to clear a space. Dropping the card inserts it at that exact relative position and recalibrates horizontal spacing evenly across the rail.
-- Vertical Staggering / Magnetic Offset (Anti-Collision):
-  - Long event text must never overlap horizontally adjacent cards.
-  - When cards snap to the timeline, alternate their vertical positions (e.g., odd-indexed placed cards sit slightly ABOVE the rail stem, even-indexed placed cards sit slightly BELOW the rail stem) with visible vertical connecting lines attaching them to the main rail stem.
-  - Implement a subtle spring/magnetic snapping effect as cards approach the stem.
+- Features a central horizontal line (the timeline stem) bounded by magnetic end-cap emitters on the left and right ends.
+- Magnetic Field Repulsion & End-Cap Confinement:
+  - Instead of clicking into rigid programmatic grid slots, cards on the timeline act like repelling magnets along the rail driven by a continuous `requestAnimationFrame` physics loop.
+  - Both ends of the timeline exert an inward repulsive push so all cards stay comfortably on screen while naturally equalizing their spacing.
+  - When a new card is dragged near or between existing cards, its magnetic field pushes neighboring cards outward smoothly as a continuous function of distance and proximity.
+  - When a card is pulled off the timeline, the remaining cards smoothly flow into the vacated gap to fill the space evenly.
+- Fluid Elastic Tether Hooks & Vertical Staggering:
+  - Cards hook to the timeline stem via dynamic curved SVG Bezier tethers and sliding stem anchor nodes that flex with card velocity.
+  - Cards alternate above and below the stem (with dynamic 2D anti-collision boost when crowded) so adjacent event text never overlaps.
 
 ### 4. Logic & Grading (Wordle-Style LIS Algorithm)
 - When the teacher/class clicks "Check Timeline":

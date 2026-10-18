@@ -5,56 +5,339 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Elastic Timeline</title>
 <style>
-:root{--bg:#0f172a;--panel:#1e293b;--panel2:#243248;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#38bdf8;--green:#22c55e;--amber:#eab308}
+:root{
+  --bg:#0f172a;
+  --panel:#1e293b;
+  --panel2:#26354d;
+  --border:#334155;
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+  --accent:#38bdf8;
+  --accent-glow:rgba(56,189,248,.45);
+  --green:#22c55e;
+  --amber:#eab308;
+}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-top:env(safe-area-inset-top,0);padding-bottom:env(safe-area-inset-bottom,0)}
-header{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:12px 20px;background:rgba(30,41,59,.65);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
-header h1{font-size:17px;margin:0;font-weight:700}
+body{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  background:radial-gradient(circle at 50% 28%, #16223b 0%, var(--bg) 72%);
+  color:var(--text);
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding-top:env(safe-area-inset-top,0);
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+header{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 20px;
+  background:rgba(30,41,59,.68);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  z-index:30;
+}
+header h1{font-size:17px;margin:0;font-weight:700;letter-spacing:.2px;display:flex;align-items:center;gap:8px}
+.hint-pill{
+  font-size:12px;
+  color:var(--muted);
+  background:rgba(15,23,42,.55);
+  border:1px solid rgba(51,65,85,.7);
+  padding:4px 10px;
+  border-radius:999px;
+  margin-left:8px;
+}
 .spacer{flex:1}
-button{font:inherit;cursor:pointer;border-radius:10px;padding:9px 15px;border:1px solid var(--border);background:var(--panel);color:var(--text)}
+button{
+  font:inherit;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  border-radius:10px;
+  padding:9px 15px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  transition:background .18s,transform .12s,box-shadow .18s;
+}
 button:hover{background:var(--panel2)}
-#checkBtn{background:var(--accent);border-color:var(--accent);color:#03202e;font-weight:700;box-shadow:0 0 16px rgba(56,189,248,.45)}
-#checkBtn:hover{filter:brightness(1.08)}
+button:active{transform:scale(.97)}
+#checkBtn{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#03202e;
+  font-weight:700;
+  box-shadow:0 0 18px rgba(56,189,248,.4);
+}
+#checkBtn:hover{filter:brightness(1.08);box-shadow:0 0 24px rgba(56,189,248,.6)}
+
 main{flex:1 1 auto;display:flex;flex-direction:column;min-height:0}
-#rail-container{flex:0 0 60%;min-height:0;position:relative;overflow:hidden}
-#rail-track{position:relative;width:100%;height:100%}
-#stem{position:absolute;top:50%;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--border) 6%,var(--border) 94%,transparent)}
-#dock-container{flex:1 1 auto;min-height:0;border-top:1px solid var(--border);overflow:auto;position:relative}
-#dock-inner{display:flex;flex-wrap:wrap;gap:16px;align-content:flex-start;justify-content:center;padding:22px;min-height:100%}
-.card-slot{width:172px;touch-action:none;user-select:none;cursor:grab}
-.card-slot.dragging{cursor:grabbing;position:fixed;z-index:60}
-.card-slot.placed{position:absolute;left:0;top:0;transition:transform .5s cubic-bezier(.34,1.8,.64,1)}
-.card-face{width:100%;min-height:64px;padding:10px 13px;background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.35);font-size:13px;line-height:1.35;display:flex;align-items:center;justify-content:center;text-align:center}
-.card-slot.dragging .card-face{box-shadow:0 12px 30px rgba(0,0,0,.55);opacity:.96}
-.bob-pool{animation:floatBig var(--dur,6s) ease-in-out infinite;animation-delay:var(--del,0s)}
-.bob-rail{animation:bobSmall calc(var(--dur,6s)*.7) ease-in-out infinite;animation-delay:var(--del,0s)}
-.card-face.lis-green{border-color:var(--green);box-shadow:0 0 16px rgba(34,197,94,.55)}
-.card-face.lis-amber{border-color:var(--amber);box-shadow:0 0 16px rgba(234,179,8,.55)}
-@keyframes floatBig{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(var(--ax),calc(var(--ay)*-1)) rotate(var(--ar))}50%{transform:translate(calc(var(--ax)*-.6),var(--ay)) rotate(calc(var(--ar)*-1))}75%{transform:translate(calc(var(--ax)*.7),calc(var(--ay)*-.5)) rotate(calc(var(--ar)*.5))}}
-@keyframes bobSmall{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-.conn{position:absolute;width:2px;background:var(--border);transition:left .5s cubic-bezier(.34,1.8,.64,1),top .3s ease,height .3s ease}
-.conn.lis-green{background:var(--green)}
-.conn.lis-amber{background:var(--amber)}
-.ghost-slot{position:absolute;border:2px dashed var(--accent);border-radius:12px;opacity:.45;pointer-events:none;transition:transform .3s ease}
-#lead{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:55}
-#leadPath{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:6 5;opacity:0;transition:opacity .15s}
-.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:100}
+
+/* Top Magnetic Timeline Rail */
+#rail-container{
+  flex:0 0 62%;
+  min-height:0;
+  position:relative;
+  overflow:hidden;
+}
+#rail-track{
+  position:relative;
+  width:100%;
+  height:100%;
+}
+#stem-wrap{
+  position:absolute;
+  top:50%;
+  left:18px;
+  right:18px;
+  height:2px;
+  transform:translateY(-50%);
+  pointer-events:none;
+}
+#stem{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(56,189,248,.55),var(--border) 10%,var(--border) 90%,rgba(56,189,248,.55));
+  border-radius:2px;
+  box-shadow:0 0 12px rgba(56,189,248,.18);
+}
+#stem-aura{
+  position:absolute;
+  top:-18px;
+  bottom:-18px;
+  left:0;
+  right:0;
+  background:radial-gradient(ellipse 160px 26px at var(--aura-x,50%) 50%, rgba(56,189,248,var(--aura-op,0)), transparent 75%);
+  pointer-events:none;
+}
+#rail-svg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:10;
+  overflow:visible;
+}
+
+/* Magnetic End-Cap Field Emitters */
+.end-field{
+  fill:none;
+  stroke:var(--accent);
+  stroke-linecap:round;
+  transition:opacity .15s;
+}
+.tether-glow{
+  fill:none;
+  stroke:var(--accent);
+  stroke-width:6;
+  stroke-linecap:round;
+  opacity:0;
+  filter:blur(4px);
+}
+.tether-line{
+  fill:none;
+  stroke:#475569;
+  stroke-width:2.2;
+  stroke-linecap:round;
+}
+.tether-line.active-drag{
+  stroke:var(--accent);
+  stroke-dasharray:6 4;
+}
+.tether-line.lis-green{stroke:var(--green);stroke-width:2.5}
+.tether-line.lis-amber{stroke:var(--amber);stroke-width:2.5}
+.tether-glow.lis-green{stroke:var(--green);opacity:.32}
+.tether-glow.lis-amber{stroke:var(--amber);opacity:.32}
+
+.stem-node{
+  fill:var(--panel);
+  stroke:#64748b;
+  stroke-width:2.2;
+}
+.stem-node.active-drag{
+  fill:var(--accent);
+  stroke:#bae6fd;
+  filter:drop-shadow(0 0 8px rgba(56,189,248,.85));
+}
+.stem-node.lis-green{fill:var(--green);stroke:#bbf7d0;filter:drop-shadow(0 0 6px rgba(34,197,94,.7))}
+.stem-node.lis-amber{fill:var(--amber);stroke:#fef08a;filter:drop-shadow(0 0 6px rgba(234,179,8,.7))}
+
+.card-hook-dot{
+  fill:#64748b;
+}
+.card-hook-dot.active-drag{fill:var(--accent)}
+.card-hook-dot.lis-green{fill:var(--green)}
+.card-hook-dot.lis-amber{fill:var(--amber)}
+
+/* Bottom Floating Pool Dock */
+#dock-container{
+  flex:1 1 auto;
+  min-height:0;
+  border-top:1px solid rgba(51,65,85,.85);
+  background:linear-gradient(180deg, rgba(15,23,42,.35) 0%, rgba(9,14,28,.65) 100%);
+  overflow:auto;
+  position:relative;
+}
+#dock-inner{
+  display:flex;
+  flex-wrap:wrap;
+  gap:18px;
+  align-content:flex-start;
+  justify-content:center;
+  padding:24px 28px;
+  min-height:100%;
+}
+
+/* Cards */
+.card-slot{
+  width:172px;
+  touch-action:none;
+  user-select:none;
+  cursor:grab;
+  will-change:transform;
+}
+.card-slot.pool{
+  position:relative;
+  transition:transform .38s cubic-bezier(.22,1,.36,1);
+}
+.card-slot.placed{
+  position:absolute;
+  left:0;
+  top:0;
+  z-index:20;
+}
+.card-slot.dragging{
+  cursor:grabbing;
+  position:fixed;
+  left:0;
+  top:0;
+  z-index:60;
+  pointer-events:none;
+}
+.card-face{
+  width:100%;
+  min-height:66px;
+  padding:11px 14px;
+  background:linear-gradient(165deg, #233047 0%, #1a2538 100%);
+  border:1.5px solid var(--border);
+  border-radius:13px;
+  box-shadow:0 6px 18px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.06);
+  font-size:13px;
+  line-height:1.36;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  transition:border-color .22s ease, box-shadow .22s ease, background .22s ease;
+}
+.card-slot:hover .card-face{
+  border-color:#4b6382;
+}
+.card-slot.dragging .card-face{
+  box-shadow:0 18px 38px rgba(0,0,0,.62), 0 0 22px rgba(56,189,248,.28);
+  border-color:var(--accent);
+}
+.card-slot.hooked-drag .card-face{
+  box-shadow:0 18px 38px rgba(0,0,0,.62), 0 0 26px rgba(56,189,248,.52);
+  border-color:#7dd3fc;
+}
+.bob-pool{
+  animation:floatBig var(--dur,6s) ease-in-out infinite;
+  animation-delay:var(--del,0s);
+}
+.card-face.lis-green{
+  border-color:var(--green);
+  box-shadow:0 6px 20px rgba(0,0,0,.4), 0 0 18px rgba(34,197,94,.52);
+  background:linear-gradient(165deg, rgba(22,101,52,.42) 0%, #1a2538 95%);
+}
+.card-face.lis-amber{
+  border-color:var(--amber);
+  box-shadow:0 6px 20px rgba(0,0,0,.4), 0 0 18px rgba(234,179,8,.52);
+  background:linear-gradient(165deg, rgba(133,77,14,.42) 0%, #1a2538 95%);
+}
+@keyframes floatBig{
+  0%,100%{transform:translate(0,0) rotate(0)}
+  25%{transform:translate(var(--ax),calc(var(--ay)*-1)) rotate(var(--ar))}
+  50%{transform:translate(calc(var(--ax)*-.6),var(--ay)) rotate(calc(var(--ar)*-1))}
+  75%{transform:translate(calc(var(--ax)*.7),calc(var(--ay)*-.5)) rotate(calc(var(--ar)*.5))}
+}
+
+/* Modal */
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(2,6,23,.65);
+  backdrop-filter:blur(7px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+}
 .modal-backdrop.hidden{display:none}
-.modal{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:22px;width:min(540px,92vw);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:22px;
+  width:min(540px,92vw);
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+}
 .modal h2{margin:0 0 6px;font-size:17px}
-.modal p{color:var(--muted);font-size:13px;margin:0 0 12px}
-.modal textarea{width:100%;height:220px;background:#0b1322;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px;font:13px/1.4 ui-monospace,Menlo,Consolas,monospace;resize:vertical}
+.modal p{color:var(--muted);font-size:13px;margin:0 0 12px;line-height:1.45}
+.modal textarea{
+  width:100%;
+  height:220px;
+  background:#0b1322;
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  font:13px/1.45 ui-monospace,Menlo,Consolas,monospace;
+  resize:vertical;
+}
 .modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
-#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(6px);background:var(--panel);border:1px solid var(--border);padding:11px 20px;border-radius:12px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:80;max-width:80vw;text-align:center}
+
+#toast{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%) translateY(6px);
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:11px 20px;
+  border-radius:12px;
+  font-size:13px;
+  box-shadow:0 8px 24px rgba(0,0,0,.45);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s,transform .3s;
+  z-index:80;
+  max-width:80vw;
+  text-align:center;
+}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.confetti{position:fixed;top:-12px;width:8px;height:14px;z-index:200;pointer-events:none;animation:fall linear forwards}
+.confetti{
+  position:fixed;
+  top:-12px;
+  width:8px;
+  height:14px;
+  z-index:200;
+  pointer-events:none;
+  animation:fall linear forwards;
+}
 @keyframes fall{to{transform:translateY(112vh) rotate(720deg);opacity:.15}}
+@media (max-width:700px){
+  .hint-pill{display:none}
+}
 </style>
 </head>
 <body>
 <header>
-  <h1>🕰 Elastic Timeline</h1>
+  <h1>🕰 Elastic Timeline <span class="hint-pill">Drag cards to the magnetic rail • Double-click to auto-place</span></h1>
   <div class="spacer"></div>
   <button id="editBtn">⚙ Edit List</button>
   <button id="resetBtn">Reset</button>
@@ -62,14 +345,23 @@ main{flex:1 1 auto;display:flex;flex-direction:column;min-height:0}
 </header>
 <main>
   <div id="rail-container">
-    <div id="rail-track"><div id="stem"></div></div>
+    <div id="rail-track">
+      <div id="stem-wrap">
+        <div id="stem"></div>
+        <div id="stem-aura"></div>
+      </div>
+      <svg id="rail-svg">
+        <g id="end-caps-layer"></g>
+        <g id="tethers-glow-layer"></g>
+        <g id="tethers-line-layer"></g>
+        <g id="nodes-layer"></g>
+      </svg>
+    </div>
   </div>
   <div id="dock-container">
     <div id="dock-inner"></div>
   </div>
 </main>
-
-<svg id="lead"><path id="leadPath"/></svg>
 
 <div class="modal-backdrop hidden" id="modal">
   <div class="modal">
@@ -86,294 +378,973 @@ main{flex:1 1 auto;display:flex;flex-direction:column;min-height:0}
 <div id="toast"></div>
 
 <script>
-const railContainer=document.getElementById('rail-container');
-const railTrack=document.getElementById('rail-track');
-const dockInner=document.getElementById('dock-inner');
-const modal=document.getElementById('modal');
-const textarea=document.getElementById('textarea');
-const toastEl=document.getElementById('toast');
-const editBtn=document.getElementById('editBtn');
-const closeBtn=document.getElementById('closeBtn');
-const loadBtn=document.getElementById('loadBtn');
-const resetBtn=document.getElementById('resetBtn');
-const checkBtn=document.getElementById('checkBtn');
-const leadPath=document.getElementById('leadPath');
+const railContainer = document.getElementById('rail-container');
+const railTrack = document.getElementById('rail-track');
+const stemAura = document.getElementById('stem-aura');
+const endCapsLayer = document.getElementById('end-caps-layer');
+const tethersGlowLayer = document.getElementById('tethers-glow-layer');
+const tethersLineLayer = document.getElementById('tethers-line-layer');
+const nodesLayer = document.getElementById('nodes-layer');
+const dockInner = document.getElementById('dock-inner');
+const modal = document.getElementById('modal');
+const textarea = document.getElementById('textarea');
+const toastEl = document.getElementById('toast');
+const editBtn = document.getElementById('editBtn');
+const closeBtn = document.getElementById('closeBtn');
+const loadBtn = document.getElementById('loadBtn');
+const resetBtn = document.getElementById('resetBtn');
+const checkBtn = document.getElementById('checkBtn');
 
-const DEFAULT_EVENTS=["The printing press is invented","The telephone is invented","The light bulb is invented","The Wright brothers achieve powered flight","The first television broadcast airs","The first personal computer is released"];
-const CARD_W=172, OFFSET=52, GAP=16;
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const DEFAULT_EVENTS = [
+  "The printing press is invented",
+  "The telephone is invented",
+  "The light bulb is invented",
+  "The Wright brothers achieve powered flight",
+  "The first television broadcast airs",
+  "The first personal computer is released"
+];
 
-let events=[], placed=[], poolOrder=[], graded=false, drag=null;
-let cardEls=new Map();
-let gradedGreen=new Set(), gradedAmber=new Set();
+const CARD_W = 172;
+const WALL_PAD = 18;
 
-function faceOf(el){return el.firstElementChild;}
-function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+let events = [];
+let placed = [];     // Ordered array of event IDs currently on the timeline rail
+let poolOrder = [];  // Shuffled order of event IDs in the dock
+let graded = false;
+let gradedGreen = new Set();
+let gradedAmber = new Set();
 
-function buildCards(){
-  cardEls.forEach(el=>el.remove());
-  cardEls=new Map();
-  events.forEach(ev=>{
-    const wrap=document.createElement('div');
-    wrap.className='card-slot';
-    wrap.dataset.id=ev.id;
-    const face=document.createElement('div');
-    face.className='card-face';
-    face.textContent=ev.text;
-    wrap.appendChild(face);
-    wrap.style.setProperty('--ax',(Math.random()*16+8)+'px');
-    wrap.style.setProperty('--ay',(Math.random()*14+8)+'px');
-    wrap.style.setProperty('--ar',(Math.random()*6+2)+'deg');
-    wrap.style.setProperty('--dur',(4+Math.random()*3).toFixed(2)+'s');
-    wrap.style.setProperty('--del',(-Math.random()*4).toFixed(2)+'s');
-    wrap.addEventListener('pointerdown',onPointerDown);
-    wrap.addEventListener('dblclick',onDoubleClick);
-    cardEls.set(ev.id,wrap);
-  });
+// Per-card state & DOM/SVG elements
+let cardState = new Map();
+let drag = null;
+
+// End-cap visual state (animated magnetic pressure at left/right boundaries)
+let leftCapPressure = 0.25;
+let rightCapPressure = 0.25;
+const endCapPaths = { left: [], right: [] };
+
+function initEndCapSvg() {
+  endCapsLayer.innerHTML = '';
+  endCapPaths.left = [];
+  endCapPaths.right = [];
+  for (let i = 0; i < 3; i++) {
+    const pL = document.createElementNS(SVG_NS, 'path');
+    pL.setAttribute('class', 'end-field');
+    endCapsLayer.appendChild(pL);
+    endCapPaths.left.push(pL);
+
+    const pR = document.createElementNS(SVG_NS, 'path');
+    pR.setAttribute('class', 'end-field');
+    endCapsLayer.appendChild(pR);
+    endCapPaths.right.push(pR);
+  }
+}
+initEndCapSvg();
+
+function shuffle(a) {
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
-function loadEvents(lines){
-  events=lines.map((t,i)=>({id:i+1,text:t}));
-  buildCards();
-  poolOrder=shuffle(events.map(e=>e.id));
-  placed=[];
-  graded=false;
-  renderAll();
+function clamp(v, lo, hi) {
+  return v < lo ? lo : v > hi ? hi : v;
 }
-function resetBoard(){
-  poolOrder=shuffle(events.map(e=>e.id));
-  placed=[];
-  graded=false;
-  renderAll();
-}
-function gradeClass(id){
-  if(gradedGreen.has(id)) return ' lis-green';
-  if(gradedAmber.has(id)) return ' lis-amber';
+
+function gradeClass(id) {
+  if (!graded) return '';
+  if (gradedGreen.has(id)) return ' lis-green';
+  if (gradedAmber.has(id)) return ' lis-amber';
   return '';
 }
 
-function renderDock(){
-  const poolIds=poolOrder.filter(id=>!placed.includes(id) && !(drag&&drag.id===id));
-  dockInner.innerHTML='';
-  poolIds.forEach(id=>{
-    const el=cardEls.get(id);
-    el.className='card-slot pool';
-    el.style.transform='';
-    faceOf(el).className='card-face bob-pool';
-    dockInner.appendChild(el);
+function buildCards() {
+  cardState.forEach(st => {
+    st.el.remove();
+    st.glowPath.remove();
+    st.linePath.remove();
+    st.stemNode.remove();
+    st.hookDot.remove();
+  });
+  cardState.clear();
+
+  events.forEach((ev, idx) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'card-slot pool';
+    wrap.dataset.id = ev.id;
+
+    const face = document.createElement('div');
+    face.className = 'card-face bob-pool';
+    face.textContent = ev.text;
+    wrap.appendChild(face);
+
+    // Subtle floating pool CSS variables
+    wrap.style.setProperty('--ax', (Math.random() * 14 + 7).toFixed(1) + 'px');
+    wrap.style.setProperty('--ay', (Math.random() * 12 + 7).toFixed(1) + 'px');
+    wrap.style.setProperty('--ar', (Math.random() * 5 + 1.5).toFixed(1) + 'deg');
+    wrap.style.setProperty('--dur', (4.4 + Math.random() * 2.8).toFixed(2) + 's');
+    wrap.style.setProperty('--del', (-Math.random() * 5).toFixed(2) + 's');
+
+    wrap.addEventListener('pointerdown', onPointerDown);
+    wrap.addEventListener('dblclick', onDoubleClick);
+
+    // SVG elements for the magnetic tether & hook
+    const glowPath = document.createElementNS(SVG_NS, 'path');
+    glowPath.setAttribute('class', 'tether-glow');
+    tethersGlowLayer.appendChild(glowPath);
+
+    const linePath = document.createElementNS(SVG_NS, 'path');
+    linePath.setAttribute('class', 'tether-line');
+    tethersLineLayer.appendChild(linePath);
+
+    const stemNode = document.createElementNS(SVG_NS, 'circle');
+    stemNode.setAttribute('class', 'stem-node');
+    stemNode.setAttribute('r', '5');
+    nodesLayer.appendChild(stemNode);
+
+    const hookDot = document.createElementNS(SVG_NS, 'circle');
+    hookDot.setAttribute('class', 'card-hook-dot');
+    hookDot.setAttribute('r', '3.5');
+    nodesLayer.appendChild(hookDot);
+
+    const W = railContainer.clientWidth || 960;
+    const H = railContainer.clientHeight || 420;
+
+    cardState.set(ev.id, {
+      id: ev.id,
+      text: ev.text,
+      el: wrap,
+      face,
+      glowPath,
+      linePath,
+      stemNode,
+      hookDot,
+      x: W / 2,
+      y: H / 2,
+      vx: 0,
+      vy: 0,
+      anchorX: W / 2,
+      anchorVx: 0,
+      rot: 0,
+      scale: 1,
+      w: 0, // magnetic weight on the rail (0 in pool, ramps to 1 on rail)
+      cardH: 68,
+      bobPhase: idx * 1.3 + Math.random() * 2,
+      bobSpeed: 0.85 + Math.random() * 0.35
+    });
   });
 }
 
-// Chooses 1, 2 or 3 vertical rows so cards fit the width with no scrolling,
-// keeping to the middle 75% of the rail unless the event count forces wider use.
-function computeLayout(order){
-  const n=order.length;
-  const W=railContainer.clientWidth||900;
-  const pmin=lv=>(CARD_W+GAP)/lv;
-  let levels=1;
-  if(n>1){
-    for(const lv of [1,2,3]){levels=lv; if((n-1)*pmin(lv)<=W*0.75) break;}
+function syncDockDOM(animateFlip = true) {
+  const poolIds = poolOrder.filter(id => !placed.includes(id) && !(drag && drag.id === id));
+
+  // Capture old positions for FLIP transition in dock
+  const oldRects = new Map();
+  if (animateFlip) {
+    poolIds.forEach(id => {
+      const el = cardState.get(id).el;
+      if (el.parentElement === dockInner) {
+        oldRects.set(id, el.getBoundingClientRect());
+      }
+    });
   }
-  let frac=0.75;
-  const span=n>1?(n-1)*pmin(levels):0;
-  if(span>W*0.75) frac=Math.min(0.96, (span/W)||0.75);
-  const avail=W*frac, margin=(W-avail)/2;
-  const pitch=n>1?avail/(n-1):0;
-  const startX=n>1?margin:W/2;
-  return {levels, items:order.map((id,i)=>({id,i,x:n>1?margin+pitch*i:startX}))};
-}
-function rowOffset(i,levels){
-  if(levels===1) return 0;
-  if(levels===2) return i%2===0?-OFFSET:OFFSET;
-  return [-OFFSET,OFFSET,-OFFSET*2.1][i%3];
+
+  poolIds.forEach(id => {
+    const st = cardState.get(id);
+    if (st.el.parentElement !== dockInner) {
+      dockInner.appendChild(st.el);
+    }
+    st.el.className = 'card-slot pool';
+    st.el.style.left = '';
+    st.el.style.top = '';
+    st.el.style.transform = '';
+    st.face.className = 'card-face bob-pool';
+    st.w = 0;
+    hideCardTether(st);
+  });
+
+  if (animateFlip && oldRects.size > 0) {
+    poolIds.forEach(id => {
+      const prev = oldRects.get(id);
+      if (!prev) return;
+      const st = cardState.get(id);
+      const next = st.el.getBoundingClientRect();
+      const dx = prev.left - next.left;
+      const dy = prev.top - next.top;
+      if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+        st.el.style.transition = 'none';
+        st.el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+        st.el.offsetHeight; // force reflow
+        st.el.style.transition = 'transform .38s cubic-bezier(.22,1,.36,1)';
+        st.el.style.transform = '';
+      }
+    });
+  }
 }
 
-function renderRail(order){
-  order=order||placed;
-  railTrack.querySelectorAll('.conn,.ghost-slot').forEach(n=>n.remove());
-  const {levels,items}=computeLayout(order);
-  const stemY=railTrack.clientHeight/2;
-  items.forEach(({id,x,i})=>{
-    const off=rowOffset(i,levels), above=off<0, mag=Math.abs(off);
-    if(id===null){
-      const g=document.createElement('div');
-      g.className='ghost-slot';
-      g.style.width=CARD_W+'px';g.style.height='56px';
-      const y=above?stemY-mag-56:stemY+mag;
-      g.style.transform=`translate(${x-CARD_W/2}px,${y}px)`;
-      railTrack.appendChild(g);
-      return;
+function hideCardTether(st) {
+  st.glowPath.style.display = 'none';
+  st.linePath.style.display = 'none';
+  st.stemNode.style.display = 'none';
+  st.hookDot.style.display = 'none';
+}
+
+function showCardTether(st) {
+  st.glowPath.style.display = '';
+  st.linePath.style.display = '';
+  st.stemNode.style.display = '';
+  st.hookDot.style.display = '';
+}
+
+function syncRailVisualClasses() {
+  placed.forEach(id => {
+    const st = cardState.get(id);
+    if (st.el.parentElement !== railTrack) {
+      railTrack.appendChild(st.el);
     }
-    const el=cardEls.get(id);
-    el.className='card-slot placed';
-    railTrack.appendChild(el);
-    faceOf(el).className='card-face bob-rail'+(graded?gradeClass(id):'');
-    const h=el.offsetHeight||64;
-    const y=above?stemY-mag-h:stemY+mag;
-    el.style.transform=`translate(${x-CARD_W/2}px,${y}px)`;
-    if(mag>0){
-      const conn=document.createElement('div');
-      conn.className='conn'+(graded?gradeClass(id):'');
-      conn.style.height=mag+'px';
-      conn.style.left=(x-1)+'px';
-      conn.style.top=(above?stemY-mag:stemY)+'px';
-      railTrack.appendChild(conn);
-    }
+    st.el.className = 'card-slot placed';
+    const gc = gradeClass(id);
+    st.face.className = 'card-face' + gc;
+    st.linePath.setAttribute('class', 'tether-line' + gc);
+    st.glowPath.setAttribute('class', 'tether-glow' + gc);
+    st.stemNode.setAttribute('class', 'stem-node' + gc);
+    st.hookDot.setAttribute('class', 'card-hook-dot' + gc);
+    st.cardH = st.el.offsetHeight || 68;
   });
 }
-function renderAll(){renderDock();renderRail();}
 
-function computeInsertIndex(pointerX){
-  const {items}=computeLayout(placed);
-  const railRect=railTrack.getBoundingClientRect();
-  const relX=pointerX-railRect.left;
-  let idx=0;
-  for(const it of items){if(relX>it.x) idx++;}
+function loadEvents(lines) {
+  events = lines.map((t, i) => ({ id: i + 1, text: t }));
+  buildCards();
+  poolOrder = shuffle(events.map(e => e.id));
+  placed = [];
+  graded = false;
+  gradedGreen.clear();
+  gradedAmber.clear();
+  syncDockDOM(false);
+}
+
+function resetBoard() {
+  // Smoothly release all placed cards back to the shuffled dock
+  poolOrder = shuffle(events.map(e => e.id));
+  placed = [];
+  graded = false;
+  gradedGreen.clear();
+  gradedAmber.clear();
+  syncDockDOM(true);
+}
+
+// Compute continuous magnetic coupling [0..1] from vertical distance to timeline stem
+function computeMagneticCoupling(localY, H) {
+  const stemY = H * 0.5;
+  const dy = Math.abs(localY - stemY);
+  const fullZone = H * 0.25;
+  const fadeZone = H * 0.56;
+  if (dy <= fullZone) return 1;
+  if (dy >= fadeZone) return 0;
+  const u = 1 - (dy - fullZone) / (fadeZone - fullZone);
+  return u * u * (3 - 2 * u);
+}
+
+// Bounded soft-core inverse-distance magnetic repulsion law.
+// Smoothly saturates at close range (max ~3.2 at u=0 vs ~1.04 at u=1) so forces never spike near edges.
+function psi(u) {
+  const s = u < 0 ? 0 : u;
+  return 1 / (s + 0.45) + 0.55 / (s * s + 0.55);
+}
+
+// Smooth hyperbolic-tangent saturation limiter
+function softLimit(v, limit) {
+  return limit * Math.tanh(v / limit);
+}
+
+// Pointer Interaction
+function onPointerDown(e) {
+  if (e.button !== undefined && e.button !== 0) return;
+  const el = e.currentTarget;
+  const id = +el.dataset.id;
+  const st = cardState.get(id);
+  if (!st) return;
+
+  el.setPointerCapture(e.pointerId);
+  const rect = el.getBoundingClientRect();
+  const railRect = railTrack.getBoundingClientRect();
+
+  const fromRail = placed.includes(id);
+  const startIndex = placed.indexOf(id);
+
+  // If picking up a card that was already on the rail, remove from `placed` list
+  // while keeping it at the exact same slotIndex & position in the magnetic field
+  // so neighbors experience zero discontinuity on pointerdown.
+  if (fromRail) {
+    placed.splice(startIndex, 1);
+  }
+
+  const centerScreenX = rect.left + rect.width * 0.5;
+  const centerScreenY = rect.top + rect.height * 0.5;
+  const localX = centerScreenX - railRect.left;
+  const localY = centerScreenY - railRect.top;
+  const H = railRect.height || 420;
+  const mu = fromRail ? 1 : computeMagneticCoupling(localY, H);
+
+  let slotIndex = startIndex;
+  if (!fromRail) {
+    slotIndex = findNaturalSlot(localX);
+  }
+
+  st.x = localX;
+  st.y = localY;
+  st.cardH = rect.height || 68;
+  if (!fromRail) {
+    st.anchorX = clamp(localX, WALL_PAD + 30, (railRect.width || 900) - WALL_PAD - 30);
+    st.anchorVx = 0;
+  }
+
+  drag = {
+    id,
+    st,
+    pointerId: e.pointerId,
+    offX: e.clientX - centerScreenX,
+    offY: e.clientY - centerScreenY,
+    screenX: centerScreenX,
+    screenY: centerScreenY,
+    prevScreenX: centerScreenX,
+    prevScreenY: centerScreenY,
+    vx: 0,
+    vy: 0,
+    localX,
+    localY,
+    mu,
+    wasInField: mu > 0.02,
+    slotIndex: clamp(slotIndex, 0, placed.length),
+    fromRail
+  };
+
+  if (graded) {
+    graded = false;
+    gradedGreen.clear();
+    gradedAmber.clear();
+    syncRailVisualClasses();
+  }
+
+  el.className = 'card-slot dragging' + (mu > 0.2 ? ' hooked-drag' : '');
+  st.face.className = 'card-face';
+  el.style.transition = 'none';
+  document.body.appendChild(el);
+  updateDraggedCardTransform();
+  syncDockDOM(true);
+
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  window.addEventListener('pointercancel', onPointerUp);
+}
+
+function findNaturalSlot(localX) {
+  let idx = 0;
+  for (let i = 0; i < placed.length; i++) {
+    const st = cardState.get(placed[i]);
+    if (localX > st.x) idx = i + 1;
+  }
   return idx;
 }
 
-function updateLead(idx){
-  const preview=placed.slice(0,idx).concat([null]).concat(placed.slice(idx));
-  const {items}=computeLayout(preview);
-  const ghost=items.find(it=>it.id===null);
-  if(!ghost||!drag) return;
-  const railRect=railTrack.getBoundingClientRect();
-  const tx=railRect.left+ghost.x, ty=railRect.top+railTrack.clientHeight/2;
-  const r=drag.el.getBoundingClientRect();
-  const x1=r.left+r.width/2, y1=r.top+r.height/2;
-  leadPath.setAttribute('d',`M${x1},${y1} Q${x1},${ty} ${tx},${ty}`);
-  leadPath.style.opacity=1;
-}
-function hideLead(){leadPath.style.opacity=0;}
+function onPointerMove(e) {
+  if (!drag) return;
+  const railRect = railTrack.getBoundingClientRect();
+  const W = railRect.width || 960;
+  const H = railRect.height || 420;
 
-function onPointerDown(e){
-  const el=e.currentTarget;
-  const id=+el.dataset.id;
-  el.setPointerCapture(e.pointerId);
-  const rect=el.getBoundingClientRect();
-  const from=placed.includes(id)?'rail':'pool';
-  const startIndex=placed.indexOf(id);
-  if(from==='rail') placed=placed.filter(x=>x!==id);
-  drag={id,el,offX:e.clientX-rect.left,offY:e.clientY-rect.top,from,startIndex,previewIndex:undefined};
-  el.className='card-slot dragging';
-  faceOf(el).className='card-face';
-  el.style.transform='';
-  el.style.left=rect.left+'px';
-  el.style.top=rect.top+'px';
-  document.body.appendChild(el);
-  renderAll();
-  window.addEventListener('pointermove',onPointerMove);
-  window.addEventListener('pointerup',onPointerUp,{once:true});
-}
-function onPointerMove(e){
-  if(!drag) return;
-  drag.el.style.left=(e.clientX-drag.offX)+'px';
-  drag.el.style.top=(e.clientY-drag.offY)+'px';
-  const railRect=railContainer.getBoundingClientRect();
-  const overRail=e.clientY>=railRect.top && e.clientY<=railRect.bottom;
-  if(overRail){
-    const idx=computeInsertIndex(e.clientX);
-    drag.previewIndex=idx;
-    renderRail(placed.slice(0,idx).concat([null]).concat(placed.slice(idx)));
-    updateLead(idx);
-  }else{
-    drag.previewIndex=null;
-    renderRail(placed);
-    hideLead();
+  const cx = e.clientX - drag.offX;
+  const cy = e.clientY - drag.offY;
+
+  drag.vx = (cx - drag.screenX) * 45;
+  drag.vy = (cy - drag.screenY) * 45;
+  drag.prevScreenX = drag.screenX;
+  drag.prevScreenY = drag.screenY;
+  drag.screenX = cx;
+  drag.screenY = cy;
+
+  drag.localX = cx - railRect.left;
+  drag.localY = cy - railRect.top;
+
+  const newMu = computeMagneticCoupling(drag.localY, H);
+  if (!drag.wasInField && newMu > 0.02) {
+    drag.slotIndex = findNaturalSlot(drag.localX);
+    drag.st.anchorX = clamp(drag.localX, WALL_PAD + 24, W - WALL_PAD - 24);
+    drag.st.anchorVx = 0;
   }
-}
-function onPointerUp(){
-  if(!drag) return;
-  window.removeEventListener('pointermove',onPointerMove);
-  const {id,el,from,startIndex,previewIndex}=drag;
-  el.style.left='';el.style.top='';
-  if(previewIndex!=null){
-    placed.splice(previewIndex,0,id);
-  }else if(from==='rail' && typeof previewIndex==='undefined'){
-    placed.splice(Math.max(0,Math.min(startIndex,placed.length)),0,id);
+  drag.mu = newMu;
+  drag.wasInField = newMu > 0.02;
+
+  // Dynamic magnetic slot pass-through with physical push hysteresis:
+  // While pushing against a card, it gets pushed ahead of your cursor;
+  // once you push past its center (+ small cushion), it slips around to the other side.
+  if (drag.mu > 0.02 && placed.length > 0) {
+    const hyst = 10 * drag.mu;
+    while (drag.slotIndex > 0) {
+      const leftSt = cardState.get(placed[drag.slotIndex - 1]);
+      if (drag.localX < leftSt.x - hyst) {
+        drag.slotIndex--;
+      } else {
+        break;
+      }
+    }
+    while (drag.slotIndex < placed.length) {
+      const rightSt = cardState.get(placed[drag.slotIndex]);
+      if (drag.localX > rightSt.x + hyst) {
+        drag.slotIndex++;
+      } else {
+        break;
+      }
+    }
   }
-  graded=false;
-  hideLead();
-  drag=null;
-  renderAll();
+
+  drag.st.el.className = 'card-slot dragging' + (drag.mu > 0.22 ? ' hooked-drag' : '');
+  updateDraggedCardTransform();
 }
 
-function onDoubleClick(e){
-  const el=e.currentTarget;
-  const id=+el.dataset.id;
-  if(placed.includes(id)) return;
-  const ev=events.find(x=>x.id===id);
-  if(!confirm(`Place "${ev.text}" on the timeline at its correct position?`)) return;
-  const idx=placed.filter(pid=>pid<id).length;
-  placed.splice(idx,0,id);
-  graded=false;
-  renderAll();
+function updateDraggedCardTransform() {
+  if (!drag) return;
+  const st = drag.st;
+  const railRect = railTrack.getBoundingClientRect();
+  const H = railRect.height || 420;
+  const stemY = railRect.top + H * 0.5;
+
+  // Subtle magnetic tug toward the timeline rail when hooked
+  const side = (drag.slotIndex % 2 === 0) ? -1 : 1;
+  const targetScreenY = stemY + side * (44 + st.cardH * 0.5);
+  const magneticPullY = (targetScreenY - drag.screenY) * (drag.mu * 0.16);
+
+  const drawX = drag.screenX - CARD_W * 0.5;
+  const drawY = drag.screenY + magneticPullY - st.cardH * 0.5;
+  const tilt = clamp(drag.vx * 0.008, -9, 9);
+  const sc = 1.03 + drag.mu * 0.02;
+
+  st.el.style.transform = `translate3d(${drawX.toFixed(1)}px, ${drawY.toFixed(1)}px, 0) rotate(${tilt.toFixed(2)}deg) scale(${sc.toFixed(3)})`;
+  st.x = drag.localX;
+  st.y = (drag.screenY + magneticPullY) - railRect.top;
 }
 
-function computeLIS(arr){
-  const n=arr.length; if(!n) return [];
-  const tailIdx=[], prev=new Array(n).fill(-1);
-  for(let i=0;i<n;i++){
-    const v=arr[i];
-    let lo=0,hi=tailIdx.length;
-    while(lo<hi){const mid=(lo+hi)>>1; if(arr[tailIdx[mid]]<v) lo=mid+1; else hi=mid;}
-    if(lo>0) prev[i]=tailIdx[lo-1];
-    if(lo===tailIdx.length) tailIdx.push(i); else tailIdx[lo]=i;
+function onPointerUp() {
+  if (!drag) return;
+  window.removeEventListener('pointermove', onPointerMove);
+  window.removeEventListener('pointerup', onPointerUp);
+  window.removeEventListener('pointercancel', onPointerUp);
+
+  const { id, st, mu, slotIndex, vx, vy } = drag;
+  drag = null;
+
+  if (mu > 0.2) {
+    // Seamlessly hand off to the magnetic rail physics engine with viscously capped velocity
+    const insertIdx = clamp(slotIndex, 0, placed.length);
+    placed.splice(insertIdx, 0, id);
+    st.vx = softLimit(vx * 0.25, 280);
+    st.vy = softLimit(vy * 0.25, 280);
+    st.w = Math.max(0.35, mu);
+    st.rot = clamp(st.vx * 0.01, -7, 7);
+    syncRailVisualClasses();
+    syncDockDOM(true);
+  } else {
+    // Return smoothly to the bottom dock
+    returnCardToDockSmoothly(st);
   }
-  const res=[]; let k=tailIdx[tailIdx.length-1];
-  while(k!==-1){res.push(k);k=prev[k];}
+}
+
+function returnCardToDockSmoothly(st) {
+  const startRect = st.el.getBoundingClientRect();
+  hideCardTether(st);
+  syncDockDOM(true);
+  const endRect = st.el.getBoundingClientRect();
+  const dx = startRect.left - endRect.left;
+  const dy = startRect.top - endRect.top;
+  if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+    st.el.style.transition = 'none';
+    st.el.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`;
+    st.el.offsetHeight;
+    st.el.style.transition = 'transform .42s cubic-bezier(.22,1,.36,1)';
+    st.el.style.transform = '';
+  }
+}
+
+function onDoubleClick(e) {
+  const el = e.currentTarget;
+  const id = +el.dataset.id;
+  if (placed.includes(id)) return;
+  const ev = events.find(x => x.id === id);
+  if (!confirm(`Place "${ev.text}" on the timeline at its correct position?`)) return;
+
+  const st = cardState.get(id);
+  const cardRect = el.getBoundingClientRect();
+  const railRect = railTrack.getBoundingClientRect();
+
+  // Start from its current dock coordinates and launch into the magnetic rail
+  const idx = placed.filter(pid => pid < id).length;
+  const W = railRect.width || 960;
+  let targetHintX = W * 0.5;
+  if (placed.length > 0) {
+    if (idx === 0) {
+      targetHintX = cardState.get(placed[0]).x - 70;
+    } else if (idx === placed.length) {
+      targetHintX = cardState.get(placed[placed.length - 1]).x + 70;
+    } else {
+      targetHintX = 0.5 * (cardState.get(placed[idx - 1]).x + cardState.get(placed[idx]).x);
+    }
+  }
+
+  st.x = clamp(cardRect.left + cardRect.width * 0.5 - railRect.left, WALL_PAD + CARD_W * 0.5, W - WALL_PAD - CARD_W * 0.5);
+  st.y = cardRect.top + cardRect.height * 0.5 - railRect.top;
+  st.vx = softLimit((targetHintX - st.x) * 1.8, 300);
+  st.vy = -280;
+  st.anchorX = clamp(targetHintX, WALL_PAD + 30, W - WALL_PAD - 30);
+  st.anchorVx = 0;
+  st.w = 0.15; // Ramps up smoothly to 1 in stepPhysics so it pushes neighbors outward with a field wave
+
+  placed.splice(idx, 0, id);
+  graded = false;
+  gradedGreen.clear();
+  gradedAmber.clear();
+  syncRailVisualClasses();
+  syncDockDOM(true);
+}
+
+// Core Continuous Physics Simulation Loop
+let lastTime = performance.now();
+
+function stepPhysics(now) {
+  const dt = Math.min(0.025, Math.max(0.001, (now - lastTime) * 0.001));
+  lastTime = now;
+
+  const W = railTrack.clientWidth || 960;
+  const H = railTrack.clientHeight || 420;
+  const stemY = H * 0.5;
+
+  const halfCard = CARD_W * 0.5;
+  const xMin = WALL_PAD + halfCard + 10;
+  const xMax = Math.max(xMin + 120, W - WALL_PAD - halfCard - 10);
+  const L = xMax - xMin;
+
+  const n = placed.length;
+  const dragMu = (drag && drag.mu > 0.005) ? drag.mu : 0;
+  const dragSlot = drag ? clamp(drag.slotIndex, 0, n) : -1;
+
+  // Ramp up magnetic weight `w` for newly placed cards
+  let sumW = dragMu;
+  for (let i = 0; i < n; i++) {
+    const st = cardState.get(placed[i]);
+    st.w = Math.min(1, st.w + dt * 3.8);
+    sumW += st.w;
+  }
+
+  // Wall spacing ratio relative to inter-card spacing
+  const alphaWall = 0.68 + 0.92 / (1 + 0.36 * Math.max(0, sumW - 1));
+  // Characteristic magnetic spacing scale S
+  const S = L / Math.max(1, sumW - 1 + 2 * alphaWall);
+
+  // Prevent a dragged card near the extreme screen edges from crushing outer cards into zero space
+  const minEdgeSep = Math.min(28, S * 0.48);
+  const safeDragMin = xMin + (dragSlot > 0 ? dragSlot * minEdgeSep : 4);
+  const safeDragMax = xMax - (dragSlot >= 0 && dragSlot < n ? (n - dragSlot) * minEdgeSep : 4);
+  const dragX = drag ? clamp(drag.localX, safeDragMin, Math.max(safeDragMin, safeDragMax)) : W * 0.5;
+  const dragY = drag ? drag.st.y : stemY;
+
+  // Track cumulative magnetic charge to the left of each card
+  const prefixW = new Array(n + 1);
+  prefixW[0] = 0;
+  for (let i = 0; i < n; i++) {
+    prefixW[i + 1] = prefixW[i] + cardState.get(placed[i]).w;
+  }
+
+  let leftEndForceMag = 0.22;
+  let rightEndForceMag = 0.22;
+
+  // Compute forces & accelerations for all placed cards
+  const nextVx = new Array(n);
+
+  for (let i = 0; i < n; i++) {
+    const st = cardState.get(placed[i]);
+    const xi = st.x;
+
+    // 1. Left & Right Nearest-Neighbor Repulsion (plus Left/Right End-Cap Boundary Push)
+    let fLeft0;
+    if (i === 0) {
+      const dWallL = (xi - xMin) / (alphaWall * S);
+      fLeft0 = psi(dWallL);
+      leftEndForceMag = Math.max(leftEndForceMag, clamp(fLeft0 / 1.8, 0.2, 1.25));
+    } else {
+      const prevSt = cardState.get(placed[i - 1]);
+      const dLeft = (xi - prevSt.x) / S;
+      fLeft0 = prevSt.w * psi(dLeft);
+    }
+
+    let fLeft = fLeft0;
+    if (dragMu > 0 && dragSlot === i) {
+      const dFromDrag = Math.max(0.05, (xi - dragX) / S);
+      fLeft = (1 - dragMu) * fLeft0 + dragMu * psi(dFromDrag);
+    }
+
+    let fRight0;
+    if (i === n - 1) {
+      const dWallR = (xMax - xi) / (alphaWall * S);
+      fRight0 = -psi(dWallR);
+      rightEndForceMag = Math.max(rightEndForceMag, clamp(-fRight0 / 1.8, 0.2, 1.25));
+    } else {
+      const nextSt = cardState.get(placed[i + 1]);
+      const dRight = (nextSt.x - xi) / S;
+      fRight0 = -nextSt.w * psi(dRight);
+    }
+
+    let fRight = fRight0;
+    if (dragMu > 0 && dragSlot === i + 1) {
+      const dToDrag = Math.max(0.05, (dragX - xi) / S);
+      fRight = (1 - dragMu) * fRight0 - dragMu * psi(dToDrag);
+    }
+
+    // 2. Macroscopic Magnetic Flux Compression between Left End-Cap and Right End-Cap
+    const qLeft = alphaWall + prefixW[i] + (dragMu > 0 && i >= dragSlot ? dragMu : 0);
+    const qRight = alphaWall + (prefixW[n] - prefixW[i + 1]) + (dragMu > 0 && i < dragSlot ? dragMu : 0);
+
+    const uMacroL = (xi - xMin) / (qLeft * S);
+    const uMacroR = (xMax - xi) / (qRight * S);
+    const fMacro = psi(uMacroL) - psi(uMacroR);
+
+    // 3. Direct 2D Field Force from a Dragged Card
+    let fField = 0;
+    if (dragMu > 0) {
+      const dir = (i >= dragSlot) ? 1 : -1;
+      const dx = xi - dragX;
+      const dy = (st.y - dragY) * 0.45;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const uField = dist / (1.08 * S);
+      if (uField < 1.15) {
+        const push = Math.max(0, psi(uField) - psi(1.15));
+        fField = dir * dragMu * push * 0.75;
+      }
+    }
+
+    // Soft-limited magnetic acceleration so forces can never spike
+    const kMag = 68;
+    const netForce = 0.58 * (fLeft + fRight) + 0.42 * fMacro + fField;
+    const magAx = softLimit(kMag * S * netForce, 1350);
+
+    // Inter-neighbor viscous dashpot (absorbs relative compression waves between neighbors & walls)
+    const vLeftNeighbor = (i > 0) ? cardState.get(placed[i - 1]).vx : 0;
+    const vRightNeighbor = (i < n - 1) ? cardState.get(placed[i + 1]).vx : 0;
+    const dashpotAx = ((vLeftNeighbor - st.vx) + (vRightNeighbor - st.vx)) * 6.5;
+
+    let vx = st.vx + (magAx + dashpotAx) * dt;
+
+    // Heavy nonlinear viscous fluid drag: base Stokes damping + quadratic speed resistance
+    const speed = Math.abs(vx);
+    const viscousRate = 14.5 + 0.055 * speed;
+    vx *= Math.exp(-viscousRate * dt);
+
+    // Smooth terminal velocity cap
+    vx = softLimit(vx, 380);
+
+    // Viscous settling deadband so residual micro-motion stops cleanly
+    if (Math.abs(vx) < 0.8 && Math.abs(magAx) < 14 && dragMu === 0) {
+      vx = 0;
+    }
+
+    nextVx[i] = vx;
+  }
+
+  // Advance horizontal positions
+  for (let i = 0; i < n; i++) {
+    const st = cardState.get(placed[i]);
+    st.vx = nextVx[i];
+    st.x += st.vx * dt;
+  }
+
+  // Viscoelastic non-crossing & boundary containment pass (absorbs excess energy without bouncing)
+  const minSep = Math.min(26, S * 0.46);
+  for (let pass = 0; pass < 2; pass++) {
+    for (let i = 0; i < n; i++) {
+      const st = cardState.get(placed[i]);
+      if (st.x < xMin) {
+        st.x = xMin;
+        if (st.vx < 0) st.vx = 0;
+      } else if (st.x > xMax) {
+        st.x = xMax;
+        if (st.vx > 0) st.vx = 0;
+      }
+    }
+    for (let i = 0; i < n - 1; i++) {
+      const stA = cardState.get(placed[i]);
+      const stB = cardState.get(placed[i + 1]);
+      const gap = stB.x - stA.x;
+      if (gap < minSep) {
+        const corr = (minSep - gap) * 0.5;
+        stA.x -= corr;
+        stB.x += corr;
+        if (stA.vx > stB.vx) {
+          const vAvg = 0.5 * (stA.vx + stB.vx);
+          stA.vx = vAvg;
+          stB.vx = vAvg;
+        }
+      }
+    }
+  }
+
+  // Update vertical spring physics, stem anchor hooks, rotation, and DOM/SVG transforms
+  for (let i = 0; i < n; i++) {
+    const st = cardState.get(placed[i]);
+
+    // Vertical Positioning: Alternating above/below stem + dynamic 2D anti-collision repulsion
+    const effIdx = (dragMu > 0.32 && i >= dragSlot) ? i + 1 : i;
+    const side = (effIdx % 2 === 0) ? -1 : 1;
+
+    // Check horizontal proximity to nearest same-side card (i-2 or i+2) to prevent text overlap when crowded
+    let crowdBoost = 0;
+    const minSameSidePitch = CARD_W + 22;
+    if (i >= 2) {
+      const prevSame = cardState.get(placed[i - 2]);
+      const dxSame = Math.abs(st.x - prevSame.x);
+      if (dxSame < minSameSidePitch) {
+        crowdBoost = Math.max(crowdBoost, 1 - dxSame / minSameSidePitch);
+      }
+    }
+    if (i + 2 < n) {
+      const nextSame = cardState.get(placed[i + 2]);
+      const dxSame = Math.abs(nextSame.x - st.x);
+      if (dxSame < minSameSidePitch) {
+        crowdBoost = Math.max(crowdBoost, 1 - dxSame / minSameSidePitch);
+      }
+    }
+    const tierExtra = (effIdx % 4 >= 2) ? crowdBoost * 74 : crowdBoost * -10;
+    const baseOffset = 44 + st.cardH * 0.5 + tierExtra;
+    const bobY = Math.sin(now * 0.0022 * st.bobSpeed + st.bobPhase) * 4.5;
+    const targetY = stemY + side * baseOffset + bobY;
+
+    const ay = softLimit((targetY - st.y) * 90, 1400);
+    st.vy += ay * dt;
+    const vSpeedY = Math.abs(st.vy);
+    st.vy *= Math.exp(-(15.0 + 0.04 * vSpeedY) * dt);
+    st.vy = softLimit(st.vy, 360);
+    st.y += st.vy * dt;
+
+    // Stem Hook Anchor Physics (slides smoothly along the stem with slight elastic tether trail)
+    const aAnchor = (st.x - st.anchorX) * 220;
+    st.anchorVx = (st.anchorVx + aAnchor * dt) * Math.exp(-22 * dt);
+    st.anchorX += st.anchorVx * dt;
+    st.anchorX = clamp(st.anchorX, WALL_PAD + 14, W - WALL_PAD - 14);
+
+    // Subtle velocity-driven tilt
+    const targetRot = clamp(st.vx * 0.014, -7.5, 7.5);
+    st.rot += (targetRot - st.rot) * Math.min(1, dt * 14);
+
+    // Apply DOM transform & update SVG magnetic tether
+    const drawX = st.x - halfCard;
+    const drawY = st.y - st.cardH * 0.5;
+    st.el.style.transform = `translate3d(${drawX.toFixed(1)}px, ${drawY.toFixed(1)}px, 0) rotate(${st.rot.toFixed(2)}deg)`;
+
+    renderCardTether(st, stemY, 1, false);
+  }
+
+  // Update dragged card's magnetic tether & stem aura when near the timeline
+  if (drag && drag.mu > 0.01) {
+    const dst = drag.st;
+    const aAnchor = (dragX - dst.anchorX) * 260 - dst.anchorVx * 24;
+    dst.anchorVx += aAnchor * dt;
+    dst.anchorX += dst.anchorVx * dt;
+    dst.anchorX = clamp(dst.anchorX, WALL_PAD + 14, W - WALL_PAD - 14);
+
+    renderCardTether(dst, stemY, drag.mu, true);
+
+    const auraPct = clamp((dst.anchorX / W) * 100, 3, 97);
+    stemAura.style.setProperty('--aura-x', auraPct.toFixed(1) + '%');
+    stemAura.style.setProperty('--aura-op', (drag.mu * 0.38).toFixed(3));
+
+    if (drag.slotIndex === 0) {
+      leftEndForceMag = Math.max(leftEndForceMag, 0.35 + drag.mu * 0.55);
+    }
+    if (drag.slotIndex === n) {
+      rightEndForceMag = Math.max(rightEndForceMag, 0.35 + drag.mu * 0.55);
+    }
+  } else if (drag) {
+    hideCardTether(drag.st);
+    stemAura.style.setProperty('--aura-op', '0');
+  } else {
+    stemAura.style.setProperty('--aura-op', '0');
+  }
+
+  // Render animated magnetic end-cap emitters on left and right ends of the timeline
+  leftCapPressure += (leftEndForceMag - leftCapPressure) * Math.min(1, dt * 10);
+  rightCapPressure += (rightEndForceMag - rightCapPressure) * Math.min(1, dt * 10);
+  renderEndCaps(W, stemY, now);
+
+  requestAnimationFrame(stepPhysics);
+}
+
+function renderCardTether(st, stemY, alpha, isDrag) {
+  showCardTether(st);
+  const above = st.y < stemY;
+  const attachY = above
+    ? Math.min(stemY - 2, st.y + st.cardH * 0.5 - 2)
+    : Math.max(stemY + 2, st.y - st.cardH * 0.5 + 2);
+
+  // Tilt offset for attachment point on card edge
+  const rad = st.rot * (Math.PI / 180);
+  const attachX = st.x + (above ? -Math.sin(rad) : Math.sin(rad)) * (st.cardH * 0.45);
+  const anchorX = st.anchorX;
+
+  const midY = stemY + (attachY - stemY) * 0.52;
+  const d = `M ${anchorX.toFixed(1)} ${stemY.toFixed(1)} C ${anchorX.toFixed(1)} ${midY.toFixed(1)}, ${attachX.toFixed(1)} ${midY.toFixed(1)}, ${attachX.toFixed(1)} ${attachY.toFixed(1)}`;
+
+  st.linePath.setAttribute('d', d);
+  st.glowPath.setAttribute('d', d);
+  st.stemNode.setAttribute('cx', anchorX.toFixed(1));
+  st.stemNode.setAttribute('cy', stemY.toFixed(1));
+  st.hookDot.setAttribute('cx', attachX.toFixed(1));
+  st.hookDot.setAttribute('cy', attachY.toFixed(1));
+
+  if (isDrag) {
+    st.linePath.setAttribute('class', 'tether-line active-drag');
+    st.glowPath.setAttribute('class', 'tether-glow');
+    st.glowPath.style.opacity = (alpha * 0.45).toFixed(2);
+    st.linePath.style.opacity = alpha.toFixed(2);
+    st.stemNode.setAttribute('class', 'stem-node active-drag');
+    st.stemNode.setAttribute('r', (3.5 + alpha * 2.5).toFixed(1));
+    st.stemNode.style.opacity = alpha.toFixed(2);
+    st.hookDot.setAttribute('class', 'card-hook-dot active-drag');
+    st.hookDot.style.opacity = alpha.toFixed(2);
+  } else {
+    st.linePath.style.opacity = '1';
+    st.glowPath.style.opacity = graded ? '0.32' : '0';
+    st.stemNode.setAttribute('r', '4.8');
+    st.stemNode.style.opacity = '1';
+    st.hookDot.style.opacity = '1';
+  }
+}
+
+function renderEndCaps(W, stemY, now) {
+  const pulse = Math.sin(now * 0.003) * 1.5;
+  for (let i = 0; i < 3; i++) {
+    // Left end-cap magnetic arcs pushing rightward
+    const xL = WALL_PAD + i * (7 + leftCapPressure * 2.5);
+    const hL = (14 + i * 8) * (0.85 + leftCapPressure * 0.25) + pulse * (i * 0.4);
+    const curveL = 6 + i * 3 + leftCapPressure * 3;
+    const dL = `M ${(xL - curveL * 0.4).toFixed(1)} ${(stemY - hL).toFixed(1)} Q ${(xL + curveL).toFixed(1)} ${stemY.toFixed(1)} ${(xL - curveL * 0.4).toFixed(1)} ${(stemY + hL).toFixed(1)}`;
+    const pL = endCapPaths.left[i];
+    pL.setAttribute('d', dL);
+    pL.setAttribute('stroke-width', (2.2 - i * 0.45).toFixed(2));
+    pL.style.opacity = clamp((0.48 - i * 0.13) * (0.7 + leftCapPressure * 0.6), 0.08, 0.85).toFixed(2);
+
+    // Right end-cap magnetic arcs pushing leftward
+    const xR = W - WALL_PAD - i * (7 + rightCapPressure * 2.5);
+    const hR = (14 + i * 8) * (0.85 + rightCapPressure * 0.25) + pulse * (i * 0.4);
+    const curveR = 6 + i * 3 + rightCapPressure * 3;
+    const dR = `M ${(xR + curveR * 0.4).toFixed(1)} ${(stemY - hR).toFixed(1)} Q ${(xR - curveR).toFixed(1)} ${stemY.toFixed(1)} ${(xR + curveR * 0.4).toFixed(1)} ${(stemY + hR).toFixed(1)}`;
+    const pR = endCapPaths.right[i];
+    pR.setAttribute('d', dR);
+    pR.setAttribute('stroke-width', (2.2 - i * 0.45).toFixed(2));
+    pR.style.opacity = clamp((0.48 - i * 0.13) * (0.7 + rightCapPressure * 0.6), 0.08, 0.85).toFixed(2);
+  }
+}
+
+// Wordle-Style LIS Grading
+function computeLIS(arr) {
+  const n = arr.length;
+  if (!n) return [];
+  const tailIdx = [], prev = new Array(n).fill(-1);
+  for (let i = 0; i < n; i++) {
+    const v = arr[i];
+    let lo = 0, hi = tailIdx.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (arr[tailIdx[mid]] < v) lo = mid + 1;
+      else hi = mid;
+    }
+    if (lo > 0) prev[i] = tailIdx[lo - 1];
+    if (lo === tailIdx.length) tailIdx.push(i);
+    else tailIdx[lo] = i;
+  }
+  const res = [];
+  let k = tailIdx[tailIdx.length - 1];
+  while (k !== -1) {
+    res.push(k);
+    k = prev[k];
+  }
   return res.reverse();
 }
-function checkTimeline(){
-  if(placed.length===0){showToast('Place at least one event on the timeline first.');return;}
-  const lisSet=new Set(computeLIS(placed));
-  gradedGreen=new Set(); gradedAmber=new Set();
-  placed.forEach((id,i)=>{(lisSet.has(i)?gradedGreen:gradedAmber).add(id);});
-  graded=true;
-  renderAll();
-  const total=events.length, correct=gradedGreen.size, remaining=total-placed.length;
-  if(correct===total && remaining===0){
+
+function checkTimeline() {
+  if (placed.length === 0) {
+    showToast('Place at least one event on the timeline first.');
+    return;
+  }
+  const lisSet = new Set(computeLIS(placed));
+  gradedGreen = new Set();
+  gradedAmber = new Set();
+  placed.forEach((id, i) => {
+    (lisSet.has(i) ? gradedGreen : gradedAmber).add(id);
+    // Give each placed card a subtle celebratory vertical impulse on check
+    const st = cardState.get(id);
+    st.vy += (i % 2 === 0 ? -90 : 90);
+  });
+  graded = true;
+  syncRailVisualClasses();
+
+  const total = events.length;
+  const correct = gradedGreen.size;
+  const remaining = total - placed.length;
+  if (correct === total && remaining === 0) {
     showToast('🎉 Perfect! The full timeline is in order.');
     burstConfetti();
-  }else{
-    let msg=`${correct} of ${placed.length} placed cards are in the correct sequence.`;
-    if(remaining>0) msg+=` ${remaining} still waiting in the dock.`;
+  } else {
+    let msg = `${correct} of ${placed.length} placed cards are in the correct sequence.`;
+    if (remaining > 0) msg += ` ${remaining} still waiting in the dock.`;
     showToast(msg);
   }
 }
-function showToast(msg){
-  toastEl.textContent=msg;
+
+function showToast(msg) {
+  toastEl.textContent = msg;
   toastEl.classList.add('show');
   clearTimeout(showToast._t);
-  showToast._t=setTimeout(()=>toastEl.classList.remove('show'),4200);
+  showToast._t = setTimeout(() => toastEl.classList.remove('show'), 4200);
 }
-function burstConfetti(){
-  const colors=['#38bdf8','#22c55e','#eab308','#f472b6','#a78bfa'];
-  for(let i=0;i<36;i++){
-    const c=document.createElement('div');
-    c.className='confetti';
-    c.style.left=Math.random()*100+'vw';
-    c.style.background=colors[i%colors.length];
-    c.style.animationDuration=(2+Math.random()*1.4)+'s';
-    c.style.transform=`rotate(${Math.random()*360}deg)`;
+
+function burstConfetti() {
+  const colors = ['#38bdf8', '#22c55e', '#eab308', '#f472b6', '#a78bfa'];
+  for (let i = 0; i < 38; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[i % colors.length];
+    c.style.animationDuration = (2 + Math.random() * 1.4) + 's';
+    c.style.transform = `rotate(${Math.random() * 360}deg)`;
     document.body.appendChild(c);
-    setTimeout(()=>c.remove(),3600);
+    setTimeout(() => c.remove(), 3600);
   }
 }
 
-editBtn.onclick=()=>{textarea.value=events.map(e=>e.text).join('\n');modal.classList.remove('hidden');};
-closeBtn.onclick=()=>modal.classList.add('hidden');
-modal.addEventListener('click',e=>{if(e.target===modal) modal.classList.add('hidden');});
-loadBtn.onclick=()=>{
-  const lines=textarea.value.split('\n').map(s=>s.trim()).filter(Boolean);
-  if(lines.length<2){alert('Add at least 2 events, one per line.');return;}
+editBtn.onclick = () => {
+  textarea.value = events.map(e => e.text).join('\n');
+  modal.classList.remove('hidden');
+};
+closeBtn.onclick = () => modal.classList.add('hidden');
+modal.addEventListener('click', e => {
+  if (e.target === modal) modal.classList.add('hidden');
+});
+loadBtn.onclick = () => {
+  const lines = textarea.value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (lines.length < 2) {
+    alert('Add at least 2 events, one per line.');
+    return;
+  }
   loadEvents(lines);
   modal.classList.add('hidden');
 };
-resetBtn.onclick=resetBoard;
-checkBtn.onclick=checkTimeline;
-window.addEventListener('resize',()=>renderRail());
+resetBtn.onclick = resetBoard;
+checkBtn.onclick = checkTimeline;
 
 loadEvents(DEFAULT_EVENTS);
+requestAnimationFrame(stepPhysics);
 </script>
 </body>
 </html>
