@@ -512,16 +512,31 @@ var WISHES=[
 /* ---------- Slides ---------- */
 var SLIDES=[
 /* ACT 0: Who's Talking? */
-{t:"Hi, I'm Caleob. I'm Not a Developer.",h:function(){return '<div class="hero">'
-  +'<h1>Hi, I&rsquo;m Caleob. I&rsquo;m Not a Developer.</h1>'
-  +'<p class="hero-sub">Teacher at Pearson Virtual Schools &middot; Tool Explorer</p>'
-  +'<div class="card glow hero-card" style="max-width:760px;margin:1.5rem auto;text-align:left;">'
-  +'<p>I&rsquo;m a teacher at Pearson Virtual Schools, not a coder. <b>I don&rsquo;t write code&mdash;I describe what I want to a genie.</b></p>'
-  +'<p>I started doing this because I wanted tools I couldn&rsquo;t find anywhere else. <b>If I can do this, you can.</b></p>'
+{t:"I Can Code Now?",short:"I Can Code Now?",h:function(){return '<div class="hero">'
+  +'<h1>I Can Code Now?</h1>'
+  +'<p class="hero-sub">A non-coder&rsquo;s guide: demonstration, simulation, and productivity browser apps</p>'
+  +'<div class="hero-stage">'
+    +'<div class="card glow hero-bio rv-step">'
+      +'<div class="hero-bio-pills">'
+        +'<span class="pill role">&#128104;&#8205;&#127979; Caleob King</span>'
+        +'<span class="pill aud">Kansas Connections Academy (KCA)</span>'
+        +'<span class="pill guard">&#128197; Since 2018</span>'
+      +'</div>'
+      +'<p class="hero-bio-text">Hi, I&rsquo;m <b>Caleob King</b>. I teach math and science at <b>Kansas Connections Academy (KCA)</b>, and have since 2018.</p>'
+    +'</div>'
+    +'<div class="hero-dev-wrap rv-step">'
+      +'<div class="hero-dev-box">'
+        +'<span class="hero-dev-word">DEVELOPER?</span>'
+        +'<span class="hero-dev-strike rv-step" aria-hidden="true"></span>'
+      +'</div>'
+    +'</div>'
+    +'<div class="card glow hero-final-card rv-step">'
+      +'<p class="hero-final-quote">&ldquo;A.I. has helped me build web-browser apps for my classes and my school. <b>It can do the same for you.</b>&rdquo;</p>'
+    +'</div>'
   +'</div>'
   +'<div class="hero-foot static">'
-  +'<p class="hero-meta">Pearson Virtual Schools Staff Conference &middot; Caleob King</p>'
-  +'<p class="hero-cue">Press Space, the right arrow, or rub the lamp to begin.</p></div>'
+    +'<p class="hero-meta">Kansas Connections Academy &middot; Pearson Virtual Schools &middot; Caleob King</p>'
+    +'<p class="hero-cue">Press Space, the right arrow, or rub the lamp to begin.</p></div>'
   +'</div>'}},
 
 {t:"What This IS and What It's NOT",h:function(){return '<h2>What This IS and What It&rsquo;s NOT</h2>'
@@ -1039,7 +1054,7 @@ function timerInit(){
 
 /* ---------- Slide Names & SVGs ---------- */
 var SLIDE_NAMES=[
-  "Hi, I'm Caleob",
+  "I Can Code Now?",
   "What This IS & NOT",
   "The Classroom Genie",
   "Sound Familiar?",
@@ -1084,8 +1099,9 @@ function slideView(n,full){
 var st={u:[],i:0},full=false,busy=false,first=true;
 var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 function arm(sec,all){
-  st.u=[].filter.call(sec.querySelectorAll('.card,.banner,li,:scope>p,.card>p,.hero>p'),function(e){
+  st.u=[].filter.call(sec.querySelectorAll('.card,.banner,li,:scope>p,.card>p,.hero>p,.rv-step'),function(e){
     if(e.closest('.static'))return false;
+    if(e.classList.contains('rv-step'))return true;
     if(e.matches('.hero>p:first-of-type'))return false;
     if(e.matches('.card')&&e.querySelector('li'))return false;
     if(e.matches('.card>p')&&!e.parentNode.querySelector('li'))return false;
@@ -1359,6 +1375,39 @@ document.addEventListener('keydown',function(e){
 var sx=null;
 document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
 document.addEventListener('touchend',function(e){if(sx===null)return;var d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>60)step(d<0?1:-1);sx=null});
+/* ---------- Automation / Export Hook ---------- */
+window.__slideController = {
+  getSlideCount: function() { return SLIDES.length; },
+  getCurrentSlide: function() { return cur; },
+  getAnimState: function() {
+    return {
+      total: (st && st.u) ? st.u.length : 0,
+      current: (st && typeof st.i === 'number') ? st.i : 0
+    };
+  },
+  goToSlide: function(n) {
+    full = false;
+    cur = Math.min(SLIDES.length, Math.max(1, n));
+    slideView(cur, false);
+    window.location.hash = '#slide-' + cur;
+  },
+  stepAnim: function() {
+    if (st && st.u && st.i < st.u.length) {
+      st.u[st.i++].classList.add('in');
+      updateCounters();
+      return true;
+    }
+    return false;
+  },
+  setExportMode: function(enabled) {
+    if (enabled) {
+      document.body.classList.add('export-mode');
+    } else {
+      document.body.classList.remove('export-mode');
+    }
+  }
+};
 window.addEventListener('hashchange',route);
 route();
+
 })();
