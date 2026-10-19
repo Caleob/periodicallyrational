@@ -273,6 +273,190 @@ function openHandoutModal(){
   if(closeBtn) closeBtn.focus();
 }
 
+var EXP_PROMPT="Make a 'Question of the Day' reveal tool for my virtual class screen share. Show a dark screen with a 'Begin Reveal' button. When clicked, smoothly animate a bright circular spotlight beam that Sweeps across the screen. Lead up teaser statements appear as the spotlight searches with pleasant but rising tension sound effects, finally the spotlight settles on the message of the day and includea triumphant sound and triumphant sparkle effects.  Include  a little gear on the bottom to paste in new messages and lead ins each day. Use only internally generated sounds and image effects. Make it an exciting and stunning way to start the virtual class day. Put everything in one single .html file without outside internet links.";
+
+var expTm={left:180,base:180,run:0,id:null};
+function expStepMinute(direction){
+  var s=expTm.left;
+  var target;
+  if(direction>0){
+    target=Math.floor(s/60)*60+60;
+    if(target>1800)target=1800;
+  }else{
+    target=Math.ceil(s/60)*60-60;
+    if(target<60)target=60;
+  }
+  expTm.left=target;
+  expTm.base=target;
+  var led=$('#exp-led');
+  if(led)led.textContent=fmt(expTm.left);
+}
+
+function expTimerInit(){
+  var led=$('#exp-led'),goBtn=$('#exp-tgo');
+  function draw(){if(led)led.textContent=fmt(expTm.left)}
+  function stop(){clearInterval(expTm.id);expTm.run=0;if(goBtn)goBtn.textContent='Play'}
+  function setT(s){stop();expTm.left=s;expTm.base=s;draw()}
+  expTm.base=expTm.base||180;
+  draw();
+  if(goBtn)goBtn.textContent=expTm.run?'Pause':'Play';
+
+  var upBtn=$('#exp-t-up');
+  if(upBtn)upBtn.onclick=function(){expStepMinute(1)};
+
+  var downBtn=$('#exp-t-down');
+  if(downBtn)downBtn.onclick=function(){expStepMinute(-1)};
+
+  var rsBtn=$('#exp-trs');
+  if(rsBtn)rsBtn.onclick=function(){setT(expTm.base)};
+
+  if(goBtn){
+    goBtn.onclick=function(){
+      if(expTm.run){stop();return}
+      if(expTm.left<=0)expTm.left=expTm.base;
+      expTm.run=1;goBtn.textContent='Pause';
+      clearInterval(expTm.id);
+      expTm.id=setInterval(function(){
+        expTm.left--;draw();
+        if(expTm.left<=0){stop();chime();toast('Quick build time is up!')}
+      },1000);
+    };
+  }
+}
+
+function openSaveCodeHelpModal(){
+  var m=$('#modal');
+  m.innerHTML='<div class="mback" data-close="1"></div>' +
+    '<div class="mdlg help-dialog" role="dialog" aria-modal="true" aria-labelledby="schtitle">' +
+      '<div class="mheader">' +
+        '<div class="mtop-row">' +
+          '<span class="mbadge">&#128196; Step 2 Helper</span>' +
+          '<button class="mclose" data-close="1" aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<h3 id="schtitle">Got a Block of Code? Here&rsquo;s How to Save It</h3>' +
+        '<p class="mdesc">You never need to read or understand the code. Here are three easy ways to turn it into a clickable tool:</p>' +
+      '</div>' +
+      '<div class="mbody help-modal-body">' +
+        '<div class="help-card-row">' +
+          '<div class="help-num-badge">1</div>' +
+          '<div>' +
+            '<h4>The Magic File Maker (Built In)</h4>' +
+            '<p>We built a file converter right into this presentation. Jump to Slide 10, paste your Gemini code, give it a name, and click <b>Save .html &amp; Open</b>!</p>' +
+            '<button class="btn btn-sm" data-close="1" data-go="10" style="margin-top:0.4rem;">&#128640; Jump to Magic File Maker (Slide 10)</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="help-card-row">' +
+          '<div class="help-num-badge">2</div>' +
+          '<div>' +
+            '<h4>Bonus: Gemini&rsquo;s &ldquo;Preview / Canvas&rdquo; Button</h4>' +
+            '<p>Look at the bottom corner of Gemini&rsquo;s code block. If you see a button labeled <b>&ldquo;Preview&rdquo;</b> or <b>&ldquo;Open in Canvas&rdquo;</b>, click it to run and test your tool directly inside Gemini without downloading anything!</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="help-card-row">' +
+          '<div class="help-num-badge">3</div>' +
+          '<div>' +
+            '<h4>The Notepad Way (Offline Fallback)</h4>' +
+            '<p>Paste the code into <b>Notepad</b> (Windows) or <b>TextEdit</b> (Mac), then choose File &rarr; Save As and name it <code>question.html</code>.</p>' +
+            '<button class="btn alt btn-sm" data-open-notepad="1" style="margin-top:0.4rem;">&#128221; View Notepad Step-by-Step</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="mtab-actions" style="justify-content:flex-end;margin-top:.6rem">' +
+          '<button class="btn" data-close="1">Got It &#10003;</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  m.classList.add('open');
+  document.body.style.overflow='hidden';
+  var closeBtn=m.querySelector('.mclose');
+  if(closeBtn) closeBtn.focus();
+}
+
+function openOpenFileHelpModal(){
+  var m=$('#modal');
+  m.innerHTML='<div class="mback" data-close="1"></div>' +
+    '<div class="mdlg help-dialog" role="dialog" aria-modal="true" aria-labelledby="ohtitle">' +
+      '<div class="mheader">' +
+        '<div class="mtop-row">' +
+          '<span class="mbadge">&#127760; Step 3 Helper</span>' +
+          '<button class="mclose" data-close="1" aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<h3 id="ohtitle">Have an .html File? Here&rsquo;s How to Open It</h3>' +
+        '<p class="mdesc">An HTML file runs right inside your web browser. Try any of these 3 simple methods:</p>' +
+      '</div>' +
+      '<div class="mbody help-modal-body">' +
+        '<div class="help-card-row">' +
+          '<div class="help-num-badge">&#128070;</div>' +
+          '<div>' +
+            '<h4>1. Double-Click in Your Downloads Folder</h4>' +
+            '<p>Open your computer&rsquo;s <b>Downloads</b> folder. Find the file (e.g., <code>question_of_the_day_reveal_tool.html</code>) and double-click it. It opens immediately in Chrome, Edge, or Safari!</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="help-card-row">' +
+          '<div class="help-num-badge">&#128444;&#65039;</div>' +
+          '<div>' +
+            '<h4>2. Drag &amp; Drop into Your Browser</h4>' +
+            '<p>Open a fresh tab in your web browser. Drag the <code>.html</code> file from your folder straight into the browser window and drop it anywhere.</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="help-card-row">' +
+          '<div class="help-num-badge">&#128433;&#65039;</div>' +
+          '<div>' +
+            '<h4>3. Right-Click &rarr; Open With</h4>' +
+            '<p>Right-click the file &rarr; select <b>Open with</b> &rarr; choose <b>Google Chrome</b> or <b>Microsoft Edge</b>.</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="banner" style="margin-top:0.4rem;font-size:0.92rem;">&#128274; <b>Notice:</b> It opens without passwords, accounts, or internet lag because it runs locally on your machine!</div>' +
+        '<div class="mtab-actions" style="justify-content:flex-end;margin-top:.6rem">' +
+          '<button class="btn" data-close="1">Got It &#10003;</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  m.classList.add('open');
+  document.body.style.overflow='hidden';
+  var closeBtn=m.querySelector('.mclose');
+  if(closeBtn) closeBtn.focus();
+}
+
+function openTroubleshootHelpModal(){
+  var m=$('#modal');
+  m.innerHTML='<div class="mback" data-close="1"></div>' +
+    '<div class="mdlg help-dialog" role="dialog" aria-modal="true" aria-labelledby="tshtitle">' +
+      '<div class="mheader">' +
+        '<div class="mtop-row">' +
+          '<span class="mbadge">&#128736;&#65039; Quick Fix</span>' +
+          '<button class="mclose" data-close="1" aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<h3 id="tshtitle">It Opens, But Doesn&rsquo;t Work?</h3>' +
+        '<p class="mdesc">Don&rsquo;t panic! Every developer runs into this. Here is the golden rule of prompting:</p>' +
+      '</div>' +
+      '<div class="mbody help-modal-body">' +
+        '<div class="help-card-row">' +
+          '<div class="help-num-badge">&#128260;</div>' +
+          '<div>' +
+            '<h4>The Golden Rule: Don&rsquo;t Argue &mdash; Start a Fresh Chat!</h4>' +
+            '<p>If Gemini made a mistake on try #1, don&rsquo;t fight with it in the same chat. Click <b>&ldquo;New Chat&rdquo;</b> in Gemini, paste the wish again, and press Enter. AI gives a fresh roll of the dice each time!</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="help-card-row">' +
+          '<div class="help-num-badge">&#128483;&#65039;</div>' +
+          '<div>' +
+            '<h4>If It Was Close, Ask for One Fix:</h4>' +
+            '<p>If the spotlight appears but clicking doesn&rsquo;t reveal the text, reply in Gemini:<br>' +
+            '<i>&ldquo;When I click Begin Reveal, nothing happens. Please fix the click action and give me the whole updated single-file HTML.&rdquo;</i></p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="mtab-actions" style="justify-content:space-between;margin-top:.6rem;flex-wrap:wrap;gap:0.6rem;">' +
+          '<button class="btn btn-sm" data-copytxt="' + encodeURIComponent(EXP_PROMPT) + '">&#128203; Copy the Question Wish Again</button>' +
+          '<button class="btn alt btn-sm" data-close="1">Close &#10003;</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  m.classList.add('open');
+  document.body.style.overflow='hidden';
+  var closeBtn=m.querySelector('.mclose');
+  if(closeBtn) closeBtn.focus();
+}
+
 /* ---------- Slide building blocks ---------- */
 function card(icon,title,body,cls){
   return '<div class="card'+(cls?' '+cls:'')+'">'
@@ -390,21 +574,62 @@ var SLIDES=[
   +'</div>'
   +'<div class="banner">You don&rsquo;t need the perfect wish. <b>You just need a first wish.</b> Most good tools get there one small tweak at a time.</div>'}},
 
-{t:'Watch a Wish Grow',h:function(){return '<h2>Watch a Wish Grow</h2>'
-  +'<div class="banner banner-row static live-demo-bar" style="margin-top:0.4rem;margin-bottom:1.1rem;background:rgba(45,212,191,.12);border-color:var(--cyan);">'
-    +'<div><span class="pill aud">&#127905; Live Demo First</span> <b>See where 3 messages take you:</b> Test the finished wheel right now before we deconstruct it!</div>'
-    +'<a class="btn" href="Example_1/WheelPicker.html" target="_blank" rel="noopener">&#127905; Try a finished wheel</a>'
-  +'</div>'
-  +'<div class="lead">Here&rsquo;s what the conversation looks like to get there (shortened a bit):</div>'
-  +'<div class="chat chat-grid">'
-  +bubble('you','Make a spinning wheel that picks a random name from a class list I paste in.')
-  +bubble('genie','Here&rsquo;s your wheel! Paste your names in the box and click Spin.','<span class="chip">&#128196; spin-wheel.html</span>')
-  +bubble('you','Love it! But it picked Jordan twice in a row. Can you take each name off after it&rsquo;s picked?')
-  +bubble('genie','Done! Picked names now come off the wheel. I added an Undo button too, just in case.','<span class="chip">&#128196; spin-wheel.html (version 2)</span>')
-  +bubble('you','Can it make a ticking sound while it spins? And use brighter colors?')
-  +bubble('genie','Ticking sound and brighter colors added. Spin away!','<span class="chip">&#128196; spin-wheel.html (version 3)</span>')
-  +'</div>'
-  +'<div class="banner"><b>Three plain-English messages. Zero code.</b> That&rsquo;s the whole skill.</div>'}},
+{t:"Let's Make Tool #1 Together [Our First Win]",h:function(){
+  return '<h2>Let&rsquo;s Make Tool #1 Together <span style="font-size:0.65em;opacity:0.85;font-weight:normal;">[Our First Win]</span></h2>'
+    +'<div class="lead">Copy the prompt below, paste it into Gemini, and build a live classroom spotlight tool right now!</div>'
+    +'<div class="grid exp-top-grid static">'
+      +'<div class="card exp-prompt-card">'
+        +'<div class="card-head">'
+          +'<div><span class="pill task">&#10024; The Shared Wish</span> <span class="pill dim">Question of the Day Spotlight</span></div>'
+          +'<div class="exp-prompt-actions">'
+            +'<button class="btn btn-sm" data-copytxt="'+encodeURIComponent(EXP_PROMPT)+'">&#128203; Copy This Wish</button>'
+            +'<a class="btn alt btn-sm" href="question_of_the_day_reveal_tool.html" target="_blank" rel="noopener">&#128640; Try Caleob&rsquo;s Version</a>'
+          +'</div>'
+        +'</div>'
+        +'<div class="exp-prompt-box">'
+          +'<p>&ldquo;'+escapeHTML(EXP_PROMPT)+'&rdquo;</p>'
+        +'</div>'
+      +'</div>'
+      +'<div class="card exp-timer-card">'
+        +'<div class="exp-timer-badge">&#9201;&#65039; 3-Minute Quick Build</div>'
+        +'<div class="led exp-led" id="exp-led" role="timer" aria-live="off">03:00</div>'
+        +'<div class="timer-controls">'
+          +'<button class="btn alt timer-btn btn-sm" id="exp-t-down" aria-label="Decrease by 1 minute">&minus;1m</button>'
+          +'<button class="btn timer-btn timer-go btn-sm" id="exp-tgo">Play</button>'
+          +'<button class="btn alt timer-btn btn-sm" id="exp-trs">Reset</button>'
+          +'<button class="btn alt timer-btn btn-sm" id="exp-t-up" aria-label="Increase by 1 minute">+1m</button>'
+        +'</div>'
+        +'<div class="exp-timer-steps">'
+          +'<div><b>1.</b> Copy &amp; paste wish into Gemini</div>'
+          +'<div><b>2.</b> Save code as an <code>.html</code> file</div>'
+          +'<div><b>3.</b> Double-click to launch in browser!</div>'
+        +'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="exp-problems-header static"><span>&#129513; Common Questions &amp; Next Steps:</span></div>'
+    +'<div class="grid exp-problems-grid static">'
+      +'<button type="button" class="card exp-prob-card" data-open-savecode="1">'
+        +'<span class="prob-icon">&#128196;</span>'
+        +'<span class="prob-title">Got a block of code?</span>'
+        +'<span class="prob-sub">How to save it as an .html file &rarr;</span>'
+      +'</button>'
+      +'<button type="button" class="card exp-prob-card" data-open-openfile="1">'
+        +'<span class="prob-icon">&#127760;</span>'
+        +'<span class="prob-title">Have an .html file?</span>'
+        +'<span class="prob-sub">How to place &amp; open it in your browser &rarr;</span>'
+      +'</button>'
+      +'<button type="button" class="card exp-prob-card" data-open-troubleshoot="1">'
+        +'<span class="prob-icon">&#128260;</span>'
+        +'<span class="prob-title">Opens, but doesn&rsquo;t work?</span>'
+        +'<span class="prob-sub">Start fresh &amp; reprompt in a new chat &rarr;</span>'
+      +'</button>'
+      +'<a class="card exp-prob-card exp-prob-padlet" href="https://padlet.com/ctking/wish-wall-s024jeclbv9ousv6zm5u" target="_blank" rel="noopener">'
+        +'<span class="prob-icon">&#128204;</span>'
+        +'<span class="prob-title">Awesome OR cringe?</span>'
+        +'<span class="prob-sub">Share your result on our Wish Wall Padlet! &rarr;</span>'
+      +'</a>'
+    +'</div>';
+},init:expTimerInit},
 
 {t:'3 Tools That Actually Get Used [Sneak Peek]',h:function(){return '<h2>3 Tools That Actually Get Used <span style="font-size:0.65em;opacity:0.85;font-weight:normal;">[Sneak Peek]</span></h2>'
   +'<div class="lead">Curated examples built for virtual classrooms. Click any tool to peek inside:</div>'
@@ -814,6 +1039,7 @@ function timerInit(){
 
 /* ---------- Views ---------- */
 function slideView(n,full){
+  if(expTm&&expTm.id&&n!==6){clearInterval(expTm.id);expTm.run=0}
   var s=SLIDES[n-1];hud.classList.remove('hide');
   view.setAttribute('data-slide', n);
   view.innerHTML='<section aria-label="Slide '+n+'">'+s.h()+'</section>';
@@ -920,6 +1146,9 @@ document.addEventListener('click',function(e){
   var lu=e.target.closest('[data-open-levelup]');if(lu){openLevelUpModal();return}
   var np=e.target.closest('#btn-notepad,[data-open-notepad]');if(np){openNotepadModal();return}
   var ho=e.target.closest('[data-open-handout]');if(ho){openHandoutModal();return}
+  var sc=e.target.closest('[data-open-savecode]');if(sc){openSaveCodeHelpModal();return}
+  var of=e.target.closest('[data-open-openfile]');if(of){openOpenFileHelpModal();return}
+  var ts=e.target.closest('[data-open-troubleshoot]');if(ts){openTroubleshootHelpModal();return}
   var g=e.target.closest('[data-i]');if(g){openModal(+g.dataset.i);return}
   var cl=e.target.closest('[data-close]');if(cl){closeModal();return}
   var mt=e.target.closest('[data-mtab]');

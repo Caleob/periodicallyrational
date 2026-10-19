@@ -9,7 +9,7 @@ Interface & Setup Panel:
 - At the top, include a collapsible "Setup & Settings" drawer:
   * Mode Selector Toggle: "Single Wheel" vs. "Dual Wheels". Switching modes dynamically toggles the visible inputs and display layout.
   * In "Single Wheel" mode: Show one <textarea> for List 1 (e.g., student roster or prompt bank).
-  * In "Dual Wheels" mode: Show two side-by-side <textareas> for List 1 and List 2 (e.g., Vocab Set A vs. Set B, or Students vs. Tasks).
+  * In "Dual Wheels" mode: Show two side-by-side <textareas> for List 1 and List 2 with customizable title inputs (e.g., Partner Matcher, Classroom Jobs, Historical Questions vs. Lenses, Vocab Comparison, or Science Concepts).
   * Options: A checkbox for "Remove selected item(s) after spin" (default: checked).
   * An "Update Wheels" button to parse lists and refresh the canvas.
 
@@ -29,4 +29,4 @@ Audio & Result Reveal:
 - Web Audio Synthesis: Use the native browser Web Audio API to procedurally generate a subtle, mechanical tick as slices pass the top pointer, and a pleasant completion chime when the wheel(s) stop.
 - Dynamic Result Banner:
   * Single Wheel: Display "Selected: [Winning Item]" with an option to manually undo removal if needed.
-  * Dual Wheels: Display "Compare & Contrast: Identify one critical similarity and one fundamental difference between [Item 1] and [Item 2]."
+  * Dual Wheels: Display selected items from both wheels with customizable titles and clean pair connector badge (e.g., [Item 1] & [Item 2]) without restrictive discussion baggage, and an option to manually undo removal if needed.

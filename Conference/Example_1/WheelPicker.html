@@ -236,7 +236,7 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         }
 
-        select, textarea {
+        select, textarea, input[type="text"] {
             width: 100%;
             background-color: var(--bg-input);
             border: 1px solid var(--border-color);
@@ -249,7 +249,7 @@
             transition: border-color 0.2s ease;
         }
 
-        select:focus, textarea:focus {
+        select:focus, textarea:focus, input[type="text"]:focus {
             border-color: var(--accent-violet);
         }
 
@@ -502,32 +502,20 @@
             word-break: break-word;
         }
 
-        .vs-badge {
-            background-color: var(--accent-pink);
+        .pair-badge {
+            background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink));
             color: white;
-            font-weight: 900;
-            font-size: 0.8rem;
-            width: 32px;
-            height: 32px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
-        }
-
-        .prompt-box {
-            background-color: rgba(99, 102, 241, 0.1);
-            border: 1px dashed var(--accent-violet);
-            border-radius: var(--radius-md);
-            padding: 1rem 1.25rem;
-            color: #c7d2fe;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-
-        .prompt-box strong {
-            color: #ffffff;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
         }
 
         .modal-actions {
@@ -608,7 +596,7 @@
             .dual-results-grid {
                 grid-template-columns: 1fr;
             }
-            .vs-badge {
+            .pair-badge {
                 margin: 0 auto;
             }
             .result-item-title {
@@ -625,7 +613,7 @@
             <div class="logo-badge">🎓 EduSpin</div>
             <div class="app-title">
                 <span>Classroom Wheel Picker</span>
-                <span class="mode-indicator" id="modeBadge">Single Wheel</span>
+                <span class="mode-indicator" id="modeBadge">Dual Wheels</span>
             </div>
         </div>
         <div class="header-actions">
@@ -650,35 +638,44 @@
                         <span>Wheel Mode</span>
                     </div>
                     <div class="mode-toggle-group">
-                        <button class="mode-btn active" id="modeSingleBtn">Single Wheel</button>
-                        <button class="mode-btn" id="modeDualBtn">Dual Wheels</button>
+                        <button class="mode-btn" id="modeSingleBtn">Single Wheel</button>
+                        <button class="mode-btn active" id="modeDualBtn">Dual Wheels</button>
                     </div>
 
                     <div class="setting-label" style="margin-top: 0.5rem;">
                         <span>Quick Presets</span>
                     </div>
                     <select id="presetSelect">
-                        <option value="students_tasks">Classroom: Students & Tasks</option>
+                        <option value="partner_chooser" selected>Partner Matcher (Student ↔ Student)</option>
+                        <option value="job_chooser">Job Chooser (Student ↔ Classroom Job)</option>
+                        <option value="history_perspectives">Historical Analysis (4 Questions ↔ 7 Lenses)</option>
+                        <option value="vocab_compare">Concept Comparison: Government Systems</option>
                         <option value="science_concepts">Science: Organelles & Functions</option>
-                        <option value="history_eras">History: Figures & Eras</option>
-                        <option value="vocab_compare">Vocab: Government Systems</option>
+                        <option value="creative_writing">Creative Writing: Character & Conflict</option>
+                        <option value="single_roster">Single Wheel: Random Student Picker</option>
                     </select>
                 </div>
 
                 <!-- Input List 1 -->
                 <div class="setting-box">
                     <div class="setting-label">
-                        <span id="list1Title">List 1 (Wheel 1)</span>
+                        <span id="list1Title">Wheel 1 (List 1)</span>
                         <span class="item-badge" id="list1Count">0 items</span>
+                    </div>
+                    <div style="margin-bottom: 0.5rem;">
+                        <input type="text" id="list1LabelInput" placeholder="Wheel 1 Title (e.g. Student 1)" value="Student 1">
                     </div>
                     <textarea id="list1Input" placeholder="Enter items, one per line..."></textarea>
                 </div>
 
                 <!-- Input List 2 (Hidden in Single Mode) -->
-                <div class="setting-box" id="list2Box" style="display: none;">
+                <div class="setting-box" id="list2Box">
                     <div class="setting-label">
-                        <span>List 2 (Wheel 2)</span>
+                        <span id="list2Title">Wheel 2 (List 2)</span>
                         <span class="item-badge" id="list2Count">0 items</span>
+                    </div>
+                    <div style="margin-bottom: 0.5rem;">
+                        <input type="text" id="list2LabelInput" placeholder="Wheel 2 Title (e.g. Student 2)" value="Student 2">
                     </div>
                     <textarea id="list2Input" placeholder="Enter items for Wheel 2, one per line..."></textarea>
                 </div>
@@ -733,7 +730,7 @@
                 <div class="wheel-header">
                     <div class="wheel-title">
                         <span>🎡</span>
-                        <span id="wheel1CardTitle">Main Wheel</span>
+                        <span id="wheel1CardTitle">Student 1</span>
                     </div>
                     <span class="item-badge" id="wheel1Badge">0 active</span>
                 </div>
@@ -743,11 +740,11 @@
             </div>
 
             <!-- Wheel 2 Card (Dual Mode) -->
-            <div class="wheel-card" id="wheelCard2" style="display: none;">
+            <div class="wheel-card" id="wheelCard2">
                 <div class="wheel-header">
                     <div class="wheel-title">
                         <span>🎡</span>
-                        <span>Wheel 2</span>
+                        <span id="wheel2CardTitle">Student 2</span>
                     </div>
                     <span class="item-badge" id="wheel2Badge">0 active</span>
                 </div>
@@ -759,7 +756,7 @@
 
         <div class="spin-controls-bar">
             <button class="btn btn-spin-large" id="btnSpin">
-                SPIN WHEEL 🎡
+                SPIN BOTH WHEELS 🎡🎡
             </button>
         </div>
     </main>
@@ -768,36 +765,31 @@
         <div class="modal-card">
             <div class="modal-header">
                 <div class="modal-title" id="modalHeaderTitle">
-                    🎉 Spin Result
+                    🎉 Selection Result
                 </div>
                 <button class="btn btn-secondary btn-icon" id="btnCloseModal">✖️</button>
             </div>
 
             <!-- Single Wheel Result Layout -->
-            <div id="singleResultContainer">
+            <div id="singleResultContainer" style="display: none;">
                 <div class="single-result-box">
-                    <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 700;">Selected Item</div>
+                    <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 700;" id="singleWinnerLabel">Selected Item</div>
                     <div class="result-item-title" id="singleWinnerItem">-</div>
                 </div>
             </div>
 
             <!-- Dual Wheel Result Layout -->
-            <div id="dualResultContainer" style="display: none;">
+            <div id="dualResultContainer">
                 <div class="dual-results-grid">
                     <div class="dual-item-box">
-                        <div class="dual-item-label">Wheel 1</div>
+                        <div class="dual-item-label" id="dualWinnerLabel1">Student 1</div>
                         <div class="dual-item-value" id="dualWinner1">-</div>
                     </div>
-                    <div class="vs-badge">VS</div>
+                    <div class="pair-badge" id="dualPairBadge">&</div>
                     <div class="dual-item-box">
-                        <div class="dual-item-label">Wheel 2</div>
+                        <div class="dual-item-label" id="dualWinnerLabel2">Student 2</div>
                         <div class="dual-item-value" id="dualWinner2">-</div>
                     </div>
-                </div>
-
-                <div class="prompt-box" id="dualPromptBox">
-                    <strong>💡 Compare & Contrast Discussion:</strong><br>
-                    Identify one critical similarity and one fundamental difference between <strong id="promptTerm1">Item 1</strong> and <strong id="promptTerm2">Item 2</strong>.
                 </div>
             </div>
 
@@ -812,7 +804,10 @@
     <script>
         // State variables
         let appState = {
-            mode: 'single', // 'single' or 'dual'
+            mode: 'dual', // 'single' or 'dual' - defaults to dual
+            label1: 'Student 1',
+            label2: 'Student 2',
+            connector: '&',
             isAudioMuted: false,
             removeOnSpin: true,
             crossRemove: true,
@@ -828,57 +823,139 @@
 
         // Educational presets
         const PRESETS = {
-            students_tasks: {
-                name: 'Classroom: Students & Tasks',
+            partner_chooser: {
+                name: 'Partner Matcher (Student ↔ Student)',
                 mode: 'dual',
+                label1: 'Student 1',
+                label2: 'Student 2',
+                connector: '&',
+                crossRemove: true,
                 list1: [
                     'Alex Miller', 'Beatriz Santos', 'Charlie Chen', 'Diana Prince', 
                     'Ethan Hunt', 'Fiona Gallagher', 'George Clark', 'Hannah Abbott', 
-                    'Ian Malcolm', 'Julia Roberts', 'Kevin Bacon', 'Laura Croft'
+                    'Ian Malcolm', 'Julia Roberts', 'Kevin Bacon', 'Laura Croft',
+                    'Marcus Aurelius', 'Nina Simone', 'Oliver Twist', 'Penelope Cruz'
                 ],
                 list2: [
-                    'Lead Discussion', 'Summarize Main Point', 'Ask Clarifying Question', 
-                    'Provide Real-World Example', 'Define Key Term', 'Challenge Assumption', 
-                    'Draw Concept Diagram', 'Synthesize Viewpoints'
+                    'Alex Miller', 'Beatriz Santos', 'Charlie Chen', 'Diana Prince', 
+                    'Ethan Hunt', 'Fiona Gallagher', 'George Clark', 'Hannah Abbott', 
+                    'Ian Malcolm', 'Julia Roberts', 'Kevin Bacon', 'Laura Croft',
+                    'Marcus Aurelius', 'Nina Simone', 'Oliver Twist', 'Penelope Cruz'
+                ]
+            },
+            job_chooser: {
+                name: 'Job Chooser (Student ↔ Classroom Job)',
+                mode: 'dual',
+                label1: 'Student',
+                label2: 'Classroom Job',
+                connector: '→',
+                crossRemove: false,
+                list1: [
+                    'Alex Miller', 'Beatriz Santos', 'Charlie Chen', 'Diana Prince', 
+                    'Ethan Hunt', 'Fiona Gallagher', 'George Clark', 'Hannah Abbott', 
+                    'Ian Malcolm', 'Julia Roberts', 'Kevin Bacon', 'Laura Croft',
+                    'Marcus Aurelius', 'Nina Simone', 'Oliver Twist', 'Penelope Cruz'
+                ],
+                list2: [
+                    'Line Leader', 'Technology Director', 'Timekeeper & Bell Ringer', 
+                    'Paper & Supply Distributor', 'Whiteboard & Screen Manager', 'Discussion Moderator', 
+                    'Materials & Supply Captain', 'Attendance & Hall Messenger', 'Classroom Librarian', 
+                    'Door Greeter & Hospitality', 'Plant & Eco Specialist', 'Homework Collector'
+                ]
+            },
+            history_perspectives: {
+                name: 'Historical Analysis (4 Questions ↔ 7 Lenses)',
+                mode: 'dual',
+                label1: 'Core Question',
+                label2: 'Historical Lens',
+                connector: '+',
+                crossRemove: false,
+                list1: [
+                    'What underlying economic interests motivated key decisions?',
+                    'How did ordinary citizens and families experience this moment?',
+                    'Whose voice or lived experience is absent from official records?',
+                    'What were the unintended long-term consequences of this policy?'
+                ],
+                list2: [
+                    'Economic & Materialist Lens',
+                    'Social Class & Labor Perspective',
+                    'Political, Legal & Diplomatic Lens',
+                    'Cultural & Religious Dimension',
+                    'Gender & Family Dynamics',
+                    'Marginalized & Subaltern Voices',
+                    'Environmental & Geographic Influences'
+                ]
+            },
+            vocab_compare: {
+                name: 'Vocab & Concepts: Government Systems',
+                mode: 'dual',
+                label1: 'System 1',
+                label2: 'System 2',
+                connector: '↔',
+                crossRemove: true,
+                list1: [
+                    'Direct Democracy', 'Representative Republic', 'Constitutional Monarchy', 
+                    'Absolute Monarchy', 'Oligarchy', 'Theocracy', 'Totalitarianism', 'Technocracy'
+                ],
+                list2: [
+                    'Authoritarian Autocracy', 'Parliamentary Democracy', 'Plutocracy', 
+                    'Direct Democracy', 'Federal Republic', 'Decentralized Cooperative', 
+                    'Military Junta', 'Aristocracy'
                 ]
             },
             science_concepts: {
                 name: 'Science: Organelles & Functions',
                 mode: 'dual',
+                label1: 'Cellular Structure',
+                label2: 'Biological Function',
+                connector: '→',
+                crossRemove: false,
                 list1: [
                     'Mitochondria', 'Chloroplast', 'Cell Membrane', 'Ribosome', 
                     'Nucleus', 'Endoplasmic Reticulum', 'Golgi Apparatus', 'Lysosome'
                 ],
                 list2: [
-                    'Energy Conversion', 'Protein Synthesis', 'Selective Barrier', 
-                    'Genetic Control', 'Lipid Synthesis', 'Package & Transport', 
-                    'Waste Recycling', 'Photosynthesis'
+                    'Energy Conversion (ATP)', 'Photosynthesis & Glucose Synthesis', 
+                    'Selective Permeability & Homeostasis', 'Protein Translation & Synthesis', 
+                    'Genetic Storage & Control', 'Lipid Synthesis & Processing', 
+                    'Packaging & Secretion', 'Macromolecule Digestion & Waste Recycling'
                 ]
             },
-            history_eras: {
-                name: 'History: Figures & Eras',
+            creative_writing: {
+                name: 'Creative Writing: Character & Conflict',
                 mode: 'dual',
+                label1: 'Character Archetype',
+                label2: 'Plot Scenario / Conflict',
+                connector: '+',
+                crossRemove: false,
                 list1: [
-                    'Socrates', 'Julius Caesar', 'Leonardo da Vinci', 'Galileo Galilei', 
-                    'Isaac Newton', 'Marie Curie', 'Albert Einstein', 'Ada Lovelace'
+                    'Reluctant Guardian', 'Rogue Inventor', 'Displaced Time Traveler', 
+                    'Undercover Investigator', 'Sentient Automaton', 'Wandering Chronicler', 
+                    'Idealistic Rebel', 'Reclusive Scholar'
                 ],
                 list2: [
-                    'Classical Greece', 'Roman Empire', 'Renaissance Italy', 
-                    'Scientific Revolution', 'The Enlightenment', 'Industrial Era', 
-                    'Atomic Age', 'Information Age'
+                    'Finds an ancient artifact counting down to an unknown event', 
+                    'Forced to form an uneasy alliance with an arch-rival', 
+                    'Trapped inside a high-security automated facility', 
+                    'Discovers a foundational historical event was fabricated', 
+                    'Cut off from communication during an unexpected blackout', 
+                    'Offered immense power in exchange for a crucial secret'
                 ]
             },
-            vocab_compare: {
-                name: 'Vocab: Government Systems',
-                mode: 'dual',
+            single_roster: {
+                name: 'Single Wheel: Random Student Picker',
+                mode: 'single',
+                label1: 'Student',
+                label2: '',
+                connector: '',
+                crossRemove: false,
                 list1: [
-                    'Democracy', 'Monarchy', 'Oligarchy', 'Republic', 
-                    'Theocracy', 'Totalitarianism', 'Anarchy', 'Technocracy'
+                    'Alex Miller', 'Beatriz Santos', 'Charlie Chen', 'Diana Prince', 
+                    'Ethan Hunt', 'Fiona Gallagher', 'George Clark', 'Hannah Abbott', 
+                    'Ian Malcolm', 'Julia Roberts', 'Kevin Bacon', 'Laura Croft',
+                    'Marcus Aurelius', 'Nina Simone', 'Oliver Twist', 'Penelope Cruz'
                 ],
-                list2: [
-                    'Autocracy', 'Direct Democracy', 'Constitutional Monarchy', 
-                    'Oligarchy', 'Republic', 'Federal System', 'Plutocracy', 'Theocracy'
-                ]
+                list2: []
             }
         };
 
@@ -1123,6 +1200,11 @@
                 return;
             }
 
+            if (appState.mode === 'dual' && items1.length === 1 && items2.length === 1 && items1[0] === items2[0]) {
+                showToast('⚠️ Only 1 item remaining — cannot pair with itself!');
+                return;
+            }
+
             // Ensure AudioContext is initialized on user click
             getAudioContext();
 
@@ -1243,7 +1325,8 @@
                 time: timeStr,
                 mode: appState.mode,
                 winner1,
-                winner2
+                winner2,
+                connector: appState.connector || '&'
             });
             updateHistoryUI();
 
@@ -1327,17 +1410,24 @@
                 dualBox.style.display = 'none';
 
                 document.getElementById('modalHeaderTitle').textContent = '🎉 WINNING SELECTION';
+                const lbl = document.getElementById('singleWinnerLabel');
+                if (lbl) lbl.textContent = appState.label1 || 'Selected Item';
                 document.getElementById('singleWinnerItem').textContent = w1 || 'None';
             } else {
                 singleBox.style.display = 'none';
                 dualBox.style.display = 'block';
 
-                document.getElementById('modalHeaderTitle').textContent = '💡 COMPARE & CONTRAST';
+                document.getElementById('modalHeaderTitle').textContent = '🎉 SELECTION RESULT';
+                const lbl1 = document.getElementById('dualWinnerLabel1');
+                const lbl2 = document.getElementById('dualWinnerLabel2');
+                const badge = document.getElementById('dualPairBadge');
+
+                if (lbl1) lbl1.textContent = appState.label1 || 'Wheel 1';
+                if (lbl2) lbl2.textContent = appState.label2 || 'Wheel 2';
+                if (badge) badge.textContent = appState.connector || '&';
+
                 document.getElementById('dualWinner1').textContent = w1 || 'None';
                 document.getElementById('dualWinner2').textContent = w2 || 'None';
-
-                document.getElementById('promptTerm1').textContent = w1 || 'Term 1';
-                document.getElementById('promptTerm2').textContent = w2 || 'Term 2';
             }
 
             modal.classList.add('open');
@@ -1425,12 +1515,15 @@
         function copyResultToClipboard() {
             let textToCopy = '';
             if (appState.mode === 'single') {
+                const label = appState.label1 || 'Selected Pick';
                 const winner = document.getElementById('singleWinnerItem').textContent;
-                textToCopy = `Selected Pick: ${winner}`;
+                textToCopy = `${label}: ${winner}`;
             } else {
+                const l1 = appState.label1 || 'Wheel 1';
+                const l2 = appState.label2 || 'Wheel 2';
                 const w1 = document.getElementById('dualWinner1').textContent;
                 const w2 = document.getElementById('dualWinner2').textContent;
-                textToCopy = `Compare & Contrast Discussion Prompt:\nIdentify one critical similarity and one fundamental difference between "${w1}" and "${w2}".`;
+                textToCopy = `${l1}: ${w1}\n${l2}: ${w2}`;
             }
 
             // Fallback execCommand for iframe compatibility
@@ -1475,6 +1568,16 @@
             const raw1 = document.getElementById('list1Input').value;
             const raw2 = document.getElementById('list2Input').value;
 
+            const lbl1 = document.getElementById('list1LabelInput') ? document.getElementById('list1LabelInput').value.trim() : '';
+            const lbl2 = document.getElementById('list2LabelInput') ? document.getElementById('list2LabelInput').value.trim() : '';
+
+            if (lbl1) appState.label1 = lbl1;
+            if (lbl2) appState.label2 = lbl2;
+
+            document.getElementById('wheel1CardTitle').textContent = appState.label1 || (appState.mode === 'single' ? 'Main Wheel' : 'Wheel 1');
+            const w2Title = document.getElementById('wheel2CardTitle');
+            if (w2Title) w2Title.textContent = appState.label2 || 'Wheel 2';
+
             appState.items1 = parseAndCleanList(raw1);
             appState.items2 = parseAndCleanList(raw2);
 
@@ -1489,6 +1592,20 @@
         function loadPreset(presetKey) {
             const preset = PRESETS[presetKey];
             if (!preset) return;
+
+            appState.label1 = preset.label1 || 'Wheel 1';
+            appState.label2 = preset.label2 || 'Wheel 2';
+            appState.connector = preset.connector || '&';
+
+            const lblInput1 = document.getElementById('list1LabelInput');
+            const lblInput2 = document.getElementById('list2LabelInput');
+            if (lblInput1) lblInput1.value = appState.label1;
+            if (lblInput2) lblInput2.value = appState.label2;
+
+            if (preset.crossRemove !== undefined) {
+                appState.crossRemove = preset.crossRemove;
+                document.getElementById('chkCrossRemove').checked = preset.crossRemove;
+            }
 
             setMode(preset.mode);
 
@@ -1508,7 +1625,9 @@
             const wheelCard2 = document.getElementById('wheelCard2');
             const spinBtn = document.getElementById('btnSpin');
             const list1Title = document.getElementById('list1Title');
+            const list2Title = document.getElementById('list2Title');
             const wheel1CardTitle = document.getElementById('wheel1CardTitle');
+            const wheel2CardTitle = document.getElementById('wheel2CardTitle');
             const lblCrossRemove = document.getElementById('lblCrossRemove');
 
             if (mode === 'single') {
@@ -1519,8 +1638,8 @@
                 wheelCard2.style.display = 'none';
                 lblCrossRemove.style.display = 'none';
                 spinBtn.textContent = 'SPIN WHEEL 🎡';
-                list1Title.textContent = 'Item List';
-                wheel1CardTitle.textContent = 'Main Wheel';
+                if (list1Title) list1Title.textContent = 'Wheel 1 (Item List)';
+                if (wheel1CardTitle) wheel1CardTitle.textContent = appState.label1 || 'Main Wheel';
             } else {
                 modeBadge.textContent = 'Dual Wheels';
                 dualBtn.classList.add('active');
@@ -1529,8 +1648,10 @@
                 wheelCard2.style.display = 'flex';
                 lblCrossRemove.style.display = 'flex';
                 spinBtn.textContent = 'SPIN BOTH WHEELS 🎡🎡';
-                list1Title.textContent = 'List 1 (Wheel 1)';
-                wheel1CardTitle.textContent = 'Wheel 1';
+                if (list1Title) list1Title.textContent = 'Wheel 1 (List 1)';
+                if (list2Title) list2Title.textContent = 'Wheel 2 (List 2)';
+                if (wheel1CardTitle) wheel1CardTitle.textContent = appState.label1 || 'Wheel 1';
+                if (wheel2CardTitle) wheel2CardTitle.textContent = appState.label2 || 'Wheel 2';
             }
 
             // Re-render canvases to fit new layout width
@@ -1566,7 +1687,7 @@
             container.innerHTML = appState.history.map(item => `
                 <div class="history-item">
                     <div>
-                        <strong>${item.mode === 'single' ? item.winner1 : `${item.winner1} ↔ ${item.winner2}`}</strong>
+                        <strong>${item.mode === 'single' ? item.winner1 : `${item.winner1} ${item.connector || '&'} ${item.winner2}`}</strong>
                     </div>
                     <div class="history-time">${item.time}</div>
                 </div>
@@ -1650,7 +1771,7 @@
             });
 
             // Initial Setup Load
-            loadPreset('students_tasks');
+            loadPreset('partner_chooser');
         });
     </script>
 </body>

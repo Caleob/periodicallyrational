@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question of the Day - Class Reveal Tool</title>
+    <style>
+        /* CSS Reset & Dark Modern Theme Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #05070f;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #ffffff;
+        }
+
+        /* Canvas Overlay for Spotlight & Particles */
+        #fxCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: block;
+        }
+
+        /* Main UI Container */
+        #uiContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* Top Header Badge */
+        .category-badge {
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #38bdf8;
+            background: rgba(15, 23, 42, 0.75);
+            padding: 0.6rem 1.6rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .category-badge.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Teaser Text Display */
+        .teaser-text {
+            position: absolute;
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(56, 189, 248, 0.4);
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            max-width: 80%;
+            line-height: 1.4;
+            pointer-events: none;
+        }
+
+        .teaser-text.active {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        /* Final Main Question Card */
+        .question-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 900px;
+            width: 90%;
+            padding: 3rem 2.5rem;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 24px;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.25), inset 0 0 30px rgba(255, 215, 0, 0.15);
+            opacity: 0;
+            transform: scale(0.85);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+        }
+
+        .question-card.revealed {
+            opacity: 1;
+            transform: scale(1);
+            animation: pulseGlow 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.25), inset 0 0 20px rgba(255, 215, 0, 0.1); }
+            100% { box-shadow: 0 0 70px rgba(255, 215, 0, 0.5), inset 0 0 40px rgba(255, 215, 0, 0.25); }
+        }
+
+        .question-title {
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #fbbf24;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .question-content {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.35;
+            background: linear-gradient(135deg, #ffffff 0%, #fef08a 50%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 1rem;
+        }
+
+        /* Action Buttons */
+        .btn-primary {
+            pointer-events: auto;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: 1.2rem 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 9999px;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.5), 0 10px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: startButtonPulse 2s infinite;
+        }
+
+        @keyframes startButtonPulse {
+            0% { transform: scale(1); box-shadow: 0 0 25px rgba(37, 99, 235, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 45px rgba(56, 189, 248, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 25px rgba(37, 99, 235, 0.5); }
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.08) translateY(-2px);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 0 50px rgba(56, 189, 248, 0.9);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* Utility Floating Controls (Audio Toggle & Gear) */
+        .floating-controls {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            z-index: 20;
+            display: flex;
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .icon-btn {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #94a3b8;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            color: #ffffff;
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: rotate(45deg);
+        }
+
+        .icon-btn.no-rotate:hover {
+            transform: scale(1.1);
+        }
+
+        .icon-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        /* Settings Drawer Modal */
+        #settingsModal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #settingsModal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .settings-card {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+        }
+
+        .settings-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: #38bdf8;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .settings-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 1.5rem;
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: #ffffff;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-save {
+            background: #0284c7;
+            color: #ffffff;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-save:hover {
+            background: #0369a1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HTML5 Canvas Effect Layer -->
+    <canvas id="fxCanvas"></canvas>
+
+    <!-- UI Layer -->
+    <div id="uiContainer">
+        <!-- Tag Header -->
+        <div id="categoryBadge" class="category-badge">Question of the Day</div>
+
+        <!-- Dynamic Teasers Area -->
+        <div id="teaserDisplay" class="teaser-text"></div>
+
+        <!-- Initial Begin Reveal Trigger Button -->
+        <button id="startBtn" class="btn-primary">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+            </svg>
+            Begin Reveal
+        </button>
+
+        <!-- Final Revealed Message Card -->
+        <div id="questionCard" class="question-card">
+            <div id="cardCategory" class="question-title">Today's Mystery</div>
+            <div id="cardText" class="question-content">Loading today's question...</div>
+            <button id="replayBtn" class="btn-secondary" style="margin-top: 1rem; border-radius: 9999px; padding: 0.6rem 1.8rem;">
+                Replay Reveal
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Action Controls (Audio Mute & Settings Gear) -->
+    <div class="floating-controls">
+        <button id="audioBtn" class="icon-btn no-rotate" title="Toggle Audio Mute">
+            <svg id="audioIconOn" viewBox="0 0 24 24">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+            <svg id="audioIconOff" viewBox="0 0 24 24" style="display:none;">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            </svg>
+        </button>
+        <button id="settingsBtn" class="icon-btn" title="Edit Question & Settings">
+            <svg viewBox="0 0 24 24">
+                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Settings Drawer Modal -->
+    <div id="settingsModal">
+        <div class="settings-card">
+            <div class="settings-header">
+                <div class="settings-title">Configure Reveal Details</div>
+                <button id="closeSettingsBtn" class="close-btn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="cfgCategory">Category Tag</label>
+                <input type="text" id="cfgCategory" class="form-control" placeholder="e.g., Math Mystery, Riddle of the Day">
+            </div>
+            <div class="form-group">
+                <label for="cfgQuestion">Main Question / Message of the Day</label>
+                <textarea id="cfgQuestion" class="form-control" placeholder="Type your reveal question here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="cfgTeasers">Teaser Lines (One per line)</label>
+                <textarea id="cfgTeasers" class="form-control" style="min-height:110px;" placeholder="Are you ready?&#10;Engaging thinking caps...&#10;Searching database..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="cfgDuration">Search Duration (Seconds)</label>
+                <input type="number" id="cfgDuration" class="form-control" min="3" max="20" value="8">
+            </div>
+            <div class="settings-footer">
+                <button id="cancelSettingsBtn" class="btn-secondary">Cancel</button>
+                <button id="saveSettingsBtn" class="btn-save">Save & Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * QUESTION OF THE DAY REVEAL SYSTEM
+         * Pure Canvas Graphics + Web Audio API Synthesizer
+         */
+
+        // Default Data State
+        const DEFAULT_CONFIG = {
+            category: "THOUGHT PROVOKER OF THE DAY",
+            question: "If you could travel back in time to teach ancient humanity one modern invention, what would it be and why?",
+            teasers: [
+                "Engaging brain engines...",
+                "Scanning the knowledge universe...",
+                "Searching for today's thought experiment...",
+                "Zeroing in on target..."
+            ],
+            duration: 8
+        };
+
+        let config = { ...DEFAULT_CONFIG };
+
+        // Load configuration from LocalStorage
+        function loadConfig() {
+            try {
+                const saved = localStorage.getItem("qotd_config_v1");
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    config = { ...DEFAULT_CONFIG, ...parsed };
+                }
+            } catch (e) {
+                console.warn("Unable to load from localStorage:", e);
+            }
+        }
+
+        function saveConfig() {
+            try {
+                localStorage.setItem("qotd_config_v1", JSON.stringify(config));
+            } catch (e) {
+                console.warn("Unable to save to localStorage:", e);
+            }
+        }
+
+        // --- WEB AUDIO API SYNTHESIZER ---
+        class AudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.isMuted = false;
+                this.droneOsc = null;
+                this.droneGain = null;
+                this.pulseTimer = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            // Low ambient tension drone during search
+            startTensionDrone() {
+                if (this.isMuted) return;
+                this.init();
+
+                const now = this.ctx.currentTime;
+                this.droneOsc = this.ctx.createOscillator();
+                this.droneGain = this.ctx.createGain();
+
+                // Low sub bass pitch ramp
+                this.droneOsc.type = 'sawtooth';
+                this.droneOsc.frequency.setValueAtTime(55, now); // Low A
+                this.droneOsc.frequency.exponentialRampToValueAtTime(110, now + config.duration);
+
+                // Lowpass filter for deep warmth
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(150, now);
+                filter.frequency.exponentialRampToValueAtTime(450, now + config.duration);
+
+                this.droneGain.gain.setValueAtTime(0.01, now);
+                this.droneGain.gain.linearRampToValueAtTime(0.12, now + 1.5);
+
+                this.droneOsc.connect(filter);
+                filter.connect(this.droneGain);
+                this.droneGain.connect(this.ctx.destination);
+
+                this.droneOsc.start();
+            }
+
+            // Periodic radar pulse sound effect
+            playSonarPing(progress) {
+                if (this.isMuted || !this.ctx) return;
+                const now = this.ctx.currentTime;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                // Pitch rises as progress moves closer to 1
+                const baseFreq = 400 + (progress * 600);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(baseFreq, now);
+                osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, now + 0.15);
+
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.16);
+            }
+
+            stopTension() {
+                if (this.droneGain && this.ctx) {
+                    this.droneGain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+                    setTimeout(() => {
+                        if (this.droneOsc) {
+                            try { this.droneOsc.stop(); } catch(e){}
+                        }
+                    }, 350);
+                }
+            }
+
+            // Final Triumphant Sound Effect
+            playTriumphantReveal() {
+                if (this.isMuted) return;
+                this.init();
+
+                const now = this.ctx.currentTime;
+
+                // 1. Warm Major Chord (C Major: C4, E4, G4, C5)
+                const chord = [261.63, 329.63, 392.00, 523.25, 659.25];
+                chord.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now);
+
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.08, now + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.0);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start(now + (idx * 0.03));
+                    osc.stop(now + 3.1);
+                });
+
+                // 2. High Sparkle Arpeggio Shimmer
+                const sparkles = [1046.50, 1318.51, 1567.98, 2093.00, 2637.02];
+                for (let i = 0; i < 12; i++) {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    const noteTime = now + 0.1 + (i * 0.06);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(sparkles[i % sparkles.length], noteTime);
+
+                    gain.gain.setValueAtTime(0.04, noteTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start(noteTime);
+                    osc.stop(noteTime + 0.35);
+                }
+
+                // 3. Impact Boom
+                const boomOsc = this.ctx.createOscillator();
+                const boomGain = this.ctx.createGain();
+
+                boomOsc.type = 'sine';
+                boomOsc.frequency.setValueAtTime(130, now);
+                boomOsc.frequency.exponentialRampToValueAtTime(30, now + 0.8);
+
+                boomGain.gain.setValueAtTime(0.25, now);
+                boomGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+                boomOsc.connect(boomGain);
+                boomGain.connect(this.ctx.destination);
+
+                boomOsc.start(now);
+                boomOsc.stop(now + 0.85);
+            }
+        }
+
+        const audio = new AudioEngine();
+
+        // --- CANVAS GRAPHICS & ANIMATION ENGINE ---
+        const canvas = document.getElementById('fxCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Particle System
+        class Particle {
+            constructor(x, y, isSparkle = false) {
+                this.reset(x, y, isSparkle);
+            }
+
+            reset(x, y, isSparkle = false) {
+                this.x = x || Math.random() * width;
+                this.y = y || Math.random() * height;
+                this.isSparkle = isSparkle;
+
+                if (isSparkle) {
+                    // Triumphant Sparkle Particles
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 8 + 2;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                    this.size = Math.random() * 4 + 2;
+                    this.alpha = 1;
+                    this.decay = Math.random() * 0.02 + 0.01;
+                    this.color = `hsl(${Math.random() * 50 + 40}, 100%, 75%)`; // Golden/Yellow
+                } else {
+                    // Ambient Dust Particles floating in dark spotlight
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.size = Math.random() * 2 + 1;
+                    this.alpha = Math.random() * 0.4 + 0.1;
+                    this.color = '#94a3b8';
+                }
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.isSparkle) {
+                    this.vy += 0.08; // subtle gravity
+                    this.alpha -= this.decay;
+                } else {
+                    // Wrap ambient dust around screen
+                    if (this.x < 0) this.x = width;
+                    if (this.x > width) this.x = 0;
+                    if (this.y < 0) this.y = height;
+                    if (this.y > height) this.y = 0;
+                }
+            }
+
+            draw(ctx) {
+                if (this.alpha <= 0) return;
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Initialize Ambient Dust
+        const dustParticles = Array.from({ length: 70 }, () => new Particle());
+        let sparkleParticles = [];
+
+        // Animation State Management
+        let state = 'IDLE'; // IDLE, SEARCHING, REVEALED
+        let searchStartTime = 0;
+        let spotlight = {
+            x: width / 2,
+            y: height / 2,
+            radius: 180,
+            targetX: width / 2,
+            targetY: height / 2
+        };
+
+        // Keyframe targets for spotlight search sweep
+        let sweepWaypoints = [];
+        function generateWaypoints() {
+            sweepWaypoints = [
+                { x: width * 0.2, y: height * 0.3 },
+                { x: width * 0.8, y: height * 0.25 },
+                { x: width * 0.3, y: height * 0.75 },
+                { x: width * 0.7, y: height * 0.7 },
+                { x: width * 0.5, y: height * 0.5 } // Lock center at end
+            ];
+        }
+
+        // Dynamic Teaser Text Handling
+        const teaserDisplay = document.getElementById('teaserDisplay');
+        let currentTeaserIdx = -1;
+
+        function updateTeaserText(progress) {
+            const teasers = config.teasers;
+            if (!teasers || teasers.length === 0) return;
+
+            const segmentLength = 1 / teasers.length;
+            const newIdx = Math.max(0, Math.min(Math.floor(progress / segmentLength), teasers.length - 1));
+
+            if (newIdx !== currentTeaserIdx) {
+                currentTeaserIdx = newIdx;
+                teaserDisplay.classList.remove('active');
+
+                setTimeout(() => {
+                    if (state !== 'SEARCHING') return;
+                    teaserDisplay.textContent = teasers[currentTeaserIdx] || '';
+                    // Move teaser text position slightly to follow the spotlight beam area
+                    teaserDisplay.style.left = `${Math.min(Math.max(spotlight.x - 150, 40), width - 340)}px`;
+                    teaserDisplay.style.top = `${Math.min(Math.max(spotlight.y - 120, 60), height - 120)}px`;
+                    teaserDisplay.classList.add('active');
+                }, 200);
+            }
+        }
+
+        // Trigger Confetti / Sparkle Burst on Reveal
+        function explodeSparkles() {
+            sparkleParticles = [];
+            for (let i = 0; i < 120; i++) {
+                sparkleParticles.push(new Particle(width / 2, height / 2, true));
+            }
+        }
+
+        // Main Render Loop
+        let lastPingTime = 0;
+        function render(timestamp) {
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. Render Dark Atmosphere Layer
+            ctx.fillStyle = '#05070f';
+            ctx.fillRect(0, 0, width, height);
+
+            // 2. State Logic & Spotlight Positioning
+            if (state === 'SEARCHING') {
+                const elapsed = Math.max(0, (timestamp - searchStartTime) / 1000);
+                const progress = Math.min(elapsed / config.duration, 1);
+
+                // Sound radar pulses
+                if (timestamp - lastPingTime > (600 - progress * 400)) {
+                    audio.playSonarPing(progress);
+                    lastPingTime = timestamp;
+                }
+
+                // Smoothly interpolate spotlight through waypoints
+                if (sweepWaypoints.length > 1) {
+                    const totalSegments = sweepWaypoints.length - 1;
+                    const scaledProgress = progress * totalSegments;
+                    const segIdx = Math.max(0, Math.min(Math.floor(scaledProgress), totalSegments - 1));
+                    const segProgress = Math.max(0, Math.min(scaledProgress - segIdx, 1));
+
+                    const p0 = sweepWaypoints[segIdx];
+                    const p1 = sweepWaypoints[segIdx + 1];
+
+                    // Smooth step (Ease in-out)
+                    const easeP = segProgress * segProgress * (3 - 2 * segProgress);
+
+                    spotlight.x = p0.x + (p1.x - p0.x) * easeP;
+                    spotlight.y = p0.y + (p1.y - p0.y) * easeP;
+                }
+
+                updateTeaserText(progress);
+
+                // Finish Search Phase
+                if (progress >= 1) {
+                    state = 'REVEALED';
+                    teaserDisplay.classList.remove('active');
+                    audio.stopTension();
+                    audio.playTriumphantReveal();
+                    explodeSparkles();
+                    document.getElementById('questionCard').classList.add('revealed');
+                }
+            } else if (state === 'REVEALED') {
+                // Spotlight stays locked in center, expanding slightly
+                spotlight.x = width / 2;
+                spotlight.y = height / 2;
+                if (spotlight.radius < Math.max(width, height) * 0.6) {
+                    spotlight.radius += 12; // Smooth expansion
+                }
+            }
+
+            // 3. Render Spotlight Beam Cutout & Gradient
+            ctx.save();
+            if (state === 'SEARCHING' || state === 'IDLE') {
+                // Radial spotlight gradient cut
+                const radGrad = ctx.createRadialGradient(
+                    spotlight.x, spotlight.y, 0,
+                    spotlight.x, spotlight.y, spotlight.radius
+                );
+                radGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+                radGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.4)');
+                radGrad.addColorStop(1, 'rgba(5, 7, 15, 0)');
+
+                ctx.fillStyle = radGrad;
+                ctx.beginPath();
+                ctx.arc(spotlight.x, spotlight.y, spotlight.radius, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (state === 'REVEALED') {
+                // Grand Stage Backlight
+                const revealGrad = ctx.createRadialGradient(
+                    width / 2, height / 2, 50,
+                    width / 2, height / 2, spotlight.radius
+                );
+                revealGrad.addColorStop(0, 'rgba(251, 191, 36, 0.35)');
+                revealGrad.addColorStop(0.6, 'rgba(37, 99, 235, 0.25)');
+                revealGrad.addColorStop(1, 'rgba(5, 7, 15, 0)');
+
+                ctx.fillStyle = revealGrad;
+                ctx.fillRect(0, 0, width, height);
+            }
+            ctx.restore();
+
+            // 4. Render Ambient Dust Particles
+            dustParticles.forEach(p => {
+                p.update();
+                p.draw(ctx);
+            });
+
+            // 5. Render Sparkle Burst Particles (When Revealed)
+            for (let i = sparkleParticles.length - 1; i >= 0; i--) {
+                const sp = sparkleParticles[i];
+                sp.update();
+                sp.draw(ctx);
+                if (sp.alpha <= 0) sparkleParticles.splice(i, 1);
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        // --- UI INTERACTION HANDLERS ---
+        const startBtn = document.getElementById('startBtn');
+        const replayBtn = document.getElementById('replayBtn');
+        const questionCard = document.getElementById('questionCard');
+        const categoryBadge = document.getElementById('categoryBadge');
+        const cardCategory = document.getElementById('cardCategory');
+        const cardText = document.getElementById('cardText');
+
+        function startRevealSequence() {
+            audio.init();
+            generateWaypoints();
+
+            // UI Adjustments
+            startBtn.style.display = 'none';
+            questionCard.classList.remove('revealed');
+            categoryBadge.classList.add('visible');
+
+            // Set state & starts search
+            state = 'SEARCHING';
+            spotlight.radius = 180;
+            searchStartTime = performance.now();
+            currentTeaserIdx = -1;
+
+            audio.startTensionDrone();
+        }
+
+        function resetToIdle() {
+            audio.stopTension();
+            state = 'IDLE';
+            spotlight.x = width / 2;
+            spotlight.y = height / 2;
+            spotlight.radius = 180;
+
+            teaserDisplay.classList.remove('active');
+            questionCard.classList.remove('revealed');
+            categoryBadge.classList.remove('visible');
+
+            startBtn.style.display = 'flex';
+        }
+
+        startBtn.addEventListener('click', startRevealSequence);
+        replayBtn.addEventListener('click', () => {
+            resetToIdle();
+            setTimeout(startRevealSequence, 300);
+        });
+
+        // --- AUDIO TOGGLE ---
+        const audioBtn = document.getElementById('audioBtn');
+        const audioIconOn = document.getElementById('audioIconOn');
+        const audioIconOff = document.getElementById('audioIconOff');
+
+        audioBtn.addEventListener('click', () => {
+            audio.isMuted = !audio.isMuted;
+            if (audio.isMuted) {
+                audioIconOn.style.display = 'none';
+                audioIconOff.style.display = 'block';
+                audio.stopTension();
+            } else {
+                audioIconOn.style.display = 'block';
+                audioIconOff.style.display = 'none';
+            }
+        });
+
+        // --- SETTINGS MODAL & DATA BINDING ---
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+        const cfgCategory = document.getElementById('cfgCategory');
+        const cfgQuestion = document.getElementById('cfgQuestion');
+        const cfgTeasers = document.getElementById('cfgTeasers');
+        const cfgDuration = document.getElementById('cfgDuration');
+
+        function applyConfigToUI() {
+            categoryBadge.textContent = config.category;
+            cardCategory.textContent = config.category;
+            cardText.textContent = config.question;
+        }
+
+        function openSettings() {
+            cfgCategory.value = config.category;
+            cfgQuestion.value = config.question;
+            cfgTeasers.value = config.teasers.join('\n');
+            cfgDuration.value = config.duration;
+            settingsModal.classList.add('open');
+        }
+
+        function closeSettings() {
+            settingsModal.classList.remove('open');
+        }
+
+        function saveSettings() {
+            config.category = cfgCategory.value.trim() || DEFAULT_CONFIG.category;
+            config.question = cfgQuestion.value.trim() || DEFAULT_CONFIG.question;
+            config.duration = Math.max(3, Math.min(20, parseInt(cfgDuration.value) || 8));
+
+            const teaserLines = cfgTeasers.value
+                .split('\n')
+                .map(s => s.trim())
+                .filter(s => s.length > 0);
+
+            config.teasers = teaserLines.length > 0 ? teaserLines : DEFAULT_CONFIG.teasers;
+
+            saveConfig();
+            applyConfigToUI();
+            closeSettings();
+            resetToIdle();
+        }
+
+        settingsBtn.addEventListener('click', openSettings);
+        closeSettingsBtn.addEventListener('click', closeSettings);
+        cancelSettingsBtn.addEventListener('click', closeSettings);
+        saveSettingsBtn.addEventListener('click', saveSettings);
+
+        // --- INITIALIZATION ---
+        window.addEventListener('load', () => {
+            loadConfig();
+            applyConfigToUI();
+            requestAnimationFrame(render);
+        });
+    </script>
+</body>
+</html>
