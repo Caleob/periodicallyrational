@@ -1037,6 +1037,32 @@ function timerInit(){
   updateMusicUI();
 }
 
+/* ---------- Slide Names & SVGs ---------- */
+var SLIDE_NAMES=[
+  "Hi, I'm Caleob",
+  "What This IS & NOT",
+  "The Classroom Genie",
+  "Sound Familiar?",
+  "The Genie Loop",
+  "Tool #1: First Win",
+  "3 Real Classroom Tools",
+  "Two Magic Sentences",
+  "Wish Starter & Borrow",
+  "The Magic File Maker",
+  "Magic Words for Tweaking",
+  "Cave of Wonders",
+  "Tinker Time"
+];
+function slideTitle(n){
+  var s=SLIDES[n-1];
+  return (s&&s.short)||SLIDE_NAMES[n-1]||(s&&s.t)||('Slide '+n);
+}
+var DBL_LEFT_SVG='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>';
+var SGL_LEFT_SVG='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>';
+var SGL_RIGHT_SVG='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>';
+var DBL_RIGHT_SVG='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 17 11 12 6 7"/><polyline points="13 17 18 12 13 7"/></svg>';
+var HOME_SVG='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H4a1 1 0 0 1-1-1z"/></svg>';
+
 /* ---------- Views ---------- */
 function slideView(n,full){
   if(expTm&&expTm.id&&n!==6){clearInterval(expTm.id);expTm.run=0}
@@ -1045,8 +1071,13 @@ function slideView(n,full){
   view.innerHTML='<section aria-label="Slide '+n+'">'+s.h()+'</section>';
   arm(view.firstChild,full);
   if(s.init)s.init();
-  hud.innerHTML='<button data-nav="-1" aria-label="Previous">&#8249;</button>'+SLIDES.map(function(x,i){return '<button class="dot'+(i+1===n?' on':'')+'" title="'+(i+1)+'. '+x.t+'" aria-label="Slide '+(i+1)+': '+x.t+'" data-go="'+(i+1)+'"></button>'}).join('')+'<button data-nav="1" aria-label="Next">&#8250;</button><span>Slide '+n+' of '+SLIDES.length+'</span><span id="cnt"></span><a href="#slide-'+CAVE_SLIDE+'">Cave of Wonders</a>';
-  hudCount();document.title=s.t+' | The Classroom Genie';
+  hud.innerHTML='<button class="hud-btn hud-prev-slide" data-hud-act="prev-slide" aria-label="Previous slide" title="Previous slide (Skip animations)">'+DBL_LEFT_SVG+'</button>'
+    +'<button class="hud-btn hud-prev-anim" data-hud-act="prev-anim" aria-label="Previous animation" title="Roll back one animation">'+SGL_LEFT_SVG+'</button>'
+    +'<span class="hud-title" title="'+escapeHTML(s.t)+'">'+escapeHTML(slideTitle(n))+'</span>'
+    +'<button class="hud-btn hud-next-anim" data-hud-act="next-anim" aria-label="Next animation" title="Advance animation">'+SGL_RIGHT_SVG+'</button>'
+    +'<button class="hud-btn hud-next-slide" data-hud-act="next-slide" aria-label="Next slide" title="Next slide (Skip animations)">'+DBL_RIGHT_SVG+'</button>';
+  updateCounters();
+  document.title=s.t+' | The Classroom Genie';
 }
 
 /* ---------- Reveal engine: one talking point per click ---------- */
@@ -1063,11 +1094,61 @@ function arm(sec,all){
   st.u.forEach(function(e,k){e.classList.add('rv');e.style.setProperty('--dx',(k%2?'':'-')+'120px');if(all)e.classList.add('in','nt')});
   setTimeout(function(){st.u.forEach(function(e){e.classList.remove('nt')})},60);
 }
-function hudCount(){var c=$('#cnt');if(c)c.textContent=st.u.length?'· '+st.i+'/'+st.u.length:''}
+function updateCounters(){
+  var sc=$('#slide-counter');
+  if(sc)sc.textContent=cur+'/'+SLIDES.length;
+
+  var ac=$('#anim-counter');
+  if(ac){
+    if(!st.u||st.u.length===0){
+      ac.innerHTML='';
+      ac.style.display='none';
+    }else{
+      ac.style.display='flex';
+      var dots='';
+      for(var k=0;k<st.u.length;k++){
+        if(k<st.i){
+          dots+='<span class="anim-dot filled" aria-hidden="true">&#9679;</span>';
+        }else{
+          dots+='<span class="anim-dot empty" aria-hidden="true">&#9675;</span>';
+        }
+      }
+      ac.innerHTML=dots;
+      ac.setAttribute('aria-label','Animation step '+st.i+' of '+st.u.length);
+    }
+  }
+
+  var prevSlideBtn=$('#hud [data-hud-act="prev-slide"]');
+  if(prevSlideBtn)prevSlideBtn.disabled=(cur<=1);
+
+  var prevAnimBtn=$('#hud [data-hud-act="prev-anim"]');
+  if(prevAnimBtn)prevAnimBtn.disabled=(st.i<=0);
+
+  var nextAnimBtn=$('#hud [data-hud-act="next-anim"]');
+  if(nextAnimBtn)nextAnimBtn.disabled=(cur>=SLIDES.length&&st.i>=st.u.length);
+
+  var nextSlideBtn=$('#hud [data-hud-act="next-slide"]');
+  if(nextSlideBtn)nextSlideBtn.disabled=(cur>=SLIDES.length);
+}
 function step(d){
   if(busy||$('#modal').classList.contains('open'))return;
-  if(d>0){if(st.i<st.u.length){st.u[st.i++].classList.add('in');hudCount()}else if(cur<SLIDES.length)go(cur+1)}
-  else{if(st.i>0){st.u[--st.i].classList.remove('in');hudCount()}else if(cur>1){full=true;go(cur-1)}}
+  if(d>0){
+    if(st.i<st.u.length){
+      st.u[st.i++].classList.add('in');
+      updateCounters();
+    }else if(cur<SLIDES.length){
+      full=false;
+      go(cur+1);
+    }
+  }else{
+    if(st.i>0){
+      st.u[--st.i].classList.remove('in');
+      updateCounters();
+    }else if(cur>1){
+      full=true;
+      go(cur-1);
+    }
+  }
 }
 
 /* ---------- Lamp and smoke transition ---------- */
@@ -1098,6 +1179,9 @@ function buildDunes(){
 }
 buildDunes();
 var lamp=document.createElement('button');lamp.id='lamp';lamp.setAttribute('data-nav','1');lamp.setAttribute('aria-label','Rub the lamp: next point');lamp.innerHTML=LAMPSVG;document.body.appendChild(lamp);
+if(!$('#home-btn')){var hb=document.createElement('button');hb.id='home-btn';hb.setAttribute('aria-label','Return to beginning (Slide 1)');hb.setAttribute('title','Return to beginning (Slide 1)');hb.innerHTML=HOME_SVG;document.body.appendChild(hb)}
+if(!$('#anim-counter')){var ac=document.createElement('div');ac.id='anim-counter';ac.setAttribute('aria-label','Animation steps');document.body.appendChild(ac)}
+if(!$('#slide-counter')){var sc=document.createElement('div');sc.id='slide-counter';sc.setAttribute('aria-label','Current slide');document.body.appendChild(sc)}
 var cv=document.createElement('canvas');cv.id='smoke';document.body.appendChild(cv);var cx=cv.getContext('2d');
 var modal=document.createElement('div');modal.id='modal';document.body.appendChild(modal);
 var PAL=['46,16,101','30,27,75','88,28,135','109,40,217','22,18,60','14,116,144'];
@@ -1218,6 +1302,43 @@ document.addEventListener('click',function(e){
     copy(rawTweak+'\n\n'+TWEAK_GUARD, 'Tweak copied (with full-file reminder)!');
     return;
   }
+  var ha=e.target.closest('[data-hud-act]');
+  if(ha){
+    var act=ha.dataset.hudAct;
+    if(act==='prev-slide'){
+      if(cur>1){full=false;go(cur-1)}
+    }else if(act==='prev-anim'){
+      if(st.i>0){
+        st.u[--st.i].classList.remove('in');
+        updateCounters();
+      }
+    }else if(act==='next-anim'){
+      if(st.i<st.u.length){
+        st.u[st.i++].classList.add('in');
+        updateCounters();
+      }else if(cur<SLIDES.length){
+        full=false;
+        go(cur+1);
+      }
+    }else if(act==='next-slide'){
+      if(cur<SLIDES.length){
+        full=false;
+        go(cur+1);
+      }
+    }
+    return;
+  }
+  var hb=e.target.closest('#home-btn');
+  if(hb){
+    if(cur!==1){
+      full=false;
+      go(1);
+    }else if(st.i>0){
+      arm(view.firstChild,false);
+      updateCounters();
+    }
+    return;
+  }
   var t=e.target.closest('[data-nav],[data-go],[data-copy],[data-copytxt],[data-dl]');
   if(!t){if(!e.target.closest('button,a,input,textarea,summary,pre'))step(1);return}
   if(t.dataset.nav)step(+t.dataset.nav);
@@ -1233,6 +1354,7 @@ document.addEventListener('keydown',function(e){
   var k=e.key;
   if(k==='ArrowRight'||k===' '||k==='PageDown'){e.preventDefault();step(1)}
   else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();step(-1)}
+  else if(k==='Home'){e.preventDefault();full=false;go(1)}
 });
 var sx=null;
 document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
